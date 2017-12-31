@@ -242,18 +242,23 @@ test('"class" syntax', () => {
 })
 
 test('observe only certain object properties', () => {
-    const obj = observe({
+    const object = {
         a: 0,
         b: 0,
         sum: 0
-    }, { props: ['a'] })
+    }
+    const observeA = observe(object, { props:  ['a'] })
+    const observeB = observe(object, { ignore: ['a'] })
 
     const doSum = computed(function() {
-        obj.sum = obj.a + obj.b
+        observeA.sum = observeA.a + observeB.b
     })
 
-    obj.a = 1
-    expect(obj.sum).toBe(1)
-    obj.b = 1
-    expect(obj.sum).toBe(1)
+    observeA.a = 2
+    expect(object.sum).toBe(2)
+    observeA.b = 1
+    observeB.a = 1
+    expect(object.sum).toBe(2)
+    observeB.b = 2
+    expect(object.sum).toBe(3)
 })

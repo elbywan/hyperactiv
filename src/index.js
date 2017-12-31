@@ -35,14 +35,14 @@ const computed = function(fun, { autoRun = true } = {}) {
 
 const dispose = _ => _.__disposed = true
 
-const observe = function(obj, { props = null } = {}) {
+const observe = function(obj, { props = null, ignore = null } = {}) {
     obj.__observeMap = new Map()
 
     return new Proxy(obj, {
         get(_, prop) {
             const { __observeMap } = obj
 
-            if(props && !props.includes(prop))
+            if((props && !props.includes(prop)) || (ignore && ignore.includes(prop)))
                 return obj[prop]
 
             if(!__observeMap.has(prop)) {
@@ -60,7 +60,7 @@ const observe = function(obj, { props = null } = {}) {
             const { __observeMap } = obj
             obj[prop] = value
 
-            if(props && !props.includes(prop))
+            if((props && !props.includes(prop)) || (ignore && ignore.includes(prop)))
                 return true
 
             if(__observeMap.has(prop)) {
