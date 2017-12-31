@@ -3,6 +3,13 @@
   "version": "0.0.1",
   "description": "Super small observable & reactive objects library.",
   "main": "dist/index.js",
+  "repository": "https://github.com/elbywan/hyperactiv",
+  "bugs": {
+    "url": "https://github.com/elbywan/hyperactiv/issues"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "start": "npm run build && npm run test",
     "build": "rollup -c rollup.config.js",
