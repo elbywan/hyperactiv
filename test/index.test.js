@@ -106,20 +106,48 @@ test('dispose computed functions', () => {
 })
 
 test('asynchronous computation', async () => {
-    const obj = observe({ a: 0 })
-    let result = 0
+    const obj = observe({ a: 0, b: 0 })
 
     const addOne = () => {
-        result = obj.a + 1
+        obj.b = obj.a + 1
     }
     const delayedAddOne = computed(() => delay(200).then(addOne))
     await delayedAddOne()
 
-    obj.a = -1
-    expect(result).toBe(1)
+    obj.a = 2
+    expect(obj.b).toBe(1)
 
     await delay(250).then(() => {
-        expect(result).toBe(0)
+        expect(obj.b).toBe(3)
+    })
+})
+
+test('concurrent asynchronous computations', async () => {
+    const obj = observe({ a: 0, b: 0 })
+    let result = 0
+
+    const plusA = computed(async ({ capture: { stop, resume }}) => {
+        stop()
+        await delay(200)
+        resume()
+        result += obj.a
+        stop()
+    })
+    const plusB = computed(async ({ capture: { stop, resume }}) => {
+        stop()
+        await delay(200)
+        resume()
+        result += obj.b
+        stop()
+    })
+
+    await Promise.all([ plusA(), plusB() ])
+
+    obj.a = 1
+    obj.b = 2
+
+    await delay(250).then(() => {
+        expect(result).toBe(3)
     })
 })
 

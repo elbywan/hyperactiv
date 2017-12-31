@@ -5,10 +5,24 @@ const computed = function(fun, autoRun = false) {
         apply: function(target, thisArg, argsList) {
             computedSet.add(proxy)
 
-            const result = target.apply(thisArg, ...argsList)
+            argsList.push({
+                capture :{
+                    stop: () => computedSet.delete(proxy),
+                    resume: () => computedSet.add(proxy)
+                }
+            })
+
+            const result = target.apply(thisArg, argsList)
 
             if(result instanceof Promise) {
-                return result.then(function() { computedSet.delete(proxy) })
+                return result
+                    .then(() => {
+                        computedSet.delete(proxy)
+                    })
+                    .catch(err => {
+                        computedSet.delete(proxy)
+                        throw err
+                    })
             } else {
                 computedSet.delete(proxy)
                 return result
