@@ -12,7 +12,7 @@ test('simple computation', () => {
 
     const sum = computed(() => {
         result = obj.a + obj.b
-    })
+    }, { autoRun: false })
     sum()
 
     expect(result).toBe(3)
@@ -31,9 +31,31 @@ test('auto-run computed function', () => {
 
     computed(() => {
         result = obj.a + obj.b
-    }, true)
+    })
 
     expect(result).toBe(3)
+})
+
+test('multiple getters', () => {
+    const obj = observe({
+        a: 1,
+        b: 2,
+        sum: 0
+    }, { props: [ 'a', 'b' ]})
+
+    computed(() => {
+        obj.sum += obj.a
+        obj.sum += obj.b
+        obj.sum += obj.a + obj.b
+    }, { autoRun: true })
+
+    // 1 + 2 + 3
+    expect(obj.sum).toBe(6)
+
+    obj.a = 2
+
+    // 6 + 2 + 2 + 4
+    expect(obj.sum).toBe(14)
 })
 
 test('nested functions', () => {
@@ -55,7 +77,7 @@ test('nested functions', () => {
 
     computed(() => {
         result = aPlusB() + cPlusD()
-    }, true)
+    })
 
     expect(result).toBe(10)
     obj.a = 2
@@ -73,7 +95,7 @@ test('multiple observed objects', () => {
 
     computed(() => {
         result = obj1.a + obj2.a + obj3.a
-    }, true)
+    })
 
     expect(result).toBe(6)
     obj1.a = 0
@@ -91,10 +113,10 @@ test('dispose computed functions', () => {
 
     const minusOne = computed(() => {
         result2 = obj.a - 1
-    }, true)
+    })
     const addOne = computed(() => {
         result = obj.a + 1
-    }, true)
+    })
 
     obj.a = 1
     expect(result).toBe(2)
@@ -111,7 +133,10 @@ test('asynchronous computation', async () => {
     const addOne = () => {
         obj.b = obj.a + 1
     }
-    const delayedAddOne = computed(() => delay(200).then(addOne))
+    const delayedAddOne = computed(
+        () => delay(200).then(addOne),
+        { autoRun: false }
+    )
     await delayedAddOne()
 
     obj.a = 2
@@ -120,6 +145,24 @@ test('asynchronous computation', async () => {
     await delay(250).then(() => {
         expect(obj.b).toBe(3)
     })
+})
+
+test('release capture on asynchronous computation error', async () => {
+    expect.assertions(1)
+
+    const obj = observe({ a: 0, b: 0, sum: 0 })
+    const error = computed(() => delay(200).then(() => {
+        obj.sum = obj.a + 1
+        throw new Error()
+    }), { autoRun: false })
+
+    try { 
+        await error()
+    } catch(e) { 
+        expect(e instanceof Error).toBe(true)
+    }
+
+    obj.b = 1
 })
 
 test('concurrent asynchronous computations', async () => {
@@ -132,14 +175,14 @@ test('concurrent asynchronous computations', async () => {
         resume()
         result += obj.a
         stop()
-    })
+    }, { autoRun: false })
     const plusB = computed(async ({ capture: { stop, resume }}) => {
         stop()
         await delay(200)
         resume()
         result += obj.b
         stop()
-    })
+    }, { autoRun: false })
 
     await Promise.all([ plusA(), plusB() ])
 
@@ -154,7 +197,7 @@ test('concurrent asynchronous computations', async () => {
 test('observe arrays', () => {
     const arr = observe([1, 2, 3])
     let sum = 0
-    computed(() => sum = arr.reduce((acc, curr) => acc + curr), true)
+    computed(() => sum = arr.reduce((acc, curr) => acc + curr))
     expect(sum).toBe(6)
 
     arr[0] = 2
@@ -170,7 +213,7 @@ test('usage with "this"', () => {
         }
     })
 
-    obj.doSum = computed(obj.doSum.bind(obj), true)
+    obj.doSum = computed(obj.doSum.bind(obj))
     expect(obj.sum).toBe(3)
     obj.a = 2
     expect(obj.sum).toBe(4)
@@ -183,7 +226,7 @@ test('"class" syntax', () => {
             this.b = 2
 
             const _this = observe(this)
-            this.doSum = computed(this.doSum.bind(_this), true)
+            this.doSum = computed(this.doSum.bind(_this))
             return _this
         }
 
@@ -196,4 +239,21 @@ test('"class" syntax', () => {
     expect(obj.sum).toBe(3)
     obj.a = 2
     expect(obj.sum).toBe(4)
+})
+
+test('observe only certain object properties', () => {
+    const obj = observe({
+        a: 0,
+        b: 0,
+        sum: 0
+    }, { props: ['a'] })
+
+    const doSum = computed(function() {
+        obj.sum = obj.a + obj.b
+    })
+
+    obj.a = 1
+    expect(obj.sum).toBe(1)
+    obj.b = 1
+    expect(obj.sum).toBe(1)
 })
