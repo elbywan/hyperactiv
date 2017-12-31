@@ -1,0 +1,65 @@
+const computedSet = new Set()
+
+const computed = function(fun, autoRun = false) {
+    const proxy = new Proxy(fun, {
+        apply: function(target, thisArg, argsList) {
+            computedSet.add(proxy)
+
+            const result = target.apply(thisArg, ...argsList)
+
+            if(result instanceof Promise) {
+                return result.then(function() { computedSet.delete(proxy) })
+            } else {
+                computedSet.delete(proxy)
+                return result
+            }
+        }
+    })
+    if(autoRun) { proxy() }
+    return proxy
+}
+
+const dispose = _ => _.__disposed = true
+
+const observe = function(obj) {
+    obj.__observeMap = new Map()
+
+    return new Proxy(obj, {
+        get(_, prop) {
+            const { __observeMap } = obj
+            if(!__observeMap.has(prop)) {
+                __observeMap.set(prop, new Set())
+            }
+
+            for(let computed of computedSet) {
+                const set = __observeMap.get(prop)
+                set.add(computed)
+                __observeMap.set(prop, set)
+            }
+            return obj[prop]
+        },
+        set(_, prop, value) {
+            const { __observeMap } = obj
+
+            obj[prop] = value
+
+            if(__observeMap.has(prop)) {
+                const dependents = __observeMap.get(prop)
+                for(let dependent of dependents) {
+                    if(dependent.__disposed) {
+                        dependents.delete(dependent)
+                    } else {
+                        dependent()
+                    }
+                }
+            }
+            return true
+        }
+    })
+}
+
+export default {
+    observe,
+    computed,
+    dispose
+}

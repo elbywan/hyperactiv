@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../dist/index.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <label>A = </label><input id="A" type="number" value="0"/>
+    </div>
+    <div>
+        <label>B = </label><input id="B" type="number" value="0"/>
+    </div>
+    <div>
+        <label>A + B = </label><span id="result"></span>
+    </div>
+
+    <script>
+        window.onload = () => {
+            const { observe, computed } = hyperactiv
+
+            const eltA = document.getElementById("A")
+            const eltB = document.getElementById("B")
+
+            const obj = observe({
+                a: +(eltA.value),
+                b: +(eltB.value)
+            })
+            eltA.onchange = function() { obj.a = +(this.value) }
+            eltB.onchange = function() { obj.b = +(this.value) }
+
+            computed(() => {
+                document.getElementById("result").innerText = obj.a + obj.b
+            }, true)
+        }
+    </script>
+</body>
+</html>
