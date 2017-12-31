@@ -1,6 +1,6 @@
 const computedSet = new Set()
 
-const computed = function(fun, autoRun = false) {
+const computed = function(fun, { autoRun = true } = {}) {
     const proxy = new Proxy(fun, {
         apply: function(target, thisArg, argsList) {
             computedSet.add(proxy)
@@ -35,12 +35,16 @@ const computed = function(fun, autoRun = false) {
 
 const dispose = _ => _.__disposed = true
 
-const observe = function(obj) {
+const observe = function(obj, { props = null } = {}) {
     obj.__observeMap = new Map()
 
     return new Proxy(obj, {
         get(_, prop) {
             const { __observeMap } = obj
+
+            if(props && !props.includes(prop))
+                return obj[prop]
+
             if(!__observeMap.has(prop)) {
                 __observeMap.set(prop, new Set())
             }
@@ -54,8 +58,10 @@ const observe = function(obj) {
         },
         set(_, prop, value) {
             const { __observeMap } = obj
-
             obj[prop] = value
+
+            if(props && !props.includes(prop))
+                return true
 
             if(__observeMap.has(prop)) {
                 const dependents = __observeMap.get(prop)
