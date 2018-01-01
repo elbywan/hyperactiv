@@ -19,6 +19,10 @@ Whenever an `observed object` property is mutated, the `computed functions` that
 
 Of course, Hyperactiv automatically handles these dependencies so you never have to explicitly declare which function depends on which property.
 
+## Demo
+
+**[Paint demo](https://elbywan.github.io/hyperactiv/)**
+
 ## Setup
 
 ```bash
@@ -79,8 +83,8 @@ console.log(result) // -> 17
 #### Release computed functions
 
 ```js
-// Observed objects keep a computed function Map,
-// so you need to release them yourself whenever needed to avoid memory leaks.
+// Observed objects store computed function references in a Set, so you need to
+// release those yourself whenever needed to prevent memory leaks
 dispose(computedFunction)
 ```
 

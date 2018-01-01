@@ -62,6 +62,10 @@ const observe = function(obj, { props = null, ignore = null, batch = false } = {
         },
         set(_, prop, value) {
             const { __observeMap } = obj
+
+            if(obj[prop] === value)
+                return false
+
             obj[prop] = value
 
             if((props && !props.includes(prop)) || (ignore && ignore.includes(prop)))
