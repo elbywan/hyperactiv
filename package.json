@@ -13,7 +13,8 @@
   "scripts": {
     "start": "npm run build && npm run test",
     "build": "rollup -c rollup.config.js",
-    "test": "rollup -c rollup.config.js -o ./test/hyperactiv.js -m inline && jest --coverage --mapCoverage"
+    "test": "rollup -c rollup.config.js -o ./test/hyperactiv.js -m inline && jest --coverage --mapCoverage",
+    "coverage": "cat ./coverage/lcov.info | coveralls"
   },
   "keywords": [
     "computed properties",
@@ -25,6 +26,7 @@
   "author": "Julien Elbaz",
   "license": "MIT",
   "devDependencies": {
+    "coveralls": "^3.0.0",
     "jest": "^22.0.4",
     "rollup": "^0.53.2",
     "rollup-plugin-uglify": "^2.0.1",
