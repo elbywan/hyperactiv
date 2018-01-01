@@ -127,6 +127,23 @@ test('dispose computed functions', () => {
     expect(result2).toBe(0)
 })
 
+test('chain of computations', () => {
+    const obj = observe({
+        a: 0,
+        b: 0,
+        c: 0,
+        d: 0
+    })
+
+    computed(() => { obj.b = obj.a * 2 })
+    computed(() => { obj.c = obj.b * 2 })
+    computed(() => { obj.d = obj.c * 2 })
+
+    expect(obj.d).toBe(0)
+    obj.a = 5
+    expect(obj.d).toBe(40)
+})
+
 test('asynchronous computation', async () => {
     const obj = observe({ a: 0, b: 0 })
 
@@ -134,7 +151,7 @@ test('asynchronous computation', async () => {
         obj.b = obj.a + 1
     }
     const delayedAddOne = computed(
-        () => delay(200).then(addOne),
+        ({ computeAsync }) => delay(200).then(() => computeAsync(addOne)),
         { autoRun: false }
     )
     await delayedAddOne()
@@ -147,50 +164,28 @@ test('asynchronous computation', async () => {
     })
 })
 
-test('release capture on asynchronous computation error', async () => {
-    expect.assertions(1)
-
-    const obj = observe({ a: 0, b: 0, sum: 0 })
-    const error = computed(() => delay(200).then(() => {
-        obj.sum = obj.a + 1
-        throw new Error()
-    }), { autoRun: false })
-
-    try { 
-        await error()
-    } catch(e) { 
-        expect(e instanceof Error).toBe(true)
-    }
-
-    obj.b = 1
-})
-
 test('concurrent asynchronous computations', async () => {
-    const obj = observe({ a: 0, b: 0 })
+    const obj = observe({ a: 0, b: 0, c: 0 })
     let result = 0
 
-    const plusA = computed(async ({ capture: { stop, resume }}) => {
-        stop()
+    const plus = prop => computed(async ({ computeAsync }) => {
         await delay(200)
-        resume()
-        result += obj.a
-        stop()
+        computeAsync(() => result += obj[prop])
     }, { autoRun: false })
-    const plusB = computed(async ({ capture: { stop, resume }}) => {
-        stop()
-        await delay(200)
-        resume()
-        result += obj.b
-        stop()
-    }, { autoRun: false })
+    const plusA = plus('a')
+    const plusB = plus('b')
+    const plusC = plus('c')
 
-    await Promise.all([ plusA(), plusB() ])
+    await Promise.all([ plusA(), plusB(), plusC() ])
+
+    expect(result).toBe(0)
 
     obj.a = 1
     obj.b = 2
+    obj.c = 3
 
     await delay(250).then(() => {
-        expect(result).toBe(3)
+        expect(result).toBe(6)
     })
 })
 
@@ -248,7 +243,7 @@ test('observe only certain object properties', () => {
         sum: 0
     }
     const observeA = observe(object, { props:  ['a'] })
-    const observeB = observe(object, { ignore: ['a'] })
+    const observeB = observe(object, { ignore: ['a', 'sum'] })
 
     const doSum = computed(function() {
         observeA.sum = observeA.a + observeB.b
@@ -261,4 +256,32 @@ test('observe only certain object properties', () => {
     expect(object.sum).toBe(2)
     observeB.b = 2
     expect(object.sum).toBe(3)
+})
+
+test('batch computations', async () => {
+    expect.assertions(6)
+
+    const array = observe([0, 0, 0], { batch: true })
+    let sum = 0
+
+    const doSum = computed(() => {
+        expect(true).toBe(true)
+        sum = array.reduce((acc, curr) => acc + curr)
+    })
+
+    expect(sum).toBe(0)
+
+    array[0] = 1
+    array[1] = 2
+    array[2] = 3
+
+    await delay(100)
+    expect(sum).toBe(6)
+
+    array[0] = 7
+    array[1] = 8
+    array[2] = 10
+
+    await delay(100)
+    expect(sum).toBe(25)
 })

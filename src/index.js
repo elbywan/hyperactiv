@@ -1,32 +1,20 @@
-const computedSet = new Set()
+const computedStack = []
 
 const computed = function(fun, { autoRun = true } = {}) {
     const proxy = new Proxy(fun, {
         apply: function(target, thisArg, argsList) {
-            computedSet.add(proxy)
-
-            argsList.push({
-                capture :{
-                    stop: () => computedSet.delete(proxy),
-                    resume: () => computedSet.add(proxy)
-                }
-            })
-
-            const result = target.apply(thisArg, argsList)
-
-            if(result instanceof Promise) {
-                return result
-                    .then(() => {
-                        computedSet.delete(proxy)
-                    })
-                    .catch(err => {
-                        computedSet.delete(proxy)
-                        throw err
-                    })
-            } else {
-                computedSet.delete(proxy)
+            const performComputation = (fun = null) => {
+                computedStack.unshift(proxy)
+                const result = fun ? fun() : target.apply(thisArg, argsList)
+                computedStack.shift()
                 return result
             }
+
+            argsList.push({
+                computeAsync: target => performComputation(target)
+            })
+
+            return performComputation()
         }
     })
     if(autoRun) { proxy() }
@@ -35,7 +23,23 @@ const computed = function(fun, { autoRun = true } = {}) {
 
 const dispose = _ => _.__disposed = true
 
-const observe = function(obj, { props = null, ignore = null } = {}) {
+const batcher = {
+    timeout: null,
+    queue: new Set(),
+    process: () => {
+        for(let task of batcher.queue)
+            task()
+        batcher.queue.clear()
+        batcher.timeout = null
+    },
+    enqueue: task => {
+        if(batcher.timeout === null)
+            batcher.timeout = setTimeout(batcher.process, 0)
+        batcher.queue.add(task)
+    }
+}
+
+const observe = function(obj, { props = null, ignore = null, batch = false } = {}) {
     obj.__observeMap = new Map()
 
     return new Proxy(obj, {
@@ -49,11 +53,11 @@ const observe = function(obj, { props = null, ignore = null } = {}) {
                 __observeMap.set(prop, new Set())
             }
 
-            for(let computed of computedSet) {
-                const set = __observeMap.get(prop)
-                set.add(computed)
-                __observeMap.set(prop, set)
-            }
+            const set = __observeMap.get(prop)
+            if(computedStack.length > 0)
+                set.add(computedStack[0])
+            __observeMap.set(prop, set)
+
             return obj[prop]
         },
         set(_, prop, value) {
@@ -69,7 +73,8 @@ const observe = function(obj, { props = null, ignore = null } = {}) {
                     if(dependent.__disposed) {
                         dependents.delete(dependent)
                     } else {
-                        dependent()
+                        if(batch) batcher.enqueue(dependent)
+                        else dependent()
                     }
                 }
             }
