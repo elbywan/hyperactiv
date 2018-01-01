@@ -1,6 +1,6 @@
 {
   "name": "hyperactiv",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Super small observable & reactive objects library.",
   "main": "dist/index.js",
   "repository": "https://github.com/elbywan/hyperactiv",
