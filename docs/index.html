@@ -106,7 +106,7 @@
                 for(let j = 0; j < side; j++) {
                     const square = squares[i][j]
                     const neighbours = tools.getNeighbours(i, j)
-                    computed(({ computeAsync }) => tools.delay(500).then(() => computeAsync(() => {
+                    computed(({ computeAsync }) => tools.delay(100).then(() => computeAsync(() => {
                         square.r = tools.mean(neighbours.map(_ => _.r))
                         square.g = tools.mean(neighbours.map(_ => _.g))
                         square.b = tools.mean(neighbours.map(_ => _.b))
