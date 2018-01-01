@@ -297,39 +297,45 @@ console.log(obj.sum) // -> 4
 
 ### observe
 
-> observe(Object | Array, { props: String[], ignore: String[], batch: boolean }) => Proxy
-
 Observes an object or an array and returns a proxified version which reacts on mutations.
+
+```ts
+observe(Object | Array, { props: String[], ignore: String[], batch: boolean }) => Proxy
+```
 
 **Options**
 
-* props: String[]
+`props: String[]`
 
 Observe only these properties.
 
-* ignore: String[]
+`ignore: String[]`
 
 Ignore these properties.
 
-* batch: boolean
+`batch: boolean`
 
 Batch computed properties calls, wrapping them in a setTimeout and executing them in a new context and preventing excessive calls.
 
 ### computed
 
-> computed(fun: Function, { autoRun: boolean }) => Proxy
-
-**Options**
-
 Wraps a function and captures observed properties which are accessed during the function execution.
 When those properties are mutated, the function is called to reflect the changes.
 
-* autoRun: boolean
+```ts
+computed(fun: Function, { autoRun: boolean }) => Proxy
+```
+
+**Options**
+
+`autoRun: boolean`
 
 Runs the function argument.
 
 ### dispose
 
-> dispose(Function) => void
-
 Will remove the computed function from the reactive Maps (the next time an bound observer property is called) allowing garbage collection.
+
+```ts
+dispose(Function) => void
+```
