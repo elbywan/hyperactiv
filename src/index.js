@@ -1,4 +1,5 @@
 const computedStack = []
+const observersMap = new WeakMap()
 
 const computed = function(fun, { autoRun = true } = {}) {
     const proxy = new Proxy(fun, {
@@ -40,28 +41,28 @@ const batcher = {
 }
 
 const observe = function(obj, { props = null, ignore = null, batch = false } = {}) {
-    obj.__observeMap = new Map()
+    observersMap.set(obj, new Map)
 
     return new Proxy(obj, {
         get(_, prop) {
-            const { __observeMap } = obj
+            const observerMap = observersMap.get(obj)
 
             if((props && !props.includes(prop)) || (ignore && ignore.includes(prop)))
                 return obj[prop]
 
-            if(!__observeMap.has(prop)) {
-                __observeMap.set(prop, new Set())
+            if(!observerMap.has(prop)) {
+                observerMap.set(prop, new Set())
             }
 
-            const set = __observeMap.get(prop)
+            const set = observerMap.get(prop)
             if(computedStack.length > 0)
                 set.add(computedStack[0])
-            __observeMap.set(prop, set)
+            observerMap.set(prop, set)
 
             return obj[prop]
         },
         set(_, prop, value) {
-            const { __observeMap } = obj
+            const observerMap = observersMap.get(obj)
 
             if(obj[prop] === value)
                 return false
@@ -71,8 +72,8 @@ const observe = function(obj, { props = null, ignore = null, batch = false } = {
             if((props && !props.includes(prop)) || (ignore && ignore.includes(prop)))
                 return true
 
-            if(__observeMap.has(prop)) {
-                const dependents = __observeMap.get(prop)
+            if(observerMap.has(prop)) {
+                const dependents = observerMap.get(prop)
                 for(let dependent of dependents) {
                     if(dependent.__disposed) {
                         dependents.delete(dependent)
