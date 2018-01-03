@@ -24,7 +24,7 @@
     <div class="description">
         <p>
             Click on the square below to add a green, blue or red color pixel which will <span class="highlight">dissolve</span> like paint in the water.<br>
-            The color of each pixel is <span class="highlight">automatically computed</span> to be equal to the mean of its neighbours color.
+            The color of each pixel is <span class="highlight">automatically computed</span> to be equal to the weighted mean of its neighbours.
         </p>
         <p>Check out the <span class="highlight"><a href="https://github.com/elbywan/hyperactiv/blob/master/docs/index.html" target="_blank">source code</a></span> !</p>
         <p><i>(Computations are slowed down in order to make the propagation visible)</i></p>
@@ -59,6 +59,16 @@
                 },
                 mean: array =>
                     Math.floor(array.reduce((acc, curr) => acc + curr) / array.length),
+                weightedMean: (ref, array, weight) => {
+                    let divider = array.length
+                    const sum = array.reduce((acc, curr) => {
+                        const diff = Math.abs(curr - ref)
+                        const currWeight = Math.max(Math.round(diff / weight), 1)
+                        divider += currWeight - 1
+                        return acc + (curr * currWeight)
+                    })
+                    return Math.round(sum / divider)
+                },
                 randomSquareColor: domSquare => {
                     const randomColor = () => (Math.random() * 255) + 1
                     // domSquare.square.r = randomColor()
@@ -106,10 +116,10 @@
                 for(let j = 0; j < side; j++) {
                     const square = squares[i][j]
                     const neighbours = tools.getNeighbours(i, j)
-                    computed(({ computeAsync }) => tools.delay(100).then(() => computeAsync(() => {
-                        square.r = tools.mean(neighbours.map(_ => _.r))
-                        square.g = tools.mean(neighbours.map(_ => _.g))
-                        square.b = tools.mean(neighbours.map(_ => _.b))
+                    computed(({ computeAsync }) => tools.delay(10).then(() => computeAsync(() => {
+                        square.r = tools.weightedMean(square.r, neighbours.map(_ => _.r), 5)
+                        square.g = tools.weightedMean(square.g, neighbours.map(_ => _.g), 5)
+                        square.b = tools.weightedMean(square.b, neighbours.map(_ => _.b), 5)
                     })))
                     // computed(() => {
                     //     square.r = tools.mean(neighbours.map(_ => _.r))
