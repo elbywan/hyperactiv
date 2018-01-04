@@ -29,17 +29,61 @@
         <p>Check out the <span class="highlight"><a href="https://github.com/elbywan/hyperactiv/blob/master/docs/index.html" target="_blank">source code</a></span> !</p>
         <p><i>(Computations are slowed down in order to make the propagation visible)</i></p>
     </div>
+    <div class="color-buttons">
+        <button onclick="window.color = 'red'">Red</button>
+        <button onclick="window.color = 'green'">Green</button>
+        <button onclick="window.color = 'blue'">Blue</button>
+        <button onclick="window.color = 'random'">Random</button>
+        <input type="color" onchange="window.color = hexToRgb(this.value)"/>
+    </div>
     <div id="container"></div>
 
 
     <script>
+        // Credits to https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+        window.hexToRgb = hex => {
+            const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
+            hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+                return r + r + g + g + b + b;
+            })
+
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null
+        }
+
         window.onload = () => {
             const { observe, computed, dispose } = window.hyperactiv
             const side = 50
             const squares = []
             const container = document.getElementById('container')
             container.onmousedown = (event) => {
-                tools.randomSquareColor(event.target)
+                const { square } = event.target
+
+                if(window.color instanceof Object) {
+                    square.r = window.color.r
+                    square.g = window.color.g
+                    square.b = window.color.b
+                    return
+                }
+
+                square.r = 0
+                square.g = 0
+                square.b = 0
+
+                switch(window.color) {
+                    case 'red':
+                        return square.r = 255
+                    case 'green':
+                        return square.g = 255
+                    case 'blue':
+                        return square.b = 255
+                    default:
+                        return tools.randomPixel(square)
+                }
             }
 
             const tools = {
@@ -69,24 +113,18 @@
                     })
                     return Math.round(sum / divider)
                 },
-                randomSquareColor: domSquare => {
+                randomPixel: square => {
                     const randomColor = () => (Math.random() * 255) + 1
-                    // domSquare.square.r = randomColor()
-                    // domSquare.square.g = randomColor()
-                    // domSquare.square.b = randomColor()
                     const which = ~~(Math.random() * 3)
-                    domSquare.square.r = 0
-                    domSquare.square.g = 0
-                    domSquare.square.b = 0
                     switch(which) {
                         case 0:
-                            domSquare.square.r = 255
+                            square.r = 255
                             break
                         case 1:
-                            domSquare.square.g = 255
+                            square.g = 255
                             break
                         case 2:
-                            domSquare.square.b = 255
+                            square.b = 255
                             break
                     }
                 },
@@ -121,11 +159,6 @@
                         square.g = tools.weightedMean(square.g, neighbours.map(_ => _.g), 5)
                         square.b = tools.weightedMean(square.b, neighbours.map(_ => _.b), 5)
                     })))
-                    // computed(() => {
-                    //     square.r = tools.mean(neighbours.map(_ => _.r))
-                    //     square.g = tools.mean(neighbours.map(_ => _.g))
-                    //     square.b = tools.mean(neighbours.map(_ => _.b))
-                    // })
                 }
             }
         }

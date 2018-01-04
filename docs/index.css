@@ -39,6 +39,10 @@ span.highlight {
     color: orangered;
 }
 
+div.color-buttons > button {
+    display: inline-block;
+}
+
 div#container {
     width: 500px;
     height: 500px;
