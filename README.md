@@ -23,7 +23,7 @@ Of course, Hyperactiv automatically handles these dependencies so you never have
 
 **[Paint demo](https://elbywan.github.io/hyperactiv/paint)**
 
-**[React todo store demo](https://elbywan.github.io/hyperactiv/todos)**
+**[React store demo](https://elbywan.github.io/hyperactiv/todos)**
 
 ## Setup
 
