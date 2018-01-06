@@ -1,11 +1,11 @@
 const computedStack = []
 const observersMap = new WeakMap()
 
-const computed = function(fun, { autoRun = true } = {}) {
+const computed = function(fun, { autoRun = true, callback = null } = {}) {
     const proxy = new Proxy(fun, {
         apply: function(target, thisArg, argsList) {
             const performComputation = (fun = null) => {
-                computedStack.unshift(proxy)
+                computedStack.unshift(callback || proxy)
                 const result = fun ? fun() : target.apply(thisArg, argsList)
                 computedStack.shift()
                 return result
@@ -65,7 +65,7 @@ const observe = function(obj, { props = null, ignore = null, batch = false } = {
             const observerMap = observersMap.get(obj)
 
             if(obj[prop] === value)
-                return false
+                return true
 
             obj[prop] = value
 

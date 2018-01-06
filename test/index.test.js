@@ -285,3 +285,21 @@ test('batch computations', async () => {
     await delay(100)
     expect(sum).toBe(25)
 })
+
+test('run a callback instead of the computed function', () => {
+    const obj = observe({
+        a: 1, b: 0
+    })
+
+    const incrementB = () => {
+        obj.b++
+    }
+    const incrementC = computed(() => {
+        expect(obj.a).toBe(1)
+    }, { callback: incrementB })
+
+    expect(obj.b).toBe(0)
+    obj.a = 2
+    expect(obj.a).toBe(2)
+    expect(obj.b).toBe(1)
+})

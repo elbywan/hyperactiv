@@ -323,7 +323,7 @@ Wraps a function and captures observed properties which are accessed during the 
 When those properties are mutated, the function is called to reflect the changes.
 
 ```ts
-computed(fun: Function, { autoRun: boolean }) => Proxy
+computed(fun: Function, { autoRun: boolean, callback: Function }) => Proxy
 ```
 
 **Options**
@@ -331,6 +331,10 @@ computed(fun: Function, { autoRun: boolean }) => Proxy
 `autoRun: boolean`
 
 Runs the function argument.
+
+`callback: Function`
+
+Specify a callback that will be re-runned each time a dependency changes instead of the computed function.
 
 ### dispose
 
