@@ -57,12 +57,30 @@ const store = observeStore({
 /* Components */
 
 const App = hyperactivComponent(class extends React.Component {
+
+    state = {
+        total: 0,
+        completed: 0,
+        active: 0
+    }
+
+    componentDidMount () {
+        // Synchronizes the state with the store
+        this.updateState = computed(() => {
+            this.setState({
+                total: store.todos.length,
+                completed: store.todos.filter(_ => _.completed).length,
+                active: store.todos.filter(_ => !_.completed).length
+            })
+        })
+    }
+
+    componentWillUnmount () {
+        dispose(this.updateState)
+    }
+
     render() {
-        const { total, completed, active } = {
-            total: store.todos.length,
-            completed: store.todos.filter(_ => _.completed).length,
-            active: store.todos.filter(_ => !_.completed).length
-        }
+        const { total, completed, active } = this.state
         return (
             <div>
                 <div className="counters">
@@ -79,6 +97,7 @@ const App = hyperactivComponent(class extends React.Component {
 })
 
 const Todos = hyperactivComponent(class extends React.PureComponent {
+
     addTodo = label => {
         label = typeof label === 'string' ? label : 'New todo'
         store.todos = [
@@ -141,6 +160,7 @@ const Todos = hyperactivComponent(class extends React.PureComponent {
 })
 
 const Todo = hyperactivComponent(class extends React.PureComponent {
+
     removeTodo = () => {
         store.todos = store.todos.filter((_, index) => index !== this.props.index)
     }
