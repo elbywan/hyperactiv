@@ -1,0 +1,68 @@
+#todos-root {
+    width: 420px;
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 2px 2px 10px #AAA;
+}
+
+#todos-root input[type="text"] {
+    border: 0;
+    border-bottom: 1px solid #666;
+    width: 250px;
+    padding: 5px 0px;
+    font-size: 1em;
+    color: #666;
+    outline: none;
+    transition: all 0.4s;
+}
+#todos-root input[type="text"]::placeholder {
+    color: #BBB;
+}
+#todos-root input[type="text"]:focus {
+    border-color: orangered;
+    color: black;
+}
+#todos-root input[type="text"].done {
+    text-decoration: line-through;
+    color: #AAA;
+}
+
+div.counters {
+    margin-bottom: 20px;
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.buttons__bar {
+    margin-bottom: 50px;
+}
+.button__todos {
+    border: 1px solid #888;
+    padding: 5px 20px;
+    color: #888;
+    margin-left: 5px;
+    margin-right: 5px;
+    transition: all 0.4s;
+}
+.button__todos:hover {
+    color: orangered;
+    border-color: orangered;
+}
+
+.todo__form {
+    margin-bottom: 50px;
+}
+
+.todo__bar {
+    margin: 20px;
+}
+
+.todo__bar > * {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.todo__bar .button__todos {
+    border: none;
+}

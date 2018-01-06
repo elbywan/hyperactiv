@@ -35,34 +35,19 @@ div.description {
     font-weight: bold;
 }
 
-span.highlight {
+.highlight {
     color: orangered;
 }
 
-div.color-buttons > button {
+.button--unstyled {
+    cursor: pointer;
+    margin: 0;
+    border: 0;
+    padding: 0;
     display: inline-block;
-}
-
-div#container {
-    width: 500px;
-    height: 500px;
-    margin-bottom: 50px;
-    border-radius: 15px;
-    box-shadow: 0px 0px 10px #CCC;
-    overflow: hidden;
-    position: relative;
-    display: inline-flex;
-    flex-direction: column;
-}
-
-div#container > div {
-    flex: 1 0 auto;
-    display: inline-flex;
-}
-
-div#container > div > span {
-    flex: 1 0 auto;
-}
-div#container > div > span:hover {
-    border: 1px solid black;
+    vertical-align: middle;
+    white-space: normal;
+    background: none;
+    line-height: 1;
+    outline: none;
 }
