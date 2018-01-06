@@ -110,13 +110,13 @@ const Todos = hyperactivComponent(class extends React.PureComponent {
         return (
             <React.Fragment>
                 <div className="buttons__bar">
-                    <button className="button--unstyled button__todos" onClick={ this.addTodo }>
+                    <button className="button--unstyled" onClick={ this.addTodo }>
                         Add todo
                     </button>
-                    <button className="button--unstyled button__todos" onClick={ this.completeAll }>
+                    <button className="button--unstyled" onClick={ this.completeAll }>
                         Complete all
                     </button>
-                    <button className="button--unstyled button__todos" onClick={ this.clearCompleted }>
+                    <button className="button--unstyled" onClick={ this.clearCompleted }>
                         Clear completed
                     </button>
                 </div>
@@ -158,7 +158,7 @@ const Todo = hyperactivComponent(class extends React.PureComponent {
                     className={ todo.completed ? 'done' : '' }
                     value={ todo && todo.label }
                     onChange={ event => todo.label = event.target.value }/>
-                <button onClick={ this.removeTodo } className="button--unstyled button__todos">✖</button>
+                <button onClick={ this.removeTodo } className="button--unstyled">✖</button>
                 <input type="checkbox" checked={todo.completed} onChange={this.toggleCompletion} />
             </div>
         )
