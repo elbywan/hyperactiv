@@ -56,30 +56,12 @@ const clearCompleted = () => {
 /* Components */
 
 const App = watch(class extends React.Component {
-
-    state = {
-        total: 0,
-        completed: 0,
-        active: 0
-    }
-
-    componentDidMount () {
-        // Bind the state and the store
-        this.updateState = computed(() => {
-            this.setState({
-                total: store.todos.length,
-                completed: store.todos.filter(_ => _.completed).length,
-                active: store.todos.filter(_ => !_.completed).length
-            })
-        })
-    }
-
-    componentWillUnmount () {
-        dispose(this.updateState)
-    }
-
     render() {
-        const { total, completed, active } = this.state
+        const { total, completed, active } = {
+            total: store.todos.length,
+            completed: store.todos.filter(_ => _.completed).length,
+            active: store.todos.filter(_ => !_.completed).length
+        }
         return (
             <div>
                 <div className="counters">
