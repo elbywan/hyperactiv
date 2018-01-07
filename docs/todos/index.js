@@ -2,8 +2,8 @@ const { observe, computed, dispose } = window.hyperactiv
 
 /* Tools */
 
-// Wraps a component and automatically updates it on change.
-const hyperactivComponent = Component => {
+// Wraps a component and automatically updates it when the store mutates.
+const watch = Component => {
     return new Proxy(Component, {
         construct: function(target, argumentsList, constructor) {
             const instance = new target(...argumentsList)
@@ -22,41 +22,40 @@ const hyperactivComponent = Component => {
     })
 }
 
-// A deep observe method.
-const observeStore = target => {
-    if(target instanceof Array) {
-        for(const key in target)
-            target[key] = observeStore(target[key])
-        return observe(target)
-    }
-    else if(typeof target === 'object'){
-        for(let key in target) {
-            if(!target.hasOwnProperty(key))
-                continue
-            const val = target[key]
-            if(typeof val === 'object') {
-                target[key] = observeStore(val)
-            }
-        }
-        return observe(target)
-    }
-}
-
 /* Store */
 
-const store = observeStore({
+const store = observe({
     todos: [
         { label: 'Do the laundry', completed: false },
         { label: 'Buy shampoo', completed: false },
         { label: 'Create a todo list', completed: true }
-    ],
-    filterTodos: false,
-    newTodoLabel: ''
-})
+    ]
+}, { deep: true })
+
+const addTodo = label => {
+    label = typeof label === 'string' ? label : 'New todo'
+    store.todos = [ 
+        observe({ label, completed: false }),
+        ...store.todos
+    ]
+}
+
+const removeTodo = todo => {
+    store.todos = store.todos.filter(_ => _ !== todo)
+}
+
+const completeAll = () => {
+    let completion = store.todos.some(({ completed }) => !completed)
+    store.todos.forEach(todo => todo.completed = completion)
+}
+
+const clearCompleted = () => {
+    store.todos = store.todos.filter(todo => !todo.completed)
+}
 
 /* Components */
 
-const App = hyperactivComponent(class extends React.Component {
+const App = watch(class extends React.Component {
 
     state = {
         total: 0,
@@ -65,7 +64,7 @@ const App = hyperactivComponent(class extends React.Component {
     }
 
     componentDidMount () {
-        // Synchronizes the state with the store
+        // Bind the state and the store
         this.updateState = computed(() => {
             this.setState({
                 total: store.todos.length,
@@ -96,46 +95,26 @@ const App = hyperactivComponent(class extends React.Component {
     }
 })
 
-const Todos = hyperactivComponent(class extends React.PureComponent {
-
-    addTodo = label => {
-        label = typeof label === 'string' ? label : 'New todo'
-        store.todos = [
-            observe({
-                label,
-                completed: false
-            }),
-            ...store.todos
-        ]
-    }
+const Todos = watch(class extends React.PureComponent {
 
     submitTodo = event => {
         event.preventDefault()
         if(!store.newTodoLabel.trim()) return
-        this.addTodo(store.newTodoLabel)
+        addTodo(store.newTodoLabel)
         store.newTodoLabel = ""
-    }
-
-    completeAll = () => {
-        let completion = store.todos.some(({ completed }) => !completed)
-        store.todos.forEach(todo => todo.completed = completion)
-    }
-
-    clearCompleted = () => {
-        store.todos = store.todos.filter(todo => !todo.completed)
     }
 
     render() {
         return (
             <React.Fragment>
                 <div className="buttons__bar">
-                    <button className="button--unstyled" onClick={ this.addTodo }>
+                    <button className="button--unstyled" onClick={ addTodo }>
                         Add todo
                     </button>
-                    <button className="button--unstyled" onClick={ this.completeAll }>
+                    <button className="button--unstyled" onClick={ completeAll }>
                         Complete all
                     </button>
-                    <button className="button--unstyled" onClick={ this.clearCompleted }>
+                    <button className="button--unstyled" onClick={ clearCompleted }>
                         Clear completed
                     </button>
                 </div>
@@ -143,15 +122,14 @@ const Todos = hyperactivComponent(class extends React.PureComponent {
                     <input type="text"
                         placeholder="What should I do  ..."
                         name="todoname"
-                        value={ store.newTodoLabel }
-                        onChange={ _ => store.newTodoLabel = _ .target.value }/>
+                        value={ store.newTodoLabel || '' }
+                        onChange={ _ => store.newTodoLabel = _.target.value }/>
                 </form>
                 <ul>
-                    { store.todos
-                        .map((todo, idx) =>
-                            store.filterTodos === 'completed' ? (todo.completed && <Todo key={idx} index={idx} />) :
-                            store.filterTodos === 'active' ? (!todo.completed && <Todo key={idx} index={idx} />) :
-                            <Todo key={idx} index={idx} />)
+                    { store.todos.map((todo, idx) =>
+                        store.filterTodos === 'completed' ? (todo.completed && <Todo key={idx} todo={todo} />) :
+                        store.filterTodos === 'active' ? (!todo.completed && <Todo key={idx} todo={todo} />) :
+                        <Todo key={idx} todo={todo} />)
                     }
                 </ul>
             </React.Fragment>
@@ -159,26 +137,22 @@ const Todos = hyperactivComponent(class extends React.PureComponent {
     }
 })
 
-const Todo = hyperactivComponent(class extends React.PureComponent {
-
-    removeTodo = () => {
-        store.todos = store.todos.filter((_, index) => index !== this.props.index)
-    }
+const Todo = watch(class extends React.PureComponent {
 
     toggleCompletion = () => {
-        const todo = store.todos[this.props.index]
+        const { todo } = this.props
         todo.completed = !todo.completed
     }
 
     render() {
-        const todo = store.todos[this.props.index]
+        const { todo } = this.props
         return (
             <div className="todo__bar">
                 <input type="text"
                     className={ todo.completed ? 'done' : '' }
                     value={ todo && todo.label }
                     onChange={ event => todo.label = event.target.value }/>
-                <button onClick={ this.removeTodo } className="button--unstyled">✖</button>
+                <button onClick={ () => removeTodo(todo) } className="button--unstyled">✖</button>
                 <input type="checkbox" checked={todo.completed} onChange={this.toggleCompletion} />
             </div>
         )

@@ -58,8 +58,8 @@ div.counters {
     margin-right: 0px;
 }
 .buttons__bar > button:hover {
-    background: #444;
-    color: #EEE;
+    background: #CCC;
+    color: #FFF;
 }
 
 .todo__form {
