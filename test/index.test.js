@@ -106,6 +106,18 @@ test('multiple observed objects', () => {
     expect(result).toBe(0)
 })
 
+test('circular computed function', () => {
+    const obj = observe({ a: 1, b: 1 })
+    computed(() => {
+        obj.a += obj.b
+    })
+    expect(obj.a).toBe(2)
+    obj.b = 2
+    expect(obj.a).toBe(4)
+    obj.a = 3
+    expect(obj.a).toBe(5)
+})
+
 test('dispose computed functions', () => {
     const obj = observe({ a: 0 })
     let result = 0

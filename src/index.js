@@ -99,7 +99,7 @@ const observe = function(obj, options = {}) {
                 for(let dependent of dependents) {
                     if(dependent.__disposed) {
                         dependents.delete(dependent)
-                    } else {
+                    } else if(computedStack.length < 1 || dependent !== computedStack[0]) {
                         if(batch) batcher.enqueue(dependent)
                         else dependent()
                     }

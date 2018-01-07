@@ -59,9 +59,10 @@ const observedArray = observe([ 3, 2, 1 ])
 ```js
 let result = 0
 const computedFunction = computed(() => {
-    result =
-        observedObject.a + observedObject.b +
-        observedArray.reduce((acc, curr) => acc + curr)
+    // result = a + b + sum(observedArray)
+    result = observedObject.a +
+             observedObject.b +
+             observedArray.reduce((acc, curr) => acc + curr)
 })
 
 // By default, a computed function is automatically called when declared :
@@ -98,13 +99,15 @@ dispose(computedFunction)
 ```js
 // Observe an object and its properties
 const obj = observe({
-    a: 1, b: 2, sum: 0
+    a: 1, b: 2, sum: 0, counter: 0
 })
 
 // The computed function auto-runs by default
 computed(() => {
     // This function depends on obj.a and obj.b
     obj.sum = obj.a + obj.b
+    // And obj.counter, which is circular (get/set a dependent property)
+    obj.counter++
 })
 
 console.log(obj.sum) // -> 3
@@ -112,6 +115,7 @@ obj.a = 2
 console.log(obj.sum) // -> 4
 obj.b = 3
 console.log(obj.sum) // -> 5
+console.log(obj.counter) // -> 3
 ```
 
 #### Nested functions
