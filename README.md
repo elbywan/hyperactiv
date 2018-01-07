@@ -302,7 +302,7 @@ console.log(obj.sum) // -> 4
 Observes an object or an array and returns a proxified version which reacts on mutations.
 
 ```ts
-observe(Object | Array, { props: String[], ignore: String[], batch: boolean }) => Proxy
+observe(Object | Array, { props: String[], ignore: String[], batch: boolean, deep: boolean }) => Proxy
 ```
 
 **Options**
@@ -318,6 +318,10 @@ Ignore these properties.
 `batch: boolean`
 
 Batch computed properties calls, wrapping them in a setTimeout and executing them in a new context and preventing excessive calls.
+
+`deep: boolean`
+
+Observe nested objects and when setting new properties.
 
 ### computed
 

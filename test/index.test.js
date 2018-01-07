@@ -303,3 +303,22 @@ test('run a callback instead of the computed function', () => {
     expect(obj.a).toBe(2)
     expect(obj.b).toBe(1)
 })
+
+test('deep observe nested objects and new properties', () => {
+    const o = { a: { b: 1 }, tab: [{ z: 1 }]}
+    Object.setPrototypeOf(o, { _unused: true })
+    const obj = observe(o, { deep: true })
+
+    obj.c = { d: 2 }
+
+    computed(() => {
+        obj.sum = obj.a.b + obj.c.d + obj.tab[0].z
+    })
+    expect(obj.sum).toBe(4)
+    obj.a.b = 2
+    expect(obj.sum).toBe(5)
+    obj.c.d = 3
+    expect(obj.sum).toBe(6)
+    obj.tab[0].z = 2
+    expect(obj.sum).toBe(7)
+})

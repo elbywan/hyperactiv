@@ -40,8 +40,27 @@ const batcher = {
     }
 }
 
-const observe = function(obj, { props = null, ignore = null, batch = false } = {}) {
+const observe = function(obj, options = {}) {
+    const { props = null, ignore = null, batch = false, deep = false } = options
     observersMap.set(obj, new Map)
+
+    if(deep) {
+        if(obj instanceof Array) {
+            for(const key in obj) {
+                if(typeof obj[key] === 'object')
+                    obj[key] = observe(obj[key], options)
+            }
+        } else {
+            for(let key in obj) {
+                if(!obj.hasOwnProperty(key))
+                    continue
+                const value = obj[key]
+                if(typeof value === 'object') {
+                    obj[key] = observe(value, options)
+                }
+            }
+        }
+    }
 
     return new Proxy(obj, {
         get(_, prop) {
@@ -67,7 +86,10 @@ const observe = function(obj, { props = null, ignore = null, batch = false } = {
             if(obj[prop] === value)
                 return true
 
-            obj[prop] = value
+            if(deep && !(prop in obj) && typeof value === 'object')
+                obj[prop] = observe(value, options)
+            else
+                obj[prop] = value
 
             if((props && !props.includes(prop)) || (ignore && ignore.includes(prop)))
                 return true
