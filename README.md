@@ -295,6 +295,52 @@ obj.a = 2
 console.log(obj.sum) // -> 4
 ```
 
+#### React store
+
+```js
+// Wraps a component and automatically updates it when the store mutates.
+const watch = Component => {
+    return new Proxy(Component, {
+        construct: function(target, argumentsList, constructor) {
+            const instance = new target(...argumentsList)
+            instance.forceUpdate = instance.forceUpdate.bind(instance)
+            return new Proxy(instance, {
+                get: function(target, property, receiver) {
+                    if(property === 'render') {
+                        return computed(target.render.bind(target), { callback: target.forceUpdate })
+                    } else if(property === 'componentWillUnmount') {
+                        dispose(target.forceUpdate)
+                    }
+                    return target[property]
+                }
+            })
+        },
+    })
+}
+
+// Store
+const store = observe({
+    firstName: 'Igor',
+    lastName: 'Gonzola'
+}, { deep: true })
+
+// Base component
+class _App extends React.Component {
+    render() {
+        return (
+             <div>
+                <input type="text" value={ store.firstName } onChange={ e => store.firstName = e.target.value } />
+                <input type="text" value={ store.lastName } onChange={ e => store.lastName = e.target.value } />
+                <div>Hello, { store.firstName } { store.lastName } !</div>
+            </div>
+        )
+    }
+}
+
+// Watched component
+const App = watch(_App)
+```
+
 ## API
 
 ### observe
