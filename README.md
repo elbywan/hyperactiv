@@ -14,10 +14,11 @@
 
 ## Description
 
-Hyperactiv is a library which `observes` object mutations and `computes` values depending on those changes.
-Whenever an `observed object` property is mutated, the `computed functions` that depend on this property will be called.
+Hyperactiv is a super small (< 120 lines of code) library which **observes** object mutations and **computes** functions depending on those changes.
 
-Of course, Hyperactiv automatically handles these dependencies so you never have to explicitly declare which function depends on which property.
+In other terms, whenever an *observed object property* is **mutated**, the *computed functions* that **depend** on this property will be **called**.
+
+Of course, Hyperactiv **automatically** handles these dependencies so you **never** have to explicitly declare which *computed function* depends on which *observed property*.
 
 ## Demo
 
