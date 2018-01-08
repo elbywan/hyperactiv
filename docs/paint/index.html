@@ -154,11 +154,14 @@
             for(let i = 0; i < side; i++) {
                 for(let j = 0; j < side; j++) {
                     const square = squares[i][j]
-                    const neighbours = tools.getNeighbours(i, j)
+                    const neighbours = [
+                        square,
+                        ...tools.getNeighbours(i, j)
+                    ]
                     computed(({ computeAsync }) => tools.delay(10).then(() => computeAsync(() => {
-                        square.r = tools.weightedMean(square.r, neighbours.map(_ => _.r), 5)
-                        square.g = tools.weightedMean(square.g, neighbours.map(_ => _.g), 5)
-                        square.b = tools.weightedMean(square.b, neighbours.map(_ => _.b), 5)
+                        square.r = tools.weightedMean(square.r, neighbours.map(_ => _.r), 3)
+                        square.g = tools.weightedMean(square.g, neighbours.map(_ => _.g), 3)
+                        square.b = tools.weightedMean(square.b, neighbours.map(_ => _.b), 3)
                     })))
                 }
             }
