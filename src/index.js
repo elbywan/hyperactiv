@@ -1,9 +1,9 @@
 const computedStack = []
 const observersMap = new WeakMap()
 
-const isObj = o => typeof o === "object"
+const isObj = o => typeof o === 'object'
 
-const computed = function(fun, { autoRun = true, callback = null } = {}) {
+const computed = function(fun, { autoRun = true, callback = null } = {}) {
     const proxy = new Proxy(fun, {
         apply(target, thisArg, argsList) {
             const performComputation = (fun = null) => {
@@ -26,11 +26,11 @@ const computed = function(fun, { autoRun = true, callback = null } = {}) {
 
 const dispose = _ => _.__disposed = true
 
-const batcher =   {
+const batcher = {
     timeout: null,
     queue: new Set(),
     process() {
-        for(let task of batcher.queue) task()
+        for(const task of batcher.queue) task()
         batcher.queue.clear()
         batcher.timeout = null
     },
@@ -45,7 +45,7 @@ const observe = function(obj, options = {}) {
     const {
         props = null, ignore = null, batch = false, deep = false
     } = options
-    observersMap.set(obj, new Map)
+    observersMap.set(obj, new Map())
 
     deep && Object.entries(obj).forEach(([key, val]) => {
         if(isObj(val)) obj[key] = observe(val, options)
@@ -72,7 +72,7 @@ const observe = function(obj, options = {}) {
             if((!props || props.includes(prop)) && (!ignore || !ignore.includes(prop))) {
                 if(observerMap.has(prop)) {
                     const dependents = observerMap.get(prop)
-                    for(let dependent of dependents) {
+                    for(const dependent of dependents) {
                         if(dependent.__disposed) {
                             dependents.delete(dependent)
                         } else if(dependent !== computedStack[0]) {

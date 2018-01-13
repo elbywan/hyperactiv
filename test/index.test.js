@@ -12,7 +12,7 @@ test('simple computation', () => {
 
     const sum = computed(() => {
         result = obj.a + obj.b
-    }, { autoRun: false })
+    }, { autoRun: false })
     sum()
 
     expect(result).toBe(3)
@@ -41,7 +41,7 @@ test('multiple getters', () => {
         a: 1,
         b: 2,
         sum: 0
-    }, { props: [ 'a', 'b' ]})
+    }, { props: [ 'a', 'b' ]})
 
     computed(() => {
         obj.sum += obj.a
@@ -68,12 +68,8 @@ test('nested functions', () => {
 
     let result
 
-    const aPlusB = () => {
-        return obj.a + obj.b
-    }
-    const cPlusD = () => {
-        return obj.c + obj.d
-    }
+    const aPlusB = () => obj.a + obj.b
+    const cPlusD = () => obj.c + obj.d
 
     computed(() => {
         result = aPlusB() + cPlusD()
@@ -107,7 +103,7 @@ test('multiple observed objects', () => {
 })
 
 test('circular computed function', () => {
-    const obj = observe({ a: 1, b: 1 })
+    const obj = observe({ a: 1, b: 1 })
     computed(() => {
         obj.a += obj.b
     })
@@ -126,7 +122,7 @@ test('dispose computed functions', () => {
     const minusOne = computed(() => {
         result2 = obj.a - 1
     })
-    const addOne = computed(() => {
+    computed(() => {
         result = obj.a + 1
     })
 
@@ -164,7 +160,7 @@ test('asynchronous computation', async () => {
     }
     const delayedAddOne = computed(
         ({ computeAsync }) => delay(200).then(() => computeAsync(addOne)),
-        { autoRun: false }
+        { autoRun: false }
     )
     await delayedAddOne()
 
@@ -183,7 +179,7 @@ test('concurrent asynchronous computations', async () => {
     const plus = prop => computed(async ({ computeAsync }) => {
         await delay(200)
         computeAsync(() => result += obj[prop])
-    }, { autoRun: false })
+    }, { autoRun: false })
     const plusA = plus('a')
     const plusB = plus('b')
     const plusC = plus('c')
@@ -257,7 +253,7 @@ test('observe only certain object properties', () => {
     const observeA = observe(object, { props:  ['a'] })
     const observeB = observe(object, { ignore: ['a', 'sum'] })
 
-    const doSum = computed(function() {
+    computed(function() {
         observeA.sum = observeA.a + observeB.b
     })
 
@@ -273,10 +269,10 @@ test('observe only certain object properties', () => {
 test('batch computations', async () => {
     expect.assertions(6)
 
-    const array = observe([0, 0, 0], { batch: true })
+    const array = observe([0, 0, 0], { batch: true })
     let sum = 0
 
-    const doSum = computed(() => {
+    computed(() => {
         expect(true).toBe(true)
         sum = array.reduce((acc, curr) => acc + curr)
     })
@@ -306,7 +302,7 @@ test('run a callback instead of the computed function', () => {
     const incrementB = () => {
         obj.b++
     }
-    const incrementC = computed(() => {
+    computed(() => {
         expect(obj.a).toBe(1)
     }, { callback: incrementB })
 
@@ -317,11 +313,11 @@ test('run a callback instead of the computed function', () => {
 })
 
 test('deep observe nested objects and new properties', () => {
-    const o = { a: { b: 1 }, tab: [{ z: 1 }]}
+    const o = { a: { b: 1 }, tab: [{ z: 1 }]}
     Object.setPrototypeOf(o, { _unused: true })
-    const obj = observe(o, { deep: true })
+    const obj = observe(o, { deep: true })
 
-    obj.c = { d: 2 }
+    obj.c = { d: 2 }
 
     computed(() => {
         obj.sum = obj.a.b + obj.c.d + obj.tab[0].z
