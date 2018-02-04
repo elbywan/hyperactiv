@@ -28,9 +28,11 @@
   "author": "Julien Elbaz",
   "license": "MIT",
   "devDependencies": {
+    "babel-eslint": "^8.2.1",
     "coveralls": "^3.0.0",
     "eslint": "^4.15.0",
     "eslint-plugin-jest": "^21.6.2",
+    "eslint-plugin-react": "^7.6.1",
     "jest": "^22.0.4",
     "rollup": "^0.53.2",
     "rollup-plugin-uglify": "^2.0.1",

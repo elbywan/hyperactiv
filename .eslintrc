@@ -1,4 +1,5 @@
 {
+    "parser": "babel-eslint",
     "parserOptions": {
         "ecmaVersion": 8,
         "sourceType": "module"
@@ -10,7 +11,10 @@
         "jest/globals": true
     },
     "plugins": ["jest"],
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended"
+    ],
     "rules": {
         "no-console": ["warn"],
         "no-extra-parens": ["warn", "all"],
@@ -60,6 +64,7 @@
             "error",
             4,
             {
+                "flatTernaryExpressions": true,
                 "SwitchCase": 1
             }
         ],
@@ -189,6 +194,8 @@
         ],
         "prefer-rest-params": [
             "warn"
-        ]
+        ],
+        "react/display-name": 0,
+        "react/prop-types": 0
     }
 }
