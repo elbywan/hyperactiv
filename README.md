@@ -304,24 +304,33 @@ console.log(obj.sum) // -> 4
 
 ```js
 // Wraps a component and automatically updates it when the store mutates.
-const watch = Component => {
-    return new Proxy(Component, {
-        construct: function(target, argumentsList, constructor) {
-            const instance = new target(...argumentsList)
-            instance.forceUpdate = instance.forceUpdate.bind(instance)
-            return new Proxy(instance, {
-                get: function(target, property, receiver) {
-                    if(property === 'render') {
-                        return computed(target.render.bind(target), { callback: target.forceUpdate })
-                    } else if(property === 'componentWillUnmount') {
-                        dispose(target.forceUpdate)
-                    }
-                    return target[property]
+const watch = Component => new Proxy(Component, {
+    construct: function(target, argumentsList) {
+        // Create a new Component instance
+        const instance = new target(...argumentsList)
+        // Ensures that the forceUpdate in correctly bound
+        instance.forceUpdate = instance.forceUpdate.bind(instance)
+        // Monkey patch the componentWillUnmount method to do some clean up on destruction
+        const originalUnmount =
+            typeof instance.componentWillUnmount === 'function' &&
+            instance.componentWillUnmount.bind(instance)()
+        instance.componentWillUnmount = function(...args) {
+            dispose(instance.forceUpdate)
+            if(originalUnmount)
+                originalUnmount(...args)
+        }
+        // Return a proxified Component
+        return new Proxy(instance, {
+            get: function(target, property) {
+                if(property === 'render') {
+                    // Compute the render function and forceUpdate on changes
+                    return computed(target.render.bind(target), { callback: instance.forceUpdate })
                 }
-            })
-        },
-    })
-}
+                return target[property]
+            }
+        })
+    }
+})
 
 // Store
 const store = observe({

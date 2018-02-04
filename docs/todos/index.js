@@ -1,41 +1,53 @@
+/* global React, ReactDOM */
+const { Fragment } = React
 const { observe, computed, dispose } = window.hyperactiv
 
 /* Tools */
 
 // Wraps a component and automatically updates it when the store mutates.
-const watch = Component => {
-    return new Proxy(Component, {
-        construct: function(target, argumentsList, constructor) {
-            const instance = new target(...argumentsList)
-            instance.forceUpdate = instance.forceUpdate.bind(instance)
-            return new Proxy(instance, {
-                get: function(target, property, receiver) {
-                    if(property === 'render') {
-                        return computed(target.render.bind(target), { callback: target.forceUpdate })
-                    } else if(property === 'componentWillUnmount') {
-                        dispose(target.forceUpdate)
-                    }
-                    return target[property]
+const watch = Component => new Proxy(Component, {
+    construct: function(target, argumentsList) {
+        // Create a new Component instance
+        const instance = new target(...argumentsList)
+        // Ensures that the forceUpdate in correctly bound
+        instance.forceUpdate = instance.forceUpdate.bind(instance)
+        // Monkey patch the componentWillUnmount method to do some clean up on destruction
+        const originalUnmount =
+            typeof instance.componentWillUnmount === 'function' &&
+            instance.componentWillUnmount.bind(instance)()
+        instance.componentWillUnmount = function(...args) {
+            dispose(instance.forceUpdate)
+            if(originalUnmount)
+                originalUnmount(...args)
+        }
+        // Return a proxified Component
+        return new Proxy(instance, {
+            get: function(target, property) {
+                if(property === 'render') {
+                    // Compute the render function and forceUpdate on changes
+                    return computed(target.render.bind(target), { callback: instance.forceUpdate })
                 }
-            })
-        },
-    })
-}
+                return target[property]
+            }
+        })
+    }
+})
 
 /* Store */
 
 const store = observe({
     todos: [
-        { label: 'Do the laundry', completed: false },
-        { label: 'Buy shampoo', completed: false },
-        { label: 'Create a todo list', completed: true }
+        { id: 2, label: 'Do the laundry', completed: false },
+        { id: 1, label: 'Buy shampoo', completed: false },
+        { id: 0, label: 'Create a todo list', completed: true }
     ]
-}, { deep: true })
+}, { deep: true })
 
+let todoId = 3
 const addTodo = label => {
     label = typeof label === 'string' ? label : 'New todo'
-    store.todos = [ 
-        observe({ label, completed: false }),
+    store.todos = [
+        observe({ id: todoId++, label, completed: false }),
         ...store.todos
     ]
 }
@@ -45,7 +57,7 @@ const removeTodo = todo => {
 }
 
 const completeAll = () => {
-    let completion = store.todos.some(({ completed }) => !completed)
+    const completion = store.todos.some(({ completed }) => !completed)
     store.todos.forEach(todo => todo.completed = completion)
 }
 
@@ -57,7 +69,7 @@ const clearCompleted = () => {
 
 const App = watch(class extends React.Component {
     render() {
-        const { total, completed, active } = {
+        const { total, completed, active } = {
             total: store.todos.length,
             completed: store.todos.filter(_ => _.completed).length,
             active: store.todos.filter(_ => !_.completed).length
@@ -68,7 +80,7 @@ const App = watch(class extends React.Component {
                     There are { total } <a href="javascript:void(0)" onClick={ () => store.filterTodos = false } className="highlight">todo(s)</a>.
                     (
                     { completed } <a href="javascript:void(0)" onClick={ () => store.filterTodos = 'completed' } className="highlight">completed</a>,&nbsp;
-                    { active } <a href="javascript:void(0)" onClick={ () => store.filterTodos = 'active' } className="highlight">active</a>
+                    { active } <a href="javascript:void(0)" onClick={ () => store.filterTodos = 'active' } className="highlight">active</a>
                     )
                 </div>
                 <Todos />
@@ -83,12 +95,12 @@ const Todos = watch(class extends React.PureComponent {
         event.preventDefault()
         if(!store.newTodoLabel.trim()) return
         addTodo(store.newTodoLabel)
-        store.newTodoLabel = ""
+        store.newTodoLabel = ''
     }
 
     render() {
         return (
-            <React.Fragment>
+            <Fragment>
                 <div className="buttons__bar">
                     <button className="button--unstyled" onClick={ addTodo }>
                         Add todo
@@ -108,13 +120,13 @@ const Todos = watch(class extends React.PureComponent {
                         onChange={ _ => store.newTodoLabel = _.target.value }/>
                 </form>
                 <ul>
-                    { store.todos.map((todo, idx) =>
-                        store.filterTodos === 'completed' ? (todo.completed && <Todo key={idx} todo={todo} />) :
-                        store.filterTodos === 'active' ? (!todo.completed && <Todo key={idx} todo={todo} />) :
-                        <Todo key={idx} todo={todo} />)
+                    { store.todos.map(todo =>
+                        store.filterTodos === 'completed' ? todo.completed && <Todo key={todo.id} todo={todo} /> :
+                        store.filterTodos === 'active' ? !todo.completed && <Todo key={todo.id} todo={todo} /> :
+                        <Todo key={todo.id} todo={todo} />)
                     }
                 </ul>
-            </React.Fragment>
+            </Fragment>
         )
     }
 })
@@ -122,7 +134,7 @@ const Todos = watch(class extends React.PureComponent {
 const Todo = watch(class extends React.PureComponent {
 
     toggleCompletion = () => {
-        const { todo } = this.props
+        const { todo } = this.props
         todo.completed = !todo.completed
     }
 
