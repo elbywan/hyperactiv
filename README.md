@@ -94,7 +94,7 @@ dispose(computedFunction)
 
 ## Code samples
 
-#### A simple sum
+#### A simple sum and a counter
 
 ```js
 // Observe an object and its properties
@@ -104,17 +104,19 @@ const obj = observe({
 
 // The computed function auto-runs by default
 computed(() => {
-    // This function depends on obj.a and obj.b
+    // This function depends on obj.a, obj.b and obj.counter
     obj.sum = obj.a + obj.b
-    // And obj.counter, which is circular (get/set a dependent property)
+    // It also sets the value of obj.counter, which is circular (get & set)
     obj.counter++
 })
 
-console.log(obj.sum) // -> 3
+console.log(obj.sum)     // -> 3
+console.log(obj.counter) // -> 1
 obj.a = 2
-console.log(obj.sum) // -> 4
+console.log(obj.sum)     // -> 4
+console.log(obj.counter) // -> 2
 obj.b = 3
-console.log(obj.sum) // -> 5
+console.log(obj.sum)     // -> 5
 console.log(obj.counter) // -> 3
 ```
 
