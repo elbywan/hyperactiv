@@ -2,7 +2,7 @@
 const { Fragment } = React
 const { observe, computed, dispose } = window.hyperactiv
 
-/* Tools */
+/* React wrapper */
 
 // Wraps a component and automatically updates it when the store mutates.
 const watch = Component => new Proxy(Component, {
@@ -46,14 +46,12 @@ const store = observe({
 let todoId = 3
 const addTodo = label => {
     label = typeof label === 'string' ? label : 'New todo'
-    store.todos = [
-        observe({ id: todoId++, label, completed: false }),
-        ...store.todos
-    ]
+    store.todos.unshift({ id: todoId++, label, completed: false })
 }
 
 const removeTodo = todo => {
-    store.todos = store.todos.filter(_ => _ !== todo)
+    const index = store.todos.indexOf(todo)
+    store.todos.splice(index, 1)
 }
 
 const completeAll = () => {
@@ -68,6 +66,11 @@ const clearCompleted = () => {
 /* Components */
 
 const App = watch(class extends React.Component {
+
+    renderFilter(label, filter = label) {
+        return <a href="javascript:void(0)" onClick={ () => store.filterTodos = filter } className="highlight">{ label }</a>
+    }
+
     render() {
         const { total, completed, active } = {
             total: store.todos.length,
@@ -77,11 +80,8 @@ const App = watch(class extends React.Component {
         return (
             <div>
                 <div className="counters">
-                    There are { total } <a href="javascript:void(0)" onClick={ () => store.filterTodos = false } className="highlight">todo(s)</a>.
-                    (
-                    { completed } <a href="javascript:void(0)" onClick={ () => store.filterTodos = 'completed' } className="highlight">completed</a>,&nbsp;
-                    { active } <a href="javascript:void(0)" onClick={ () => store.filterTodos = 'active' } className="highlight">active</a>
-                    )
+                    There is a { this.renderFilter('total', false) } of { total } todo(s).
+                    ({ completed } { this.renderFilter('completed') }, { active } { this.renderFilter('active') })
                 </div>
                 <Todos />
             </div>
@@ -91,7 +91,11 @@ const App = watch(class extends React.Component {
 
 const Todos = watch(class extends React.PureComponent {
 
-    submitTodo = event => {
+    onNewTodoChange = event => {
+        store.newTodoLabel = event.target.value
+    }
+
+    submitNewTodo = event => {
         event.preventDefault()
         if(!store.newTodoLabel.trim()) return
         addTodo(store.newTodoLabel)
@@ -112,18 +116,18 @@ const Todos = watch(class extends React.PureComponent {
                         Clear completed
                     </button>
                 </div>
-                <form className="todo__form" onSubmit={ this.submitTodo }>
+                <form className="todo__form" onSubmit={ this.submitNewTodo }>
                     <input type="text"
                         placeholder="What should I do  ..."
                         name="todoname"
                         value={ store.newTodoLabel || '' }
-                        onChange={ _ => store.newTodoLabel = _.target.value }/>
+                        onChange={ this.onNewTodoChange }/>
                 </form>
                 <ul>
                     { store.todos.map(todo =>
-                        store.filterTodos === 'completed' ? todo.completed && <Todo key={todo.id} todo={todo} /> :
-                        store.filterTodos === 'active' ? !todo.completed && <Todo key={todo.id} todo={todo} /> :
-                        <Todo key={todo.id} todo={todo} />)
+                        store.filterTodos === 'completed' ? todo.completed && <Todo key={ todo.id } todo={ todo } /> :
+                        store.filterTodos === 'active' ? !todo.completed && <Todo key={ todo.id } todo={ todo } /> :
+                        <Todo key={todo.id} todo={ todo } />)
                     }
                 </ul>
             </Fragment>

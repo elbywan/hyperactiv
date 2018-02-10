@@ -1,4 +1,4 @@
-const hyperactiv = require('./hyperactiv.js')
+const hyperactiv = require('../dist/hyperactiv.map.js')
 const { computed, observe, dispose } = hyperactiv
 
 const delay = time => new Promise(resolve => setTimeout(resolve, time))
@@ -112,6 +112,23 @@ test('circular computed function', () => {
     expect(obj.a).toBe(4)
     obj.a = 3
     expect(obj.a).toBe(5)
+})
+
+test('array methods', () => {
+    const arr = observe([{ val: 1 }, { val: 2 }, { val: 3 }], { deep: true })
+    let sum = 0
+    computed(() => { sum = arr.reduce((acc, { val }) => acc + val, 0) })
+    expect(sum).toBe(6)
+    arr.push({ val: 4 })
+    expect(sum).toBe(10)
+    arr.pop()
+    expect(sum).toBe(6)
+    arr.unshift({ val: 5 }, { val: 4 })
+    expect(sum).toBe(15)
+    arr.shift()
+    expect(sum).toBe(10)
+    arr.splice(1, 3)
+    expect(sum).toBe(4)
 })
 
 test('dispose computed functions', () => {

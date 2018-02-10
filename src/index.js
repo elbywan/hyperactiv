@@ -2,6 +2,7 @@ const computedStack = []
 const observersMap = new WeakMap()
 
 const isObj = o => typeof o === 'object'
+const isArray = Array.isArray
 
 const computed = function(fun, { autoRun = true, callback = null } = {}) {
     const proxy = new Proxy(fun, {
@@ -45,20 +46,25 @@ const observe = function(obj, options = {}) {
     const {
         props = null, ignore = null, batch = false, deep = false
     } = options
-    observersMap.set(obj, new Map())
 
+    if(obj.__observed) return obj
+
+    observersMap.set(obj, new Map())
     deep && Object.entries(obj).forEach(([key, val]) => {
         if(isObj(val)) obj[key] = observe(val, options)
     })
 
     return new Proxy(obj, {
         get(_, prop) {
+            if(prop === '__observed') return true
+
             if((!props || props.includes(prop)) && (!ignore || !ignore.includes(prop))) {
-                const observerMap = observersMap.get(obj)
-                if(!observerMap.has(prop))
-                    observerMap.set(prop, new Set())
-                if(computedStack.length)
+                if(computedStack.length) {
+                    const observerMap = observersMap.get(obj)
+                    if(!observerMap.has(prop))
+                        observerMap.set(prop, new Set())
                     observerMap.get(prop).add(computedStack[0])
+                }
             }
 
             return obj[prop]
@@ -66,8 +72,8 @@ const observe = function(obj, options = {}) {
         set(_, prop, value) {
             const observerMap = observersMap.get(obj)
 
-            if(obj[prop] === value) return true
-            obj[prop] = deep && !(prop in obj) && isObj(value) ? observe(value, options) : value
+            if((!isArray(obj) || prop !== 'length') && obj[prop] === value) return true
+            obj[prop] = deep && isObj(value) ? observe(value, options) : value
 
             if((!props || props.includes(prop)) && (!ignore || !ignore.includes(prop))) {
                 if(observerMap.has(prop)) {
