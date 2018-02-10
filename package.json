@@ -15,7 +15,7 @@
     "lint": "eslint ./src ./test",
     "lint:fix": "eslint --fix ./src ./test",
     "build": "rollup -c rollup.config.js",
-    "test": "rollup -c rollup.config.js -o ./test/hyperactiv.js -m inline && jest --coverage --mapCoverage",
+    "test": "rollup -c rollup.config.js -o ./dist/hyperactiv.map.js -m inline && jest --coverage --mapCoverage",
     "coverage": "cat ./coverage/lcov.info | coveralls"
   },
   "keywords": [
