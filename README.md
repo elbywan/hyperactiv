@@ -38,10 +38,20 @@ npm i hyperactiv
 
 ## Import
 
-```js
-/* Hyperactiv is bundled as an UMD package */
-const hyperactiv = require('hyperactiv')
+**Hyperactiv is bundled as an UMD package.**
 
+```js
+// ESModules
+import hyperactiv from 'hyperactiv'
+```
+
+```js
+// Commonjs
+const hyperactiv = require('hyperactiv')
+```
+
+```js
+// Global variable
 const { computed, observe, dispose } = hyperactiv
 ```
 
@@ -51,36 +61,49 @@ const { computed, observe, dispose } = hyperactiv
 
 ```js
 const observedObject = observe({ a: 5, b: 4 })
-const observedArray = observe([ 3, 2, 1 ])
+
+// The 'deep' flag allow hyperactiv to observe properties as they are added to an object.
+// It is very useful for Arrays since keys are set dynamically as you add or remove elements.
+
+const observedArray = observe([ 3, 2, 1 ], { deep: true })
 ```
 
 #### Define computed functions
 
 ```js
 let result = 0
+
+// This function calculates the sum of observedObject and observedArrayvalues, which is 5 + 4 + 3 + 2 + 1 = 15 at this point.
+
 const computedFunction = computed(() => {
-    // result = a + b + sum(observedArray)
-    result = observedObject.a +
-             observedObject.b +
-             observedArray.reduce((acc, curr) => acc + curr)
+    result = [ ...Object.values(observedObject), ...observedArray].reduce((acc, curr) => acc + curr)
 })
 
-// By default, a computed function is automatically called when declared :
+// By default, a computed function is automatically called when declared.
+
 console.log(result) // -> 15
 
-// To prevent this behaviour set the autoRun option to false :
-const _ = computed(() => {}, { autoRun: false })
+// To prevent this behaviour set the autoRun option to false.
+// Warning : the computed function *must* be called at least once to calculate its dependencies.
 
-// Warning : the computed function *must* be called at least once to calculate its dependencies
+const _ = computed(() => {}, { autoRun: false })
 ```
 
 #### Mutate observed properties
 
 ```js
-// computedFunction will be called each time one of its dependencies is changed
+// computedFunction will be called each time one of its dependencies is changed.
+
 observedObject.a = 6
 console.log(result) // -> 16
 observedArray[0] = 4
+console.log(result) // -> 17
+
+// This is where the 'deep' flag shines.
+
+observedArray.unshift(1)
+console.log(result) // -> 18
+observedArray.pop()
 console.log(result) // -> 17
 ```
 
@@ -88,7 +111,8 @@ console.log(result) // -> 17
 
 ```js
 // Observed objects store computed function references in a Set, so you need to
-// release those yourself whenever needed to prevent memory leaks
+// release those yourself whenever needed to prevent memory leaks.
+
 dispose(computedFunction)
 ```
 
@@ -97,16 +121,18 @@ dispose(computedFunction)
 #### A simple sum and a counter
 
 ```js
-// Observe an object and its properties
+// Observe an object and its properties.
+
 const obj = observe({
     a: 1, b: 2, sum: 0, counter: 0
 })
 
-// The computed function auto-runs by default
+// The computed function auto-runs by default.
+
 computed(() => {
-    // This function depends on obj.a, obj.b and obj.counter
+    // This function depends on obj.a, obj.b and obj.counter.
     obj.sum = obj.a + obj.b
-    // It also sets the value of obj.counter, which is circular (get & set)
+    // It also sets the value of obj.counter, which is circular (get & set).
     obj.counter++
 })
 
@@ -171,7 +197,8 @@ console.log(obj.d) // -> 80
 #### Asynchronous computations
 
 ```js
-// Promisified setTimeout
+// Promisified setTimeout.
+
 const delay = time => new Promise(resolve => setTimeout(resolve, time))
 
 const obj = observe({ a: 0, b: 0, c: 0 })
@@ -179,8 +206,10 @@ const multiply = () => {
     obj.c = obj.a * obj.b
 }
 const delayedMultiply = computed(
-    // when dealing with asynchronous functions
-    // wrapping with computeAsync is essential to monitor dependencies
+
+    // When dealing with asynchronous functions
+    // wrapping with computeAsync is essential to monitor dependencies.
+
     ({ computeAsync }) =>
         delay(100).then(() =>
             computeAsync(multiply)),
@@ -200,11 +229,14 @@ delayedMultiply().then(() => {
 #### Batch computations
 
 ```js
-// Promisified setTimeout
+// Promisified setTimeout.
+
 const delay = time => new Promise(resolve => setTimeout(resolve, time))
 
-// Enable batch mode
+// Enable batch mode.
+
 const array = observe([0, 0, 0], { batch: true })
+
 let sum = 0
 let triggerCount = 0
 
@@ -216,6 +248,7 @@ const doSum = computed(() => {
 console.log(sum) // -> 0
 
 // Even if we are mutating 3 properties, doSum will only be called once asynchronously.
+
 array[0] = 1
 array[1] = 2
 array[2] = 3
@@ -236,25 +269,34 @@ const object = {
     b: 0,
     sum: 0
 }
+
 // Use props to observe only some properties
-// observeA reacts only when mutating 'a'
+// observeA reacts only when mutating 'a'.
+
 const observeA = observe(object, { props:  ['a'] })
+
 // Use ignore to ignore some properties
-// observeB reacts only when mutating 'b'
+// observeB reacts only when mutating 'b'.
+
 const observeB = observe(object, { ignore: ['a', 'sum'] })
 
 const doSum = computed(function() {
     observeA.sum = observeA.a + observeB.b
 })
 
-// Triggers doSum
+// Triggers doSum.
+
 observeA.a = 2
 console.log(object.sum) // -> 2
-// Does not trigger doSum
+
+// Does not trigger doSum.
+
 observeA.b = 1
 observeB.a = 1
 console.log(object.sum) // -> 2
-// Triggers doSum
+
+// Triggers doSum.
+
 observeB.b = 2
 console.log(object.sum) // -> 3
 ```
@@ -269,9 +311,11 @@ class MyClass {
         this.b = 2
 
         const _this = observe(this)
-        // Bind computed functions to the instance
+        // Bind computed functions to the instance.
+
         this.doSum = computed(this.doSum.bind(_this))
-        // Return an observed instance
+
+        // Return an observed instance.
         return _this
     }
 
@@ -295,7 +339,8 @@ const obj = observe({
     }
 })
 
-// Bind the computed function
+// Bind the computed function.
+
 obj.doSum = computed(obj.doSum.bind(obj))
 console.log(obj.sum) // -> 3
 obj.a = 2
@@ -306,13 +351,20 @@ console.log(obj.sum) // -> 4
 
 ```js
 // Wraps a component and automatically updates it when the store mutates.
+
 const watch = Component => new Proxy(Component, {
     construct: function(target, argumentsList) {
+
         // Create a new Component instance
+
         const instance = new target(...argumentsList)
-        // Ensures that the forceUpdate in correctly bound
+
+        // Ensures that the forceUpdate in correctly bound.
+
         instance.forceUpdate = instance.forceUpdate.bind(instance)
-        // Monkey patch the componentWillUnmount method to do some clean up on destruction
+
+        // Monkey patch the componentWillUnmount method to do some clean up on destruction.
+
         const originalUnmount =
             typeof instance.componentWillUnmount === 'function' &&
             instance.componentWillUnmount.bind(instance)()
@@ -321,11 +373,13 @@ const watch = Component => new Proxy(Component, {
             if(originalUnmount)
                 originalUnmount(...args)
         }
-        // Return a proxified Component
+
+        // Return a proxified Component.
+
         return new Proxy(instance, {
             get: function(target, property) {
                 if(property === 'render') {
-                    // Compute the render function and forceUpdate on changes
+                    // Compute the render function and forceUpdate on changes.
                     return computed(target.render.bind(target), { callback: instance.forceUpdate })
                 }
                 return target[property]
@@ -334,13 +388,15 @@ const watch = Component => new Proxy(Component, {
     }
 })
 
-// Store
+// Store.
+
 const store = observe({
     firstName: 'Igor',
     lastName: 'Gonzola'
 }, { deep: true })
 
-// Base component
+// Base component.
+
 class _App extends React.Component {
     render() {
         return (
@@ -353,7 +409,8 @@ class _App extends React.Component {
     }
 }
 
-// Watched component
+// Watched component.
+
 const App = watch(_App)
 ```
 
