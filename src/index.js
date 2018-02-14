@@ -1,7 +1,7 @@
 const computedStack = []
 const observersMap = new WeakMap()
 
-const isObj = o => typeof o === 'object'
+const isObj = o => o && typeof o === 'object'
 const isArray = Array.isArray
 
 const computed = function(fun, { autoRun = true, callback = null } = {}) {

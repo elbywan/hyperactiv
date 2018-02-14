@@ -334,16 +334,20 @@ test('deep observe nested objects and new properties', () => {
     Object.setPrototypeOf(o, { _unused: true })
     const obj = observe(o, { deep: true })
 
-    obj.c = { d: 2 }
+    obj.c = { d: { e: 2 } }
 
     computed(() => {
-        obj.sum = obj.a.b + obj.c.d + obj.tab[0].z
+        obj.sum = (obj.a && obj.a.b) + obj.c.d.e + obj.tab[0].z
     })
     expect(obj.sum).toBe(4)
     obj.a.b = 2
     expect(obj.sum).toBe(5)
-    obj.c.d = 3
+    obj.c.d.e = 3
     expect(obj.sum).toBe(6)
     obj.tab[0].z = 2
     expect(obj.sum).toBe(7)
+
+    // null check
+    obj.a = null
+    expect(obj.sum).toBe(5)
 })
