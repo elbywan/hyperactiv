@@ -5,7 +5,8 @@ const { observe, computed, dispose } = window.hyperactiv
 /* React wrapper */
 
 // Wraps a component and automatically updates it when the store mutates.
-const watch = Component => new Proxy(Component, {
+
+const watchClassComponent = Component => new Proxy(Component, {
     construct: function(target, argumentsList) {
         // Create a new Component instance
         const instance = new target(...argumentsList)
@@ -25,13 +26,34 @@ const watch = Component => new Proxy(Component, {
             get: function(target, property) {
                 if(property === 'render') {
                     // Compute the render function and forceUpdate on changes
-                    return computed(target.render.bind(target), { callback: instance.forceUpdate })
+                    return computed(target.render.bind(target), { autoRun: false, callback: instance.forceUpdate })
                 }
                 return target[property]
             }
         })
     }
 })
+
+const watchStatelessComponent = Component => class extends React.PureComponent {
+    constructor(props, context) {
+        super(props, context)
+        this.wrap = computed(Component, { autoRun: false, callback: this.forceUpdate.bind(this) })
+    }
+
+    render() {
+        return this.wrap(this.props)
+    }
+
+    componentWillUnmount() {
+        dispose(this.wrap)
+    }
+}
+
+
+const watch = Component =>
+    !Component.prototype.render ?
+        watchStatelessComponent(Component) :
+        watchClassComponent(Component)
 
 /* Store */
 
@@ -89,73 +111,62 @@ const App = watch(class extends React.Component {
     }
 })
 
-const Todos = watch(class extends React.PureComponent {
+const Todos = watch(() => {
 
-    onNewTodoChange = event => {
+    const onNewTodoChange = event => {
         store.newTodoLabel = event.target.value
     }
 
-    submitNewTodo = event => {
+    const submitNewTodo = event => {
         event.preventDefault()
         if(!store.newTodoLabel.trim()) return
         addTodo(store.newTodoLabel)
         store.newTodoLabel = ''
     }
 
-    render() {
-        return (
-            <Fragment>
-                <div className="buttons__bar">
-                    <button className="button--unstyled" onClick={ addTodo }>
-                        Add todo
-                    </button>
-                    <button className="button--unstyled" onClick={ completeAll }>
-                        Complete all
-                    </button>
-                    <button className="button--unstyled" onClick={ clearCompleted }>
-                        Clear completed
-                    </button>
-                </div>
-                <form className="todo__form" onSubmit={ this.submitNewTodo }>
-                    <input type="text"
-                        placeholder="What should I do  ..."
-                        name="todoname"
-                        value={ store.newTodoLabel || '' }
-                        onChange={ this.onNewTodoChange }/>
-                </form>
-                <ul>
-                    { store.todos.map(todo =>
-                        store.filterTodos === 'completed' ? todo.completed && <Todo key={ todo.id } todo={ todo } /> :
-                        store.filterTodos === 'active' ? !todo.completed && <Todo key={ todo.id } todo={ todo } /> :
-                        <Todo key={todo.id} todo={ todo } />)
-                    }
-                </ul>
-            </Fragment>
-        )
-    }
-})
 
-const Todo = watch(class extends React.PureComponent {
-
-    toggleCompletion = () => {
-        const { todo } = this.props
-        todo.completed = !todo.completed
-    }
-
-    render() {
-        const { todo } = this.props
-        return (
-            <div className="todo__bar">
-                <input type="text"
-                    className={ todo.completed ? 'done' : '' }
-                    value={ todo && todo.label }
-                    onChange={ event => todo.label = event.target.value }/>
-                <button onClick={ () => removeTodo(todo) } className="button--unstyled">✖</button>
-                <input type="checkbox" checked={todo.completed} onChange={this.toggleCompletion} />
+    return (
+        <Fragment>
+            <div className="buttons__bar">
+                <button className="button--unstyled" onClick={ addTodo }>
+                    Add todo
+                </button>
+                <button className="button--unstyled" onClick={ completeAll }>
+                    Complete all
+                </button>
+                <button className="button--unstyled" onClick={ clearCompleted }>
+                    Clear completed
+                </button>
             </div>
-        )
-    }
+            <form className="todo__form" onSubmit={ submitNewTodo }>
+                <input type="text"
+                    placeholder="What should I do  ..."
+                    name="todoname"
+                    value={ store.newTodoLabel || '' }
+                    onChange={ onNewTodoChange }/>
+            </form>
+            <ul>
+                { store.todos.map(todo =>
+                    store.filterTodos === 'completed' ? todo.completed && <Todo key={ todo.id } todo={ todo } /> :
+                    store.filterTodos === 'active' ? !todo.completed && <Todo key={ todo.id } todo={ todo } /> :
+                    <Todo key={todo.id} todo={ todo } />)
+                }
+            </ul>
+        </Fragment>
+    )
+
 })
+
+const Todo = watch(({ todo }) =>
+    <div className="todo__bar">
+        <input type="text"
+            className={ todo.completed ? 'done' : '' }
+            value={ todo.label }
+            onChange={ event => todo.label = event.target.value }/>
+        <button onClick={ () => removeTodo(todo) } className="button--unstyled">✖</button>
+        <input type="checkbox" checked={todo.completed} onChange={ () => todo.completed = !todo.completed } />
+    </div>
+)
 
 /* Mounting */
 
