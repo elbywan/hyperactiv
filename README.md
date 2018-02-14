@@ -352,18 +352,18 @@ console.log(obj.sum) // -> 4
 ```js
 // Wraps a component and automatically updates it when the store mutates.
 
-const watch = Component => new Proxy(Component, {
+const watchClassComponent = Component => new Proxy(Component, {
     construct: function(target, argumentsList) {
 
         // Create a new Component instance
 
         const instance = new target(...argumentsList)
 
-        // Ensures that the forceUpdate in correctly bound.
+        // Ensures that the forceUpdate in correctly bound
 
         instance.forceUpdate = instance.forceUpdate.bind(instance)
 
-        // Monkey patch the componentWillUnmount method to do some clean up on destruction.
+        // Monkey patch the componentWillUnmount method to do some clean up on destruction
 
         const originalUnmount =
             typeof instance.componentWillUnmount === 'function' &&
@@ -374,19 +374,41 @@ const watch = Component => new Proxy(Component, {
                 originalUnmount(...args)
         }
 
-        // Return a proxified Component.
+        // Return a proxified Component
 
         return new Proxy(instance, {
             get: function(target, property) {
                 if(property === 'render') {
-                    // Compute the render function and forceUpdate on changes.
-                    return computed(target.render.bind(target), { callback: instance.forceUpdate })
+                    // Compute the render function and forceUpdate on changes
+                    return computed(target.render.bind(target), { autoRun: false, callback: instance.forceUpdate })
                 }
                 return target[property]
             }
         })
     }
 })
+
+// For stateless component functions it's even easier
+
+const watchStatelessComponent = Component => class extends React.PureComponent {
+    constructor(props, context) {
+        super(props, context)
+        this.wrap = computed(Component, { autoRun: false, callback: this.forceUpdate.bind(this) })
+    }
+
+    render() {
+        return this.wrap(this.props)
+    }
+
+    componentWillUnmount() {
+        dispose(this.wrap)
+    }
+}
+
+const watch = Component =>
+    !Component.prototype.render ?
+        watchStatelessComponent(Component) :
+        watchClassComponent(Component)
 
 // Store.
 
