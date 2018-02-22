@@ -361,6 +361,15 @@ test('handler and write generator', () => {
     expect(copy.b.c.d).toBe(15)
     obj.b.c.d = 10
     expect(copy.b.c.d).toBe(15)
+
+    const copy2 = { }
+    const obj2 = observe({ }, { handler: write(copy2), deep: true })
+    obj2.a = 10
+    expect(copy2.a).toBe(10)
+    obj2.b = { c: { d: 15 } }
+    expect(copy2.b.c.d).toBe(15)
+    obj2.b.c.d = 10
+    expect(copy2.b.c.d).toBe(10)
 })
 
 test('automatic binding of class methods', () => {

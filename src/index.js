@@ -101,7 +101,7 @@ const observe = function(obj, options = {}) {
                     const ancestry = [ prop ]
                     let parent = obj
                     while(parent.__key && parent.__parent) {
-                        ancestry.shift(parent.__key)
+                        ancestry.unshift(parent.__key)
                         parent = parent.__parent
                     }
                     handler(ancestry, value)
