@@ -138,10 +138,10 @@ const observe = function(obj, options = {}) {
 const write = function(obj) {
     return function(props, value) {
         if(!props || props.length < 1) return
-        let cxt = obj || (Number.isNumbers(props[0]) ? [ ] : { }), prop = null
+        let cxt = obj || (Number.isInteger(props[0]) ? [ ] : { }), prop = null
         for(let i = 0; i < props.length - 1; i++) {
             prop = props[i]
-            if(cxt[prop] == null) cxt[prop] = Number.isNumbers(props[i + 1]) ? [ ] : { }
+            if(cxt[prop] == null) cxt[prop] = Number.isInteger(props[i + 1]) ? [ ] : { }
             cxt = cxt[prop]
         }
         cxt[props[props.length - 1]] = value
