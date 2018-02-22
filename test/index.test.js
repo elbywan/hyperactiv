@@ -357,6 +357,10 @@ test('handler and write generator', () => {
     const obj = observe({ }, { handler: write(copy) })
     obj.a = 10
     expect(copy.a).toBe(10)
+    obj.b = { c: { d: 15 } }
+    expect(copy.b.c.d).toBe(15)
+    obj.b.c.d = 10
+    expect(copy.b.c.d).toBe(15)
 })
 
 test('automatic binding of class methods', () => {

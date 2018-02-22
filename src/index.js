@@ -44,9 +44,9 @@ const batcher = {
 
 function bubble(obj, deep) {
     Object.entries(obj).forEach(([key, val]) => {
-        if(isObj(val)) {
-            val.__key = key
-            val.__parent = obj
+        if(['__observed', '__key', '__parent'].indexOf(key) < 0 && val && isObj(val)) {
+            Object.defineProperty(val, '__key', { value: key, enumerable: false, configurable: true })
+            Object.defineProperty(val, '__parent', { value: obj, enumerable: false, configurable: true })
             if(deep) bubble(val, deep)
         }
     })
@@ -57,7 +57,9 @@ const observe = function(obj, options = {}) {
         props = null, ignore = null, batch = false, deep = false, bind = true, handler = null
     } = options
 
-    if(handler && isObj(obj)) bubble(obj, deep)
+    if(handler && deep && isObj(obj)) {
+        bubble(obj, deep)
+    }
 
     if(obj.__observed) return obj
 
@@ -82,36 +84,39 @@ const observe = function(obj, options = {}) {
             return obj[prop]
         },
         set(_, prop, value) {
-            const observerMap = observersMap.get(obj)
+            if(prop === '__key' || prop === '__parent') {
+                _[prop] = value
+            } else {
+                const observerMap = observersMap.get(obj)
 
-            if((!isArray(obj) || prop !== 'length') && obj[prop] === value) return true
-            obj[prop] = deep && isObj(value) ? observe(value, options) : value
+                if((!isArray(obj) || prop !== 'length') && obj[prop] === value) return true
+                obj[prop] = deep && isObj(value) ? observe(value, options) : value
 
-            if(handler) {
-                const ancestry = [ prop ]
-                if(isObj(obj[prop])) {
-                    obj[prop].__key = prop
-                    obj[prop].__parent = obj
-                    bubble(obj[prop], deep)
+                if(handler) {
+                    if(deep && isObj(obj[prop])) {
+                        Object.defineProperty(obj[prop], '__key', { value: prop, enumerable: false, configurable: true })
+                        Object.defineProperty(obj[prop], '__parent', { value: obj, enumerable: false, configurable: true })
+                    }
+
+                    const ancestry = [ prop ]
+                    let parent = obj
+                    while(parent.__key && parent.__parent) {
+                        ancestry.shift(parent.__key)
+                        parent = parent.__parent
+                    }
+                    handler(ancestry, value)
                 }
 
-                let parent = obj
-                while(parent.__key && parent.__parent) {
-                    ancestry.shift(parent.__key)
-                    parent = parent.__parent
-                }
-                handler(ancestry, value)
-            }
-
-            if((!props || props.includes(prop)) && (!ignore || !ignore.includes(prop))) {
-                if(observerMap.has(prop)) {
-                    const dependents = observerMap.get(prop)
-                    for(const dependent of dependents) {
-                        if(dependent.__disposed) {
-                            dependents.delete(dependent)
-                        } else if(dependent !== computedStack[0]) {
-                            if(batch) batcher.enqueue(dependent)
-                            else dependent()
+                if((!props || props.includes(prop)) && (!ignore || !ignore.includes(prop))) {
+                    if(observerMap.has(prop)) {
+                        const dependents = observerMap.get(prop)
+                        for(const dependent of dependents) {
+                            if(dependent.__disposed) {
+                                dependents.delete(dependent)
+                            } else if(dependent !== computedStack[0]) {
+                                if(batch) batcher.enqueue(dependent)
+                                else dependent()
+                            }
                         }
                     }
                 }
@@ -137,6 +142,7 @@ const observe = function(obj, options = {}) {
 
 const write = function(obj) {
     return function(props, value) {
+        value = JSON.parse(JSON.stringify(value))
         if(!props || props.length < 1) return
         let cxt = obj || (Number.isInteger(props[0]) ? [ ] : { }), prop = null
         for(let i = 0; i < props.length - 1; i++) {
