@@ -52,7 +52,7 @@ const hyperactiv = require('hyperactiv')
 
 ```js
 // Global variable
-const { computed, observe, dispose } = hyperactiv
+const { computed, observe, dispose, write } = hyperactiv
 ```
 
 ## Usage
@@ -347,6 +347,15 @@ obj.a = 2
 console.log(obj.sum) // -> 4
 ```
 
+#### Automatically bind methods
+
+```javascript
+let obj = new SomeClass();
+obj = observe(obj, { deep: true, bind: true });
+obj.someMethodThatMutatesObjUsingThis();
+// observe see's all!
+```
+
 #### React store
 
 ```js
@@ -443,7 +452,7 @@ const App = watch(_App)
 Observes an object or an array and returns a proxified version which reacts on mutations.
 
 ```ts
-observe(Object | Array, { props: String[], ignore: String[], batch: boolean, deep: boolean }) => Proxy
+observe(Object | Array, { props: String[], ignore: String[], batch: boolean, deep: boolean, bind: boolean, handler: function }) => Proxy
 ```
 
 **Options**
@@ -463,6 +472,14 @@ Batch computed properties calls, wrapping them in a setTimeout and executing the
 `deep: boolean`
 
 Observe nested objects and when setting new properties.
+
+`bind: boolean`
+
+Automatically bind methods to observed object.
+
+`handler: function`
+
+Callback of style (ancestry: Array, value: Object) for each mutation
 
 ### computed
 
@@ -489,4 +506,16 @@ Will remove the computed function from the reactive Maps (the next time an bound
 
 ```ts
 dispose(Function) => void
+```
+
+### write
+
+Will generate a handler to transpose writes onto another object
+
+```javascipt
+let copy = { };
+let obj = observe(obj, { deep: true, handler: write(copy) })
+
+obj.a = 10;
+copy.a === 10;
 ```

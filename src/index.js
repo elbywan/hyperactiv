@@ -42,22 +42,22 @@ const batcher = {
     }
 }
 
-function bubble(obj) {
+function bubble(obj, deep) {
     Object.entries(obj).forEach(([key, val]) => {
         if(isObj(val)) {
             val.__key = key
             val.__parent = obj
-            bubble(val)
+            if(deep) bubble(val, deep)
         }
     })
 }
 
 const observe = function(obj, options = {}) {
     const {
-        props = null, ignore = null, batch = false, deep = false, handler = null
+        props = null, ignore = null, batch = false, deep = false, bind = true, handler = null
     } = options
 
-    if(deep && handler) bubble(obj)
+    if(handler && isObj(obj)) bubble(obj, deep)
 
     if(obj.__observed) return obj
 
@@ -66,7 +66,7 @@ const observe = function(obj, options = {}) {
         if(isObj(val)) obj[key] = observe(val, options)
     })
 
-    return new Proxy(obj, {
+    const proxy = new Proxy(obj, {
         get(_, prop) {
             if(prop === '__observed') return true
 
@@ -87,17 +87,19 @@ const observe = function(obj, options = {}) {
             if((!isArray(obj) || prop !== 'length') && obj[prop] === value) return true
             obj[prop] = deep && isObj(value) ? observe(value, options) : value
 
-            if(deep && handler) {
+            if(handler) {
                 const ancestry = [ prop ]
+                if(isObj(obj[prop])) {
+                    obj[prop].__key = prop
+                    obj[prop].__parent = obj
+                    bubble(obj[prop], deep)
+                }
+
                 let parent = obj
-                obj[prop].__key = prop
-                obj[prop].__parent = obj
-                bubble(obj[prop])
                 while(parent.__key && parent.__parent) {
                     ancestry.shift(parent.__key)
                     parent = parent.__parent
                 }
-
                 handler(ancestry, value)
             }
 
@@ -117,7 +119,7 @@ const observe = function(obj, options = {}) {
             return true
         },
         deleteProperty(_, prop) {
-            if(_[prop] && deep && handler) {
+            if(_[prop] && handler) {
                 delete _[prop].__key
                 delete _[prop].__parent
             }
@@ -125,6 +127,12 @@ const observe = function(obj, options = {}) {
             return true
         }
     })
+
+    bind && isObj(obj) && Object.getOwnPropertyNames(obj).forEach(key => {
+        if(typeof obj[key] === 'function') obj[key] = obj[key].bind(proxy)
+    })
+
+    return proxy
 }
 
 const write = function(obj) {
