@@ -42,10 +42,22 @@ const batcher = {
     }
 }
 
+function bubble(obj) {
+    Object.entries(obj).forEach(([key, val]) => {
+        if(isObj(val)) {
+            val.__key = key
+            val.__parent = obj
+            bubble(val)
+        }
+    })
+}
+
 const observe = function(obj, options = {}) {
     const {
-        props = null, ignore = null, batch = false, deep = false
+        props = null, ignore = null, batch = false, deep = false, handler = null
     } = options
+
+    if(deep && handler) bubble(obj)
 
     if(obj.__observed) return obj
 
@@ -75,6 +87,20 @@ const observe = function(obj, options = {}) {
             if((!isArray(obj) || prop !== 'length') && obj[prop] === value) return true
             obj[prop] = deep && isObj(value) ? observe(value, options) : value
 
+            if(deep && handler) {
+                const ancestry = [ prop ]
+                let parent = obj
+                obj[prop].__key = prop
+                obj[prop].__parent = obj
+                bubble(obj[prop])
+                while(parent.__key && parent.__parent) {
+                    ancestry.shift(parent.__key)
+                    parent = parent.__parent
+                }
+
+                handler(ancestry, value)
+            }
+
             if((!props || props.includes(prop)) && (!ignore || !ignore.includes(prop))) {
                 if(observerMap.has(prop)) {
                     const dependents = observerMap.get(prop)
@@ -89,12 +115,34 @@ const observe = function(obj, options = {}) {
                 }
             }
             return true
+        },
+        deleteProperty(_, prop) {
+            if(_[prop] && deep && handler) {
+                delete _[prop].__key
+                delete _[prop].__parent
+            }
+            delete _[prop]
+            return true
         }
     })
+}
+
+const write = function(obj) {
+    return function(props, value) {
+        if(!props || props.length < 1) return
+        let cxt = obj || (Number.isNumbers(props[0]) ? [ ] : { }), prop = null
+        for(let i = 0; i < props.length - 1; i++) {
+            prop = props[i]
+            if(cxt[prop] == null) cxt[prop] = Number.isNumbers(props[i + 1]) ? [ ] : { }
+            cxt = cxt[prop]
+        }
+        cxt[props[props.length - 1]] = value
+    }
 }
 
 export default {
     observe,
     computed,
-    dispose
+    dispose,
+    write
 }
