@@ -351,7 +351,7 @@ console.log(obj.sum) // -> 4
 
 ```javascript
 let obj = new SomeClass();
-obj = observe(obj, { deep: true, bind: true });
+obj = observe(obj, { bind: true });
 obj.someMethodThatMutatesObjUsingThis();
 // observe see's all!
 ```
@@ -514,7 +514,7 @@ Will generate a handler to transpose writes onto another object
 
 ```javascipt
 let copy = { };
-let obj = observe(obj, { deep: true, handler: write(copy) })
+let obj = observe(obj, { handler: write(copy) })
 
 obj.a = 10;
 copy.a === 10;

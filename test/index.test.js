@@ -1,5 +1,5 @@
 const hyperactiv = require('../dist/hyperactiv.map.js')
-const { computed, observe, dispose } = hyperactiv
+const { computed, observe, dispose, write } = hyperactiv
 
 const delay = time => new Promise(resolve => setTimeout(resolve, time))
 
@@ -350,4 +350,23 @@ test('deep observe nested objects and new properties', () => {
     // null check
     obj.a = null
     expect(obj.sum).toBe(5)
+})
+
+test('handler and write generator', () => {
+    const copy = { }
+    const obj = observe({ }, { handler: write(copy) })
+    obj.a = 10
+    expect(copy.a).toBe(10)
+})
+
+test('automatic binding of class methods', () => {
+    class SomeClass {
+        method() {
+            this.value = 10
+        }
+    }
+
+    const obj = observe(new SomeClass(), { bind: true })
+    obj.method()
+    expect(obj.value).toBe(10)
 })
