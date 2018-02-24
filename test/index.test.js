@@ -1,5 +1,5 @@
 const hyperactiv = require('../dist/hyperactiv.map.js')
-const { computed, observe, dispose, write } = hyperactiv
+const { computed, observe, dispose, handlers: { write }} = hyperactiv
 
 const delay = time => new Promise(resolve => setTimeout(resolve, time))
 
@@ -352,9 +352,39 @@ test('deep observe nested objects and new properties', () => {
     expect(obj.sum).toBe(5)
 })
 
-test('handler and write generator', () => {
-    const copy = { }
-    const obj = observe({ }, { handler: write(copy) })
+test('bind methods to the observed object', () => {
+    const obj = observe({
+        a: 1,
+        b: 2,
+        doSum: function() {
+            this.sum = this.a + this.b
+        }
+    }, { bind: true })
+
+    obj.doSum = computed(obj.doSum)
+    expect(obj.sum).toBe(3)
+    obj.a = 2
+    expect(obj.sum).toBe(4)
+})
+
+test('bind computed functions using the bind option', () => {
+    const obj = observe({
+        a: 1,
+        b: 2,
+        doSum: function() {
+            this.sum = this.a + this.b
+        }
+    })
+
+    obj.doSum = computed(obj.doSum, { bind: obj })
+    expect(obj.sum).toBe(3)
+    obj.a = 2
+    expect(obj.sum).toBe(4)
+})
+
+test('write handler should proxify mutations to another object', () => {
+    const copy = {}
+    const obj = observe({}, { handler: write(copy) })
     obj.a = 10
     expect(copy.a).toBe(10)
     obj.b = { c: { d: 15 } }
@@ -362,24 +392,37 @@ test('handler and write generator', () => {
     obj.b.c.d = 10
     expect(copy.b.c.d).toBe(15)
 
-    const copy2 = { }
-    const obj2 = observe({ }, { handler: write(copy2), deep: true })
+    const copy2 = {}
+    const obj2 = observe({}, { handler: write(copy2), deep: true })
     obj2.a = 10
     expect(copy2.a).toBe(10)
     obj2.b = { c: { d: 15 } }
     expect(copy2.b.c.d).toBe(15)
     obj2.b.c.d = 10
     expect(copy2.b.c.d).toBe(10)
-})
 
-test('automatic binding of class methods', () => {
-    class SomeClass {
-        method() {
-            this.value = 10
-        }
-    }
+    const copy3 = []
+    const obj3 = observe([], { handler: write(copy3), deep: true })
+    obj3.push('test')
+    expect(copy3[0]).toBe('test')
+    obj3.push({ a: { b: [ { c: 1 }]}})
+    expect(copy3[1]).toEqual({ a: { b: [ { c: 1 }]}})
+    obj3[1].a.b[0].c = 2
+    expect(copy3[1]).toEqual({ a: { b: [ { c: 2 }]}})
 
-    const obj = observe(new SomeClass(), { bind: true })
-    obj.method()
-    expect(obj.value).toBe(10)
+    const copy4 = {}
+    const obj4 = observe({ a: { b: 1 }}, { handler: write(copy4), deep: true })
+    obj4.a.b = 2
+    expect(copy4.a.b).toEqual(2)
+
+    const copy5 = []
+    const obj5 = observe([[[1]]], { handler: write(copy5), deep: true })
+    obj5[0][0][0] = 2
+    expect(copy5[0][0][0]).toEqual(2)
+
+
+    expect(() => observe({}, { handler: write() })).toThrow()
+
+    // Improves coverage
+    delete obj2.b.c
 })

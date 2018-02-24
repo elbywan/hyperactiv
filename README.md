@@ -14,7 +14,7 @@
 
 ## Description
 
-Hyperactiv is a super small (< 100 lines of code) library which **observes** object mutations and **computes** functions depending on those changes.
+Hyperactiv is a super small (~ 150 lines of code) library which **observes** object mutations and **computes** functions depending on those changes.
 
 In other terms, whenever an *observed object property* is **mutated**, the *computed functions* that **depend** on this property will be **called**.
 
@@ -52,7 +52,7 @@ const hyperactiv = require('hyperactiv')
 
 ```js
 // Global variable
-const { computed, observe, dispose, write } = hyperactiv
+const { computed, observe, dispose, handlers: { write }} = hyperactiv
 ```
 
 ## Usage
@@ -301,6 +301,14 @@ observeB.b = 2
 console.log(object.sum) // -> 3
 ```
 
+#### Automatically bind methods
+
+```javascript
+let obj = new SomeClass();
+obj = observe(obj, { bind: true });
+obj.someMethodThatMutatesObjUsingThis();
+// observe see's all!
+```
 
 #### This and class syntaxes
 
@@ -311,8 +319,8 @@ class MyClass {
         this.b = 2
 
         const _this = observe(this)
-        // Bind computed functions to the instance.
 
+        // Bind computed functions to the observed instance.
         this.doSum = computed(this.doSum.bind(_this))
 
         // Return an observed instance.
@@ -337,29 +345,21 @@ const obj = observe({
     doSum: function() {
         this.sum = this.a + this.b
     }
+}, { 
+    // Use the bind flag to bind doSum to the observed object.
+    bind: true
 })
 
-// Bind the computed function.
-
-obj.doSum = computed(obj.doSum.bind(obj))
+obj.doSum = computed(obj.doSum)
 console.log(obj.sum) // -> 3
 obj.a = 2
 console.log(obj.sum) // -> 4
 ```
 
-#### Automatically bind methods
-
-```javascript
-let obj = new SomeClass();
-obj = observe(obj, { bind: true });
-obj.someMethodThatMutatesObjUsingThis();
-// observe see's all!
-```
-
 #### React store
 
 ```js
-// Wraps a component and automatically updates it when the store mutates.
+// Wraps a component and automatically updates it whenever the store mutates.
 
 const watchClassComponent = Component => new Proxy(Component, {
     construct: function(target, argumentsList) {
@@ -445,6 +445,30 @@ class _App extends React.Component {
 const App = watch(_App)
 ```
 
+#### Catch the chain of mutated properties and perform an action
+
+```js
+const object = { a: { b: [ { c: 1 } ]}}
+
+const handler = function(keys, value) {
+    console.log('The handler is triggered after each mutation')
+    console.log('The mutated keys are :')
+    console.log(keys)
+    console.log('The new value is :')
+    console.log(value)
+}
+
+// The deep flag ensures that the handler will be triggered when the mutation happens in a nested array/object
+const observer = observe(object, { handler, deep: true })
+object.a.b[0].c = 'value'
+
+// The handler is triggered after each mutation
+// The mutated keys are :
+// [ 'a', 'b', '0', 'c']
+// The new value is :
+// 'value'
+```
+
 ## API
 
 ### observe
@@ -452,34 +476,41 @@ const App = watch(_App)
 Observes an object or an array and returns a proxified version which reacts on mutations.
 
 ```ts
-observe(Object | Array, { props: String[], ignore: String[], batch: boolean, deep: boolean, bind: boolean, handler: function }) => Proxy
+observe(Object | Array, {
+    props: String[],
+    ignore: String[],
+    batch: boolean,
+    deep: boolean,
+    bind: boolean,
+    handler: function
+}) => Proxy
 ```
 
 **Options**
 
-`props: String[]`
+- `props: String[]`
 
-Observe only these properties.
+Observe only the properties listed.
 
-`ignore: String[]`
+- `ignore: String[]`
 
-Ignore these properties.
+Ignore the properties listed.
 
-`batch: boolean`
+- `batch: boolean`
 
 Batch computed properties calls, wrapping them in a setTimeout and executing them in a new context and preventing excessive calls.
 
-`deep: boolean`
+- `deep: boolean`
 
 Observe nested objects and when setting new properties.
 
-`bind: boolean`
+- `bind: boolean`
 
-Automatically bind methods to observed object.
+Automatically bind methods to the observed object.
 
-`handler: function`
+- `handler: Function(ancestry: String[], value: Object, originalObject: Object)`
 
-Callback of style (ancestry: Array, value: Object) for each mutation
+Callback performed whenever the observed object is mutated.
 
 ### computed
 
@@ -487,16 +518,19 @@ Wraps a function and captures observed properties which are accessed during the 
 When those properties are mutated, the function is called to reflect the changes.
 
 ```ts
-computed(fun: Function, { autoRun: boolean, callback: Function }) => Proxy
+computed(fun: Function, { 
+    autoRun: boolean,
+    callback: Function
+}) => Proxy
 ```
 
 **Options**
 
-`autoRun: boolean`
+- `autoRun: boolean`
 
-Runs the function argument.
+Runs the function argument at once.
 
-`callback: Function`
+- `callback: Function`
 
 Specify a callback that will be re-runned each time a dependency changes instead of the computed function.
 
@@ -508,14 +542,20 @@ Will remove the computed function from the reactive Maps (the next time an bound
 dispose(Function) => void
 ```
 
-### write
+### handlers
 
-Will generate a handler to transpose writes onto another object
+Helper handlers used to perform various tasks whenever an observed object is mutated. (`observe.handler`)
 
-```javascipt
-let copy = { };
+#### write
+
+Will generate a handler to transpose writes onto another object.
+
+```javascript
+import { observe, handlers: { write }} from 'hyperactiv'
+
+let copy = { }
 let obj = observe(obj, { handler: write(copy) })
 
-obj.a = 10;
-copy.a === 10;
+obj.a = 10
+copy.a === 10
 ```
