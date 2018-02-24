@@ -153,11 +153,30 @@ const writeHandler = function(target) {
     }
 }
 
+/* Debug handler */
+
+const debugHandler = function(logger) {
+    logger = logger || console
+    return function(props, value) {
+        const keys = props.map(prop => Number.isInteger(Number.parseInt(prop)) ? `[${prop}]` : `.${prop}`).join('').substr(1)
+        logger.debug(`${keys} = ${JSON.stringify(value, null, '\t')}`)
+    }
+}
+
+/* All handler */
+
+const allHandler = function(handlers) {
+    return Array.isArray(handlers) ? (keys, value, proxy) => handlers.forEach(fn => fn(keys, value, proxy)) : handlers
+}
+
+
 export default {
     observe,
     computed,
     dispose,
     handlers: {
-        write: writeHandler
+        write: writeHandler,
+        debug: debugHandler,
+        all: allHandler
     }
 }

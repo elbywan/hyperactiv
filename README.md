@@ -52,7 +52,7 @@ const hyperactiv = require('hyperactiv')
 
 ```js
 // Global variable
-const { computed, observe, dispose, handlers: { write }} = hyperactiv
+const { computed, observe, dispose, handlers: { write, debug, all }} = hyperactiv
 ```
 
 ## Usage
@@ -307,7 +307,7 @@ console.log(object.sum) // -> 3
 let obj = new SomeClass();
 obj = observe(obj, { bind: true });
 obj.someMethodThatMutatesObjUsingThis();
-// observe see's all!
+// observe sees all!
 ```
 
 #### This and class syntaxes
@@ -558,4 +558,35 @@ let obj = observe(obj, { handler: write(copy) })
 
 obj.a = 10
 copy.a === 10
+```
+
+#### debug
+
+Log mutations
+
+```javascript
+import { observe, handlers: { debug }} from 'hyperactiv'
+
+let obj = observe(obj, { handler: debug(console) })
+
+obj.a = 10
+obj.b = { c: 10 }
+
+// a = 10
+```
+
+#### all
+
+Sequence of handlers
+
+```javascript
+import { observe, handlers: { all, write, debug }} from 'hyperactiv'
+
+let obj = observe(obj, { 
+    handler: handlers.all([ 
+        handlers.debug(), 
+        handlers.write(copy), 
+        handlers.write(copy2) 
+    ]) 
+})
 ```
