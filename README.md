@@ -570,7 +570,6 @@ import { observe, handlers: { debug }} from 'hyperactiv'
 let obj = observe(obj, { handler: debug(console) })
 
 obj.a = 10
-obj.b = { c: 10 }
 
 // a = 10
 ```
@@ -582,7 +581,7 @@ Sequence of handlers
 ```javascript
 import { observe, handlers: { all, write, debug }} from 'hyperactiv'
 
-let obj = observe(obj, { 
+let copy = { }, copy2 = { }, obj = observe(obj, { 
     handler: handlers.all([ 
         handlers.debug(), 
         handlers.write(copy), 
