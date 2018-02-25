@@ -128,11 +128,10 @@ const observe = function(obj, options = {}) {
         }
     })
 
-    bind && isObj(obj) && Object.getOwnPropertyNames(obj).forEach(key => {
-        if(typeof obj[key] === 'function') obj[key] = obj[key].bind(proxy)
-    }) && Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).forEach(key => {
-        if(typeof obj[key] === 'function') obj[key] = obj[key].bind(proxy)
-    })
+    let methods = Object.getOwnPropertyNames(obj)
+    methods.push(...Object.getOwnPropertyNames(Object.getPrototypeOf(obj)))
+    methods = methods.filter(prop => prop != 'constructor' && typeof obj[prop] === 'function')
+    bind && isObj(obj) && methods.forEach(key => obj[key] = obj[key].bind(proxy))
 
     return proxy
 }
