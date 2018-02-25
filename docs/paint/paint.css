@@ -7,6 +7,7 @@ div.color-buttons > button, div.color-buttons > input {
     cursor: pointer;
     border: 1px solid #DDD;
     color: #666;
+    background: white;
     height: 3em;
     padding: 0;
     margin-right: 10px;
@@ -23,8 +24,8 @@ div.color-buttons > button:hover, div.color-buttons > input:hover {
 }
 div.color-buttons > button.selected, div.color-buttons > input.selected {
     color: white;
-    background: orangered;
-    border-color: orangered;
+    background: rgb(255, 0, 55);
+    border-color: rgb(255, 0, 55);
 }
 
 div#container {

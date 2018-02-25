@@ -22,7 +22,7 @@
     color: #BBB;
 }
 #todos-root input[type="text"]:focus {
-    border-color: orangered;
+    border-color: rgb(255, 0, 55);
     color: black;
 }
 #todos-root input[type="text"].done {
@@ -96,5 +96,5 @@ div.counters {
     transition: all 0.4s;
 }
 .todo__bar button:hover {
-    color: orangered;
+    color: rgb(255, 0, 55);
 }

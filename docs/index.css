@@ -11,7 +11,7 @@ a, a:active {
 
 header {
     font-family: 'Encode Sans Expanded', sans-serif;
-    background: orangered;
+    background: rgb(255, 0, 55);
     color: white;
     padding: 20px;
 }
@@ -36,7 +36,7 @@ div.description {
 }
 
 .highlight {
-    color: orangered;
+    color: rgb(255, 0, 55);
 }
 
 .button--unstyled {
