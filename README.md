@@ -1,16 +1,17 @@
-# Hyperactiv
-
-![Hyperactiv logo](./logo.svg)
-
-### A super tiny reactive library. :zap:
-<p>
+<h1 align="center">
+    <img alt="Hyperactiv logo" src="https://cdn.rawgit.com/elbywan/hyperactiv/747e759b/logo.svg" width="100px"/>
+	<br>
+    Hyperactiv<br>
     <a href="https://www.npmjs.com/package/hyperactiv"><img alt="npm-badge" src="https://img.shields.io/npm/v/hyperactiv.svg?colorB=ff733e" height="20"></a>
     <a href="https://travis-ci.org/elbywan/hyperactiv"><img alt="travis-badge" src="https://travis-ci.org/elbywan/hyperactiv.svg?branch=master"></a>
     <a href='https://coveralls.io/github/elbywan/hyperactiv?branch=master'><img src='https://coveralls.io/repos/github/elbywan/hyperactiv/badge.svg?branch=master' alt='Coverage Status' /></a>
     <a href="https://github.com/elbywan/hyperactiv/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="license-badge" height="20"></a>
-</p>
+</h1>
 
-<br>
+ <h4 align="center">
+    A super tiny reactive library. ⚡️<br>
+    <br>
+</h4>
 
 ## Description
 
