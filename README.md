@@ -361,7 +361,7 @@ console.log(obj.sum) // -> 4
 #### React store
 
 Hyperactiv contains built-in helpers to easily create a reactive store which re-renders your React components.
-The components are rendered is a smart fashion, meaning only when they depend on any part of store that has been modified.
+The components are rendered in a smart fashion, meaning only when they depend on any part of store that has been modified.
 
 ```js
 // Import the helpers
@@ -510,7 +510,7 @@ dispose(Function) => void
 
 Helper handlers used to perform various tasks whenever an observed object is mutated.
 
-*Handlers are written separately from the main hyperactiv codebase and need to be imported from a separate path.*
+Note that handlers are written separately from the main hyperactiv codebase and need to be imported from a separate path.
 
 ```js
 import handlers from 'hyperactiv/handlers'
