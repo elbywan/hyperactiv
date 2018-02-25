@@ -1,6 +1,6 @@
 {
   "name": "hyperactiv",
-  "version": "0.2.1",
+  "version": "0.2.0",
   "description": "Super small observable & reactive objects library.",
   "main": "dist/index.js",
   "repository": "https://github.com/elbywan/hyperactiv",
@@ -8,14 +8,15 @@
     "url": "https://github.com/elbywan/hyperactiv/issues"
   },
   "files": [
-    "dist"
+    "dist",
+    "handlers"
   ],
   "scripts": {
     "start": "npm run lint && npm run build && npm run test",
     "lint": "eslint ./src ./test",
     "lint:fix": "eslint --fix ./src ./test",
-    "build": "rollup -c rollup.config.js",
-    "test": "rollup -c rollup.config.js -o ./dist/hyperactiv.map.js -m inline && jest --coverage --mapCoverage",
+    "build": "rollup -c rollup.config.js && rollup -c rollup.config.js -i ./src/handlers/index.js -o ./handlers/index.js",
+    "test": "rollup -c rollup.config.js -o ./dist/hyperactiv.map.js -m inline && rollup -c rollup.config.js -i ./src/handlers/index.js -o ./handlers/handlers.map.js -m inline && jest --coverage --mapCoverage",
     "coverage": "cat ./coverage/lcov.info | coveralls"
   },
   "keywords": [

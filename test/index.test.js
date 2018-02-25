@@ -1,5 +1,7 @@
 const hyperactiv = require('../dist/hyperactiv.map.js')
-const { computed, observe, dispose, handlers: { write }} = hyperactiv
+const handlers = require('../handlers/handlers.map.js')
+const { computed, observe, dispose } = hyperactiv
+const { all, write, debug } = handlers
 
 const delay = time => new Promise(resolve => setTimeout(resolve, time))
 
@@ -150,6 +152,20 @@ test('dispose computed functions', () => {
     obj.a = 10
     expect(result).toBe(11)
     expect(result2).toBe(0)
+})
+
+test('does not observe the original object', () => {
+    const obj = { a: 1 }
+    const obs = observe(obj)
+    let plusOne = 0
+    computed(() => {
+        plusOne = obs.a + 1
+    })
+    expect(plusOne).toBe(2)
+    obj.a = 2
+    expect(plusOne).toBe(2)
+    obs.a = 3
+    expect(plusOne).toBe(4)
 })
 
 test('chain of computations', () => {
@@ -366,7 +382,23 @@ test('bind methods to the observed object', () => {
     obj.a = 2
     expect(obj.sum).toBe(4)
 })
+test('bind methods to the observed class', () => {
+    class TestClass {
+        constructor() {
+            this.a = 1
+            this.b = 2
+        }
+        method() {
+            this.sum = this.a + this.b
+        }
+    }
+    const observer = observe(new TestClass(), { bind: true })
+    observer.method = computed(observer.method)
+    expect(observer.sum).toBe(3)
+    observer.a = 2
+    expect(observer.sum).toBe(4)
 
+})
 test('bind computed functions using the bind option', () => {
     const obj = observe({
         a: 1,
@@ -425,4 +457,33 @@ test('write handler should proxify mutations to another object', () => {
 
     // Improves coverage
     delete obj2.b.c
+})
+test('debug handler should print mutations', () => {
+    let val = ''
+    const logger = {
+        log: str => val += str
+    }
+    const obj = { a: { b: [1] }}
+    const observed = observe(obj, { handler: all([debug(logger), debug()]), deep: true })
+    observed.a.b[0] = 2
+    expect(val).toBe('a.b[0] = 2')
+})
+test('all handler should run handlers sequentially', () => {
+    let val = ''
+    let count = 0
+    const logger = {
+        log: () => {
+            val += count
+            count++
+        }
+    }
+    const obj = { a: { b: [1] }}
+    const observed = observe(obj, { handler: all([debug(logger), debug(logger)]), deep: true })
+    observed.a.b[0] = 2
+    expect(val).toBe('01')
+
+    // Improves coverage
+    const observed2 = observe(obj, { handler: all(debug(logger)), deep: true })
+    observed2.a.b[0] = 3
+    expect(val).toBe('0123')
 })

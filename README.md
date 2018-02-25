@@ -52,7 +52,7 @@ const hyperactiv = require('hyperactiv')
 
 ```js
 // Global variable
-const { computed, observe, dispose, handlers: { write, debug, all }} = hyperactiv
+const { computed, observe, dispose } = hyperactiv
 ```
 
 ## Usage
@@ -544,14 +544,25 @@ dispose(Function) => void
 
 ### handlers
 
-Helper handlers used to perform various tasks whenever an observed object is mutated. (`observe.handler`)
+Helper handlers used to perform various tasks whenever an observed object is mutated.
+
+*Handlers are written separately from the main hyperactiv codebase and need to be imported from a separate path.*
+
+```js
+import { ... } from 'hyperactiv/handlers'
+```
+
+```html
+<script src="https://unpkg.com/hyperactiv/handlers/index.js" ></script>
+```
 
 #### write
 
 Will generate a handler to transpose writes onto another object.
 
 ```javascript
-import { observe, handlers: { write }} from 'hyperactiv'
+import { observe } from 'hyperactiv'
+import { write } from 'hyperactiv/handlers'
 
 let copy = { }
 let obj = observe(obj, { handler: write(copy) })
@@ -562,12 +573,13 @@ copy.a === 10
 
 #### debug
 
-Log mutations
+Log mutations.
 
 ```javascript
-import { observe, handlers: { debug }} from 'hyperactiv'
+import { observe } from 'hyperactiv'
+import { debug } from 'hyperactiv/handlers'
 
-let obj = observe(obj, { handler: debug(console) })
+let obj = observe({}, { handler: debug(console) })
 
 obj.a = 10
 
@@ -576,16 +588,17 @@ obj.a = 10
 
 #### all
 
-Sequence of handlers
+Run multiple handlers sequentially.
 
 ```javascript
-import { observe, handlers: { all, write, debug }} from 'hyperactiv'
+import { observe } from 'hyperactiv'
+import { all, write, debug } from 'hyperactiv/handlers'
 
-let copy = { }, copy2 = { }, obj = observe(obj, { 
-    handler: handlers.all([ 
-        handlers.debug(), 
-        handlers.write(copy), 
-        handlers.write(copy2) 
-    ]) 
+let copy = {}, copy2 = {}, obj = observe({ observed: 'object' }, {
+    handler: all([
+        debug(),
+        write(copy),
+        write(copy2)
+    ])
 })
 ```
