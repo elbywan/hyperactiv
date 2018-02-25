@@ -1,6 +1,6 @@
 # Hyperactiv
 
-<br>
+![Hyperactiv logo](./logo.svg)
 
 ### A super tiny reactive library. :zap:
 <p>
