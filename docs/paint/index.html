@@ -24,18 +24,18 @@
     </header>
     <div class="description">
         <p>
-            Click on the square below to add a green, blue or red color pixel which will <span class="highlight">dissolve</span> like paint in the water.<br>
+            Click on the square below to add a green, blue or red color pixel which will <span class="highlight">dissolve</span> like clouds of paint.<br>
             The color of each pixel is <span class="highlight">automatically computed</span> to be equal to the weighted mean of its neighbours.
         </p>
         <p>Check out the <span class="highlight"><a href="https://github.com/elbywan/hyperactiv/blob/master/docs/paint/index.html" target="_blank">source code</a></span> !</p>
         <p><i>(Computations are slowed down in order to make the propagation visible)</i></p>
     </div>
     <div class="color-buttons">
-        <button onclick="window.color = 'red'">Red</button>
-        <button onclick="window.color = 'green'">Green</button>
-        <button onclick="window.color = 'blue'">Blue</button>
-        <button onclick="window.color = 'random'">Random</button>
-        <input type="color" onchange="window.color = hexToRgb(this.value)"/>
+        <button onclick="window.setColor(this, 'red')">Red</button>
+        <button onclick="window.setColor(this, 'green')">Green</button>
+        <button class='selected' onclick="window.setColor(this, 'blue')">Blue</button>
+        <button onclick="window.setColor(this, 'random')">Random</button>
+        <input type="color" onchange="window.setColor(this, hexToRgb(this.value))"/>
     </div>
     <div id="container"></div>
 
@@ -54,6 +54,14 @@
                 g: parseInt(result[2], 16),
                 b: parseInt(result[3], 16)
             } : null
+        }
+
+        window.setColor = (target, value) => {
+            Array.from(target.parentElement.children).forEach(elt => {
+                elt.classList.remove('selected')
+            })
+            target.classList.add('selected')
+            window.color = value
         }
 
         window.onload = () => {

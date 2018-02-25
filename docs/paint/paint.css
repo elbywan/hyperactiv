@@ -1,5 +1,30 @@
-div.color-buttons > button {
+div.color-buttons {
+    margin-bottom: 20px;
+}
+div.color-buttons > button, div.color-buttons > input {
     display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid #DDD;
+    color: #666;
+    height: 3em;
+    padding: 0;
+    margin-right: 10px;
+    width: 100px;
+    border-radius: 5px;
+    outline: none;
+    text-transform: uppercase;
+    transition: 0.25s all;
+}
+div.color-buttons > button:hover, div.color-buttons > input:hover {
+    color: #222;
+    background: #EEE;
+    border-color: #EEE;
+}
+div.color-buttons > button.selected, div.color-buttons > input.selected {
+    color: white;
+    background: orangered;
+    border-color: orangered;
 }
 
 div#container {
