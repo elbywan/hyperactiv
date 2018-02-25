@@ -130,6 +130,8 @@ const observe = function(obj, options = {}) {
 
     bind && isObj(obj) && Object.getOwnPropertyNames(obj).forEach(key => {
         if(typeof obj[key] === 'function') obj[key] = obj[key].bind(proxy)
+    }) && Object.getOwnPropertyNames(Object.getPrototypeOf(obj)).forEach(key => {
+        if(typeof obj[key] === 'function') obj[key] = obj[key].bind(proxy)
     })
 
     return proxy
