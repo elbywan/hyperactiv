@@ -36,6 +36,8 @@ npm i hyperactiv
 <script src="https://unpkg.com/hyperactiv"></script>
 ```
 
+For react users, see [hyperactiv/react](https://github.com/elbywan/hyperactiv#react-store).
+
 ## Import
 
 **Hyperactiv is bundled as an UMD package.**
@@ -358,73 +360,34 @@ console.log(obj.sum) // -> 4
 
 #### React store
 
+Hyperactiv contains built-in helpers to easily create a reactive store which re-renders your React components.
+The components are rendered is a smart fashion, meaning only when they depend on any part of store that has been modified.
+
 ```js
-// Wraps a component and automatically updates it whenever the store mutates.
+// Import the helpers
+import reactHyperactiv from 'hyperactiv/react'
+const { watch, store } = reactHyperactiv
+```
 
-const watchClassComponent = Component => new Proxy(Component, {
-    construct: function(target, argumentsList) {
+Alternatively, if you prefer script tags :
 
-        // Create a new Component instance
+```html
+<script src="https://unpkg.com/hyperactiv/react/index.js"></script>
+```
 
-        const instance = new target(...argumentsList)
+```js
+const { watch, store } = window['react-hyperactiv']
+```
 
-        // Ensures that the forceUpdate in correctly bound
+Then :
 
-        instance.forceUpdate = instance.forceUpdate.bind(instance)
-
-        // Monkey patch the componentWillUnmount method to do some clean up on destruction
-
-        const originalUnmount =
-            typeof instance.componentWillUnmount === 'function' &&
-            instance.componentWillUnmount.bind(instance)()
-        instance.componentWillUnmount = function(...args) {
-            dispose(instance.forceUpdate)
-            if(originalUnmount)
-                originalUnmount(...args)
-        }
-
-        // Return a proxified Component
-
-        return new Proxy(instance, {
-            get: function(target, property) {
-                if(property === 'render') {
-                    // Compute the render function and forceUpdate on changes
-                    return computed(target.render.bind(target), { autoRun: false, callback: instance.forceUpdate })
-                }
-                return target[property]
-            }
-        })
-    }
-})
-
-// For stateless component functions it's even easier
-
-const watchStatelessComponent = Component => class extends React.PureComponent {
-    constructor(props, context) {
-        super(props, context)
-        this.wrap = computed(Component, { autoRun: false, callback: this.forceUpdate.bind(this) })
-    }
-
-    render() {
-        return this.wrap(this.props)
-    }
-
-    componentWillUnmount() {
-        dispose(this.wrap)
-    }
-}
-
-const watch = Component =>
-    !Component.prototype.render ?
-        watchStatelessComponent(Component) :
-        watchClassComponent(Component)
-
+```js
 // Store.
 
-const store = observe({
+const appStore = store({
     firstName: 'Igor',
     lastName: 'Gonzola'
-}, { deep: true })
+})
 
 // Base component.
 
@@ -432,9 +395,10 @@ class _App extends React.Component {
     render() {
         return (
              <div>
-                <input type="text" value={ store.firstName } onChange={ e => store.firstName = e.target.value } />
-                <input type="text" value={ store.lastName } onChange={ e => store.lastName = e.target.value } />
-                <div>Hello, { store.firstName } { store.lastName } !</div>
+                { /* Whenever these inputs are changed, the store will update and the component will re-render. */ }
+                <input type="text" value={ appStore.firstName } onChange={ e => appStore.firstName = e.target.value } />
+                <input type="text" value={ appStore.lastName } onChange={ e => appStore.lastName = e.target.value } />
+                <div>Hello, { appStore.firstName } { appStore.lastName } !</div>
             </div>
         )
     }
@@ -549,11 +513,16 @@ Helper handlers used to perform various tasks whenever an observed object is mut
 *Handlers are written separately from the main hyperactiv codebase and need to be imported from a separate path.*
 
 ```js
-import { ... } from 'hyperactiv/handlers'
+import handlers from 'hyperactiv/handlers'
 ```
+
+Or alternatively if you prefer script tags :
 
 ```html
 <script src="https://unpkg.com/hyperactiv/handlers/index.js" ></script>
+```
+```js
+const { ... } = window['hyperactiv-handlers']
 ```
 
 #### write
@@ -561,8 +530,11 @@ import { ... } from 'hyperactiv/handlers'
 Will generate a handler to transpose writes onto another object.
 
 ```javascript
-import { observe } from 'hyperactiv'
-import { write } from 'hyperactiv/handlers'
+import hyperactiv from 'hyperactiv'
+import handlers from 'hyperactiv/handlers'
+
+const { observe } = hyperactiv
+const { write } = handlers
 
 let copy = { }
 let obj = observe(obj, { handler: write(copy) })
@@ -576,8 +548,11 @@ copy.a === 10
 Log mutations.
 
 ```javascript
-import { observe } from 'hyperactiv'
-import { debug } from 'hyperactiv/handlers'
+import hyperactiv from 'hyperactiv'
+import handlers from 'hyperactiv/handlers'
+
+const { observe } = hyperactiv
+const { debug } = handlers
 
 let obj = observe({}, { handler: debug(console) })
 
@@ -591,8 +566,11 @@ obj.a = 10
 Run multiple handlers sequentially.
 
 ```javascript
-import { observe } from 'hyperactiv'
-import { all, write, debug } from 'hyperactiv/handlers'
+import hyperactiv from 'hyperactiv'
+import handlers from 'hyperactiv/handlers'
+
+const { observe } = hyperactiv
+const { all, write, debug } = handlers
 
 let copy = {}, copy2 = {}, obj = observe({ observed: 'object' }, {
     handler: all([
