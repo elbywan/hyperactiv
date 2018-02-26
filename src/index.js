@@ -152,7 +152,7 @@ const observe = function(obj, options = {}) {
             ...Object.getOwnPropertyNames(obj),
             ...Object.getPrototypeOf(obj) ? Object.getOwnPropertyNames(Object.getPrototypeOf(obj)) : []
         ].filter(prop => prop != 'constructor' && typeof obj[prop] === 'function')
-        methods.forEach(key => Object.defineProperty(obj, key, { value: obj[key].bind(proxy), enumerable: false, configurable: true }))
+        methods.forEach(key => obj[key] = obj[key].bind(proxy))
     }
 
     return proxy
