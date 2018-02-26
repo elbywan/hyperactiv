@@ -1,6 +1,6 @@
 {
   "name": "hyperactiv",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Super small observable & reactive objects library.",
   "main": "dist/index.js",
   "repository": "https://github.com/elbywan/hyperactiv",
@@ -8,15 +8,20 @@
     "url": "https://github.com/elbywan/hyperactiv/issues"
   },
   "files": [
-    "dist"
+    "dist",
+    "handlers",
+    "react"
   ],
   "scripts": {
     "start": "npm run lint && npm run build && npm run test",
     "lint": "eslint ./src ./test",
     "lint:fix": "eslint --fix ./src ./test",
-    "build": "rollup -c rollup.config.js",
-    "test": "rollup -c rollup.config.js -o ./dist/hyperactiv.map.js -m inline && jest --coverage --mapCoverage",
-    "coverage": "cat ./coverage/lcov.info | coveralls"
+    "build": "rollup -c config/rollup.config.js && npm run build:handlers && npm run build:react",
+    "build:handlers": "rollup -c config/rollup.handlers.config.js",
+    "build:react": "rollup -c config/rollup.react.config.js",
+    "test": "rollup -c config/rollup.config.js -o ./dist/hyperactiv.map.js -m inline && rollup -c config/rollup.handlers.config.js -o ./handlers/handlers.map.js -m inline && jest --coverage --mapCoverage",
+    "coverage": "cat ./coverage/lcov.info | coveralls",
+    "clean": "rimraf {dist,react,handlers}"
   },
   "keywords": [
     "computed properties",
@@ -34,6 +39,9 @@
     "eslint-plugin-jest": "^21.6.2",
     "eslint-plugin-react": "^7.6.1",
     "jest": "^22.0.4",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "rimraf": "^2.6.2",
     "rollup": "^0.53.2",
     "rollup-plugin-uglify": "^2.0.1",
     "uglify-es": "^3.3.4"
