@@ -3,7 +3,7 @@ const observersMap = new WeakMap()
 
 /* Tools */
 
-const isObj = function(o) { return o && typeof o === 'object' }
+const isObj = function(o) { return o && typeof o === 'object' && !(o instanceof Date) }
 const isArray = Array.isArray
 const defineBubblingProperties = function(object, key, parent) {
     Object.defineProperty(object, '__key', { value: key, enumerable: false, configurable: true })
@@ -150,9 +150,9 @@ const observe = function(obj, options = {}) {
         // Need this for binding es6 classes methods which are stored in the object prototype
         const methods = [
             ...Object.getOwnPropertyNames(obj),
-            ...(Object.getPrototypeOf(obj) ? Object.getOwnPropertyNames(Object.getPrototypeOf(obj)) : [])
+            ...Object.getPrototypeOf(obj) ? Object.getOwnPropertyNames(Object.getPrototypeOf(obj)) : []
         ].filter(prop => prop != 'constructor' && typeof obj[prop] === 'function')
-        methods.forEach(key => obj[key] = obj[key].bind(proxy))
+        methods.forEach(key => Object.defineProperty(obj, key, { value: obj[key].bind(proxy), enumerable: false, configurable: true }))
     }
 
     return proxy
