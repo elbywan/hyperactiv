@@ -5,9 +5,12 @@ const observersMap = new WeakMap()
 
 const isObj = function(o) { return o && typeof o === 'object' && !(o instanceof Date) }
 const isArray = Array.isArray
-const defineBubblingProperties = function(object, key, parent) {
+const defineBubblingProperties = function(object, key, parent, deep) {
     Object.defineProperty(object, '__key', { value: key, enumerable: false, configurable: true })
     Object.defineProperty(object, '__parent', { value: parent, enumerable: false, configurable: true })
+    deep && Object.entries(object).forEach(function([key, val]) {
+        if(isObj(val) && (!val.__key || !val.__parent)) defineBubblingProperties(object[key], key, object)
+    })
 }
 
 const batcher = {
@@ -135,7 +138,7 @@ function observe(obj, options = {}) {
             // If the deep flag is set we observe the newly set value
             obj[prop] = deep && isObj(value) ? observe(value, options) : value
             // If we defined a handler, we define the bubbling keys recursively on the new value
-            handler && deep && isObj(value) && defineBubblingProperties(obj[prop], prop, obj)
+            handler && deep && isObj(value) && defineBubblingProperties(obj[prop], prop, obj, deep)
 
             if(handler) {
                 // Retrieve the mutated properties chain & call the handler

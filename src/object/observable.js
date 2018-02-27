@@ -10,8 +10,8 @@ module.exports = class Observable {
         this.__computedProperties.push(computed(fn))
     }
     dispose() {
-        this.__computedProperties.forEach(c => dispose(c))
-        while(this.__computedProperties.pop()) null
+        let c
+        while((c = this.__computedProperties.pop()) != null) dispose(c)
     }
 }
 
