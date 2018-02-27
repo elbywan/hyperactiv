@@ -12,8 +12,7 @@
     "src",
     "dist",
     "handlers",
-    "react",
-    "object"
+    "react"
   ],
   "scripts": {
     "start": "npm run lint && npm run build && npm run test",

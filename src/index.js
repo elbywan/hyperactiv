@@ -224,8 +224,9 @@ const Computable = Base => class extends Base {
 
 /* container */
 
-const container = function(handler) {
-    return observe({ }, { deep: true, batch: true, handler: handler })
+const container = function(options) {
+    if(typeof options === 'function') options = { deep: true, batch: true, handler: options }
+    return observe({ }, options)
 }
 
 export default {
