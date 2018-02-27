@@ -1,4 +1,6 @@
-const { observe, computed, dispose } = require('hyperactiv')
+/* An extensible observed object */
+
+const { observe, computed, dispose } = require('../index')
 module.exports = class Observable {
     constructor(data, options) {
         Object.defineProperty(this, '__computedProperties', { value: [ ], enumerable: false })
