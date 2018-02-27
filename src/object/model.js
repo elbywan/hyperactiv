@@ -7,13 +7,13 @@ module.exports = class Model extends Events {
         super()
         Object.defineProperty(this, '__computedProperties', { value: [ ], enumerable: false })
         if(typeof data === 'object' && !(data instanceof Date)) Object.assign(this, data)
-        return observe(this, { deep: true, batch: true, ignore: [ 'domain', '_events', 'eventsCount', '_maxListeners' ], handler: (keys, value) => this.emit('change', keys, value) })
+        return observe(this, { deep: true, batch: true, ignore: [ 'domain', '_events', 'eventsCount', '_maxListeners' ], handler: (keys, value, old, proxy) => this.emit('change', keys, value, old, proxy) })
     }
     auto(fn) {
         this.__computedProperties.push(computed(fn))
     }
     dispose() {
-        this.__computedProperties.forEach(c => dispose(c))
-        while(this.__computedProperties.pop()) null
+        let c
+        while((c = this.__computedProperties.pop()) != null) dispose(c)
     }
 }
