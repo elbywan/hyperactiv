@@ -1,6 +1,6 @@
 /* An extensible observed object */
 
-const { observe, computed, dispose } = require('./dist')
+const { observe, computed, dispose } = require('../dist/index')
 module.exports = class Observable {
     constructor(data, options) {
         Object.defineProperty(this, '__computedProperties', { value: [ ], enumerable: false })
