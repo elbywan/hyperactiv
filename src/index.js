@@ -109,6 +109,8 @@ const observe = function(obj, options = {}) {
 
             // If the new/old value are equal, return
             if((!isArray(obj) || prop !== 'length') && obj[prop] === value) return true
+            // Remember old value for handler
+            const oldValue = obj[prop]
             // If the deep flag is set we observe the newly set value
             obj[prop] = deep && isObj(value) ? observe(value, options) : value
             // If we defined a handler, we define the bubbling keys recursively on the new value
@@ -122,7 +124,7 @@ const observe = function(obj, options = {}) {
                     ancestry.unshift(parent.__key)
                     parent = parent.__parent
                 }
-                handler(ancestry, value, proxy)
+                handler(ancestry, value, oldValue, proxy)
             }
 
             // If the prop is watched
