@@ -10,7 +10,8 @@
   "files": [
     "dist",
     "handlers",
-    "react"
+    "react",
+    "object"
   ],
   "scripts": {
     "start": "npm run lint && npm run build && npm run test",
