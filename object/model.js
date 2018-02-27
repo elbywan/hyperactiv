@@ -1,7 +1,7 @@
 /* Contains a reactive model and exports mutations through an EventEmitter interface */
 
 const Events = require('events')
-const { observe, computed, dispose } = require('../index')
+const { observe, computed, dispose } = require('./dist')
 module.exports = class Model extends Events {
     constructor(data) {
         super()
