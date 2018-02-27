@@ -163,8 +163,57 @@ const observe = function(obj, options = {}) {
     return proxy
 }
 
+/* Observable */
+
+const Observable = Base => class extends Base {
+    constructor(data, options) {
+        super()
+        const store = observe(data || { }, options || { deep: true, batch: true })
+        return new Proxy(this, {
+            set: (obj, name, value) => {
+                if(typeof value === 'function') {
+                    this[name] = value
+                } else {
+                    store[name] = value
+                    if(this[name] === undefined) Object.defineProperty(this, name, { get: () => store[name], enumerable: true, configurable: true })
+                }
+                return true
+            },
+            deleteProperty: (obj, name) => {
+                delete store[name]
+                delete obj[name]
+                return true
+            }
+        })
+    }
+}
+
+/* Computable */
+
+const Computable = Base => class extends Base {
+    constructor() {
+        super()
+        Object.defineProperty(this, '__computed', { value: [ ], enumerable: false })
+    }
+    computed(fn) {
+        this.__computed.push(computed(fn))
+    }
+    dispose() {
+        while(this.__computed.length) dispose(this.__computed.pop())
+    }
+}
+
+/* container */
+
+const container = function(handler) {
+    return observe({ }, { deep: true, batch: true, handler: handler })
+}
+
 export default {
     observe,
     computed,
-    dispose
+    dispose,
+    Observable,
+    Computable,
+    container
 }
