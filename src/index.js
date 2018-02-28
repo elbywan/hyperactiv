@@ -192,7 +192,7 @@ const observe = function(obj, options = { }) {
 const Observable = Base => class extends Base {
     constructor(data, options) {
         super()
-        const store = observe(data || { }, options || { deep: true, batch: true })
+        const store = observe(data, options)
         Object.defineProperty(this, 'onChange', { value: fn => this.__handler = fn })
         return new Proxy(this, {
             set: (obj, name, value) => {
