@@ -685,8 +685,8 @@ const hostedObject = wss.host({ });
 
 ```javascript
 const WebSocket = require('ws');
-const subscribeToHostedOject = require('hyperactiv/websocket/server').client;
-const remoteObject = subscribeToHostedOject(new WebSocket("ws://localhost:8080"));
+const subscribeToHostedObject = require('hyperactiv/websocket/server').client;
+const remoteObject = subscribeToHostedObject(new WebSocket("ws://localhost:8080"));
 ```
 
 ### Browser Client
