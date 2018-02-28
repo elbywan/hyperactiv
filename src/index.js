@@ -64,7 +64,7 @@ const dispose = function(_) { return _.__disposed = true }
 
 const observe = function(obj, options = {}) {
     const {
-        props = null, ignore = null, batch = false, deep = false, handler = null, bind = false
+        props = null, ignore = null, batch = false, deep = false, bubble = null, bind = false
     } = options
 
     // Ignore if the object is already observed
@@ -82,8 +82,8 @@ const observe = function(obj, options = {}) {
     deep && Object.entries(obj).forEach(function([key, val]) {
         if(isObj(val)) {
             obj[key] = observe(val, options)
-            // If a handler is set, we add keys to the object used to bubble up the mutation
-            if(handler)
+            // If bubble is set, we add keys to the object used to bubble up the mutation
+            if(bubble)
                 defineBubblingProperties(obj[key], key, obj)
         }
     })
@@ -108,26 +108,34 @@ const observe = function(obj, options = {}) {
             return obj[prop]
         },
         set(_, prop, value) {
+            // Don't track bubble handlers
+            if(bubble && prop === '__handler') {
+                obj.__handler = value
+                return true
+            }
+
             const propertiesMap = observersMap.get(obj)
 
             // If the new/old value are equal, return
             if((!isArray(obj) || prop !== 'length') && obj[prop] === value) return true
-            // Remember old value for handler
+            // Remember old value for bubble
             const oldValue = obj[prop]
             // If the deep flag is set we observe the newly set value
             obj[prop] = deep && isObj(value) ? observe(value, options) : value
-            // If we defined a handler, we define the bubbling keys recursively on the new value
-            handler && deep && isObj(value) && defineBubblingProperties(obj[prop], prop, obj, deep)
+            // If required, we define the bubbling keys recursively on the new value
+            bubble && deep && isObj(value) && defineBubblingProperties(obj[prop], prop, obj, deep)
 
-            if(handler) {
-                // Retrieve the mutated properties chain & call the handler
+            if(obj.__handler || obj.__parent) {
+                // Retrieve the mutated properties chain & call any __handlers along the way
                 const ancestry = [ prop ]
                 let parent = obj
-                while(parent.__key && parent.__parent) {
-                    ancestry.unshift(parent.__key)
-                    parent = parent.__parent
+                while(parent) {
+                    if(parent.__handler && parent.__handler(ancestry, value, oldValue, proxy) === false) break
+                    if(parent.__key && parent.__parent) {
+                        ancestry.unshift(parent.__key)
+                        parent = parent.__parent
+                    } else parent = null
                 }
-                handler(ancestry, value, oldValue, proxy)
             }
 
             // If the prop is watched
@@ -203,18 +211,10 @@ const Computable = Base => class extends Base {
     }
 }
 
-/* container */
-
-const container = function(options) {
-    if(typeof options === 'function') options = { deep: true, batch: true, handler: options }
-    return observe({ }, options)
-}
-
 export default {
     observe,
     computed,
     dispose,
     Observable,
-    Computable,
-    container
+    Computable
 }
