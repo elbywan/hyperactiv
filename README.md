@@ -394,6 +394,8 @@ console.log(obj.sum) // -> 4
 Ground up support for reactive class models using mixins
 
 ```javascript
+const { Observable, Computable } = require("hyperactiv/mixins");
+
 class SomeClass extends Computable(Observable(Object)) {
     constructor(data, opts) {
         super(data, opts)
@@ -401,6 +403,16 @@ class SomeClass extends Computable(Observable(Object)) {
         this.value = 10 // writes to observed object automagically
     }
 }
+```
+
+Alternatively, if you prefer script tags on the browser:
+
+```html
+<script src="https://unpkg.com/hyperactiv/mixins/index.js"></script>
+```
+
+```js
+const { Observable, Computable } = window['hyperactiv-mixins']
 ```
 
 #### React store
@@ -479,6 +491,13 @@ object.a.b[0].c = 'value'
 // [ 'a', 'b', '0', 'c']
 // The new value is :
 // 'value'
+```
+
+Or if you use the Observable mixin you can catch mutations with the `onChange` method
+
+```javascript
+let o = new Observable(Object);
+o.onChange((keys, value, old, obj) => { })
 ```
 
 ## API
@@ -632,4 +651,54 @@ let copy = {}, copy2 = {}, obj = observe({ observed: 'object' }, {
         write(copy2)
     ])
 })
+```
+
+## WebSocket
+
+Establishing a one-way data sync over WebSocket is easy.
+
+### Plain WebSockets
+
+```javascript
+const WebSocket = require('ws');
+const extendWebSocketServerWithHostMethod = require('hyperactiv/websocket/server').server;
+const wss = extendWebSocketServerWithHostMethod(new WebSocket.Server({ port: 8080 }));
+const remoteObject = wss.host({ });
+```
+
+### Express Server
+
+```javascript
+const http = require('http');
+const express = require('express');
+const WebSocket = require('ws');
+const extendWebSocketServerWithHostMethod = require('hyperactiv/websocket/server').server;
+const app = express();
+const server = http.createServer(app);
+const wss = extendWebSocketServerWithHostMethod(new WebSocket.Server({ server }));
+server.listen(8080);
+
+const remoteObject = wss.host({ });
+```
+
+### Node WebSocket Client
+
+```javascript
+const WebSocket = require('ws');
+const subscribeToHostedOject = require('hyperactiv/websocket/server').client;
+const remoteObject = subscribeToHostedOject(new WebSocket("ws://localhost:8080"));
+```
+
+### Browser WebSocket Client
+
+```html
+<html>
+    <head>
+        <script src="https://unpkg.com/hyperactiv" ></script>
+        <script src="https://unpkg.com/hyperactiv/websocket/browser.js"></script>
+    </head>
+    <body onload="window['hyperactiv-websocket']('ws://localhost:8080', window.remoteObject = { })">
+        Check developer console for "remoteObject"
+    </body>
+</html>
 ```
