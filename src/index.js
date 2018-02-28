@@ -63,7 +63,7 @@ const dispose = function(_) { return _.__disposed = true }
 /* Observe */
 
 const observe = function(obj, options = { }) {
-    // 'deep' semantics are slower but more reasonable; 'shallow' is a performance enhancement
+    // 'deep' is slower but reasonable; 'shallow' a performance enhancement but with side-effects
     const {
         props = null, ignore = null, batch = false, deep = true, bubble = null, bind = false
     } = options
@@ -193,6 +193,7 @@ const Observable = Base => class extends Base {
     constructor(data, options) {
         super()
         const store = observe(data || { }, options || { deep: true, batch: true })
+        Object.defineProperty(this, 'onChange', { value: fn => this.__handler = fn })
         return new Proxy(this, {
             set: (obj, name, value) => {
                 if(typeof value === 'function') {
@@ -219,8 +220,8 @@ const Computable = Base => class extends Base {
         super()
         Object.defineProperty(this, '__computed', { value: [ ], enumerable: false })
     }
-    computed(fn) {
-        this.__computed.push(computed(fn))
+    computed(fn, opt) {
+        this.__computed.push(computed(fn, opt))
     }
     dispose() {
         while(this.__computed.length) dispose(this.__computed.pop())
