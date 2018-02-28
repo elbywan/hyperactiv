@@ -62,9 +62,10 @@ const dispose = function(_) { return _.__disposed = true }
 
 /* Observe */
 
-const observe = function(obj, options = {}) {
+const observe = function(obj, options = { }) {
+    // 'deep' semantics are slower but more reasonable; 'shallow' is a performance enhancement
     const {
-        props = null, ignore = null, batch = false, deep = false, bubble = null, bind = false
+        props = null, ignore = null, batch = false, deep = true, bubble = null, bind = false
     } = options
 
     // Ignore if the object is already observed
