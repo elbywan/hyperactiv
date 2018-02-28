@@ -389,6 +389,20 @@ obj.a = 2
 console.log(obj.sum) // -> 4
 ```
 
+#### Reactive Classes
+
+Ground up support for reactive class models using mixins
+
+```javascript
+class SomeClass extends Computed(Observable(Object)) {
+    constructor() {
+        super()
+    
+        this.value = 10 // writes to observed object automagically
+    }
+}
+```
+
 #### React store
 
 Hyperactiv contains built-in helpers to easily create a reactive store which re-renders your React components.
@@ -456,7 +470,8 @@ const handler = function(keys, value) {
 }
 
 // The deep flag ensures that the handler will be triggered when the mutation happens in a nested array/object
-const observer = observe(object, { handler, deep: true })
+const observer = observe(object, { bubble: true, deep: true })
+observer.__handler = handler
 object.a.b[0].c = 'value'
 
 // The handler is triggered after each mutation
@@ -479,7 +494,7 @@ observe(Object | Array, {
     batch: boolean,
     deep: boolean,
     bind: boolean,
-    handler: function
+    bubble: boolean
 }) => Proxy
 ```
 
@@ -503,11 +518,9 @@ Observe nested objects and when setting new properties.
 
 - `bind: boolean`
 
-Automatically bind methods to the observed object.
+Bubble mutations up the object hierarchy, triggering handlers along the way.
 
-- `handler: Function(ancestry: String[], value: Object, originalObject: Object)`
-
-Callback performed whenever the observed object is mutated.
+- `bubble: boolean`
 
 ### computed
 
@@ -541,7 +554,14 @@ dispose(Function) => void
 
 ### handlers
 
-Helper handlers used to perform various tasks whenever an observed object is mutated.
+When bubble is set, you can "wire tap" any observed object by assigning a callback to the `__handler` property
+
+```javascript
+const observer = observe(object, { bubble: true, deep: true })
+observer.__handler = (keys, value, oldValue, observedObject) => { }
+```
+
+Helper handlers can be used to perform various tasks whenever an observed object is mutated.
 
 Note that handlers are written separately from the main hyperactiv codebase and need to be imported from a separate path.
 
