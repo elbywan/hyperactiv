@@ -224,8 +224,8 @@ const Observable = Base => class extends Base {
 /* Computable */
 
 const Computable = Base => class extends Base {
-    constructor() {
-        super()
+    constructor(data, options) {
+        super(data, options)
         Object.defineProperty(this, '__computed', { value: [ ], enumerable: false })
     }
     computed(fn, opt) {
