@@ -416,7 +416,7 @@ test('bind computed functions using the bind option', () => {
 
 test('write handler should proxify mutations to another object', () => {
     const copy = {}
-    const obj = observe({}, { bubble: true })
+    const obj = observe({}, { bubble: true, deep: false })
     obj.__handler = write(copy)
     obj.a = 10
     expect(copy.a).toBe(10)
