@@ -109,23 +109,28 @@ const observe = function(obj, options = {}) {
         },
         set(_, prop, value) {
             // Don't track bubble handlers
-            if(bubble && prop === '__handler') {
-                obj.__handler = value
+            if(prop === '__handler') {
+                Object.defineProperty(obj, '__handler', { value: value, enumerable: false, configurable: true })
                 return true
             }
 
             const propertiesMap = observersMap.get(obj)
-
             // If the new/old value are equal, return
             if((!isArray(obj) || prop !== 'length') && obj[prop] === value) return true
-            // Remember old value for bubble
+            // Remove bubbling infrastructure and pass old value to handlers
             const oldValue = obj[prop]
+            if(isObj(oldValue)) {
+                delete oldValue.__key
+                delete oldValue.__parent
+            }
+
             // If the deep flag is set we observe the newly set value
             obj[prop] = deep && isObj(value) ? observe(value, options) : value
-            // If required, we define the bubbling keys recursively on the new value
-            bubble && deep && isObj(value) && defineBubblingProperties(obj[prop], prop, obj, deep)
 
+            // If assigning to an object participating (wittingly or unwittingly) in bubbling, define the bubbling keys recursively on the new value
             if(obj.__handler || obj.__parent) {
+                deep && isObj(value) && defineBubblingProperties(obj[prop], prop, obj, deep)
+
                 // Retrieve the mutated properties chain & call any __handlers along the way
                 const ancestry = [ prop ]
                 let parent = obj
