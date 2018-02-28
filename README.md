@@ -657,13 +657,13 @@ let copy = {}, copy2 = {}, obj = observe({ observed: 'object' }, {
 
 Establishing a one-way data sync over WebSocket is easy.
 
-### Plain WebSockets
+### Plain WebSocket Server
 
 ```javascript
 const WebSocket = require('ws');
 const extendWebSocketServerWithHostMethod = require('hyperactiv/websocket/server').server;
 const wss = extendWebSocketServerWithHostMethod(new WebSocket.Server({ port: 8080 }));
-const remoteObject = wss.host({ });
+const hostedObject = wss.host({ });
 ```
 
 ### Express Server
@@ -678,7 +678,7 @@ const server = http.createServer(app);
 const wss = extendWebSocketServerWithHostMethod(new WebSocket.Server({ server }));
 server.listen(8080);
 
-const remoteObject = wss.host({ });
+const hostedObject = wss.host({ });
 ```
 
 ### Node WebSocket Client
