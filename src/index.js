@@ -161,6 +161,16 @@ const observe = function(obj, options = {}) {
                 }
             }
             return true
+        },
+        deleteProperty(_, prop) {
+            // Prevent bubbling mutations from stray objects
+            const value = _[prop]
+            if(isObj(value)) {
+                delete value.__key
+                delete value.__parent
+            }
+            delete _[prop]
+            return true
         }
     })
 
