@@ -111,55 +111,55 @@ const observe = function(obj, options = {}) {
             // Don't track bubble handlers
             if(prop === '__handler') {
                 Object.defineProperty(obj, '__handler', { value: value, enumerable: false, configurable: true })
-                return true
-            }
-
-            const propertiesMap = observersMap.get(obj)
-            // If the new/old value are equal, return
-            if((!isArray(obj) || prop !== 'length') && obj[prop] === value) return true
-            // Remove bubbling infrastructure and pass old value to handlers
-            const oldValue = obj[prop]
-            if(isObj(oldValue)) {
-                delete oldValue.__key
-                delete oldValue.__parent
-            }
-
-            // If the deep flag is set we observe the newly set value
-            obj[prop] = deep && isObj(value) ? observe(value, options) : value
-
-            // If assigning to an object participating (wittingly or unwittingly) in bubbling, define the bubbling keys recursively on the new value
-            if(obj.__handler || obj.__parent) {
-                deep && isObj(value) && defineBubblingProperties(obj[prop], prop, obj, deep)
-
-                // Retrieve the mutated properties chain & call any __handlers along the way
-                const ancestry = [ prop ]
-                let parent = obj
-                while(parent) {
-                    if(parent.__handler && parent.__handler(ancestry, value, oldValue, proxy) === false) break
-                    if(parent.__key && parent.__parent) {
-                        ancestry.unshift(parent.__key)
-                        parent = parent.__parent
-                    } else parent = null
+            } else {
+                const propertiesMap = observersMap.get(obj)
+                // If the new/old value are equal, return
+                if((!isArray(obj) || prop !== 'length') && obj[prop] === value) return true
+                // Remove bubbling infrastructure and pass old value to handlers
+                const oldValue = obj[prop]
+                if(isObj(oldValue)) {
+                    delete oldValue.__key
+                    delete oldValue.__parent
                 }
-            }
 
-            // If the prop is watched
-            if((!props || props.includes(prop)) && (!ignore || !ignore.includes(prop))) {
-                if(propertiesMap.has(prop)) {
-                    // Retrieve the computed functions depending on the prop
-                    const dependents = propertiesMap.get(prop)
-                    for(const dependent of dependents) {
-                        // If disposed, delete the function reference
-                        if(dependent.__disposed) {
-                            dependents.delete(dependent)
-                        } else if(dependent !== computedStack[0]) {
-                            // Run the computed function
-                            if(batch) batcher.enqueue(dependent)
-                            else dependent()
+                // If the deep flag is set we observe the newly set value
+                obj[prop] = deep && isObj(value) ? observe(value, options) : value
+                // Co-opt assigned object into bubbling if appropriate
+                deep && isObj(value) && (bubble || obj.__parent) && defineBubblingProperties(obj[prop], prop, obj, deep)
+                // If handler, invoke callback; if a handler explicitly returns 'false' then stop propogation, like jQuery
+                if(!obj.__handler || obj.__handler([ prop ], value, oldValue, proxy) !== false) {
+                    // Continue propogation, traversing the mutated property's object hierarchy & call any __handler's along the way
+                    const ancestry = [ obj.__key, prop ]
+                    let parent = obj.__parent
+                    while(parent) {
+                        // If a handler explicitly returns 'false' then stop propogation, like jQuery
+                        if(parent.__handler && parent.__handler(ancestry, value, oldValue, proxy) === false) break
+                        if(parent.__key && parent.__parent) {
+                            ancestry.unshift(parent.__key)
+                            parent = parent.__parent
+                        } else parent = null
+                    }
+                }
+
+                // If the prop is watched
+                if((!props || props.includes(prop)) && (!ignore || !ignore.includes(prop))) {
+                    if(propertiesMap.has(prop)) {
+                        // Retrieve the computed functions depending on the prop
+                        const dependents = propertiesMap.get(prop)
+                        for(const dependent of dependents) {
+                            // If disposed, delete the function reference
+                            if(dependent.__disposed) {
+                                dependents.delete(dependent)
+                            } else if(dependent !== computedStack[0]) {
+                                // Run the computed function
+                                if(batch) batcher.enqueue(dependent)
+                                else dependent()
+                            }
                         }
                     }
                 }
             }
+
             return true
         },
         deleteProperty(_, prop) {

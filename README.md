@@ -522,7 +522,7 @@ dispose(Function) => void
 
 ### handlers
 
-When bubble is set, you can "wire tap" any observed object by assigning a callback to the `__handler` property
+You can "wire tap" any observed object by assigning a callback to the `__handler` property.  When `bubble` is set along with `deep`, the `__handler` will receive mutations from nested objects.
 
 ```javascript
 const observer = observe(object, { bubble: true, deep: true })
@@ -530,8 +530,6 @@ observer.__handler = (keys, value, oldValue, observedObject) => { }
 ```
 
 Helper handlers can be used to perform various tasks whenever an observed object is mutated.
-
-Note that handlers are written separately from the main hyperactiv codebase and need to be imported from a separate path.
 
 ```js
 import handlers from 'hyperactiv/handlers'
@@ -545,6 +543,8 @@ Or alternatively if you prefer script tags :
 ```js
 const { ... } = window['hyperactiv-handlers']
 ```
+
+__Note__: Handlers are written separately from the main hyperactiv codebase and need to be imported from a separate path.
 
 #### write
 
