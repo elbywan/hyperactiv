@@ -394,9 +394,9 @@ console.log(obj.sum) // -> 4
 Ground up support for reactive class models using mixins
 
 ```javascript
-class SomeClass extends Computed(Observable(Object)) {
-    constructor() {
-        super()
+class SomeClass extends Computable(Observable(Object)) {
+    constructor(data, opts) {
+        super(data, opts)
     
         this.value = 10 // writes to observed object automagically
     }
