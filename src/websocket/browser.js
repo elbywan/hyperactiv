@@ -5,7 +5,7 @@ export default (url, obj, debug, timeout) => {
     let id = 0
     ws.addEventListener('message', msg => {
         msg = JSON.parse(msg.data)
-        if(debug) console.debug(msg)
+        if(debug) debug(msg)
         if(msg.type == 'sync') {
             if(typeof obj === 'function') {
                 obj = obj(msg.state)
@@ -29,7 +29,7 @@ export default (url, obj, debug, timeout) => {
         } else if(msg.type == 'response') {
             cbs[msg.request](msg.result)
             delete cbs[msg.request]
-        } else console.warn('Unrecognized message ' + (msg.type || msg))
+        }
     })
 
     ws.addEventListener('open', () => ws.send('sync'))
