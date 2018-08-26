@@ -47,26 +47,27 @@ class App extends PureComponent {
         )
     }
 
-    render() {
-        const watchedRender = () => {
-            console.log('(update) App')
-            const { total, completed, active } = {
-                total: store.todos.length,
-                completed: store.todos.filter(_ => _.completed).length,
-                active: store.todos.filter(_ => !_.completed).length
-            }
-            return (
-                <div>
-                    <div className="counters">
-                        There is a { this.renderFilter('total', false) } of { total } todo(s).
-                        ({ completed } { this.renderFilter('completed') }, { active } { this.renderFilter('active') })
-                    </div>
-                    <Todos />
-                </div>
-            )
+    watchedRender = () => {
+        console.log('(update) App')
+        const { total, completed, active } = {
+            total: store.todos.length,
+            completed: store.todos.filter(_ => _.completed).length,
+            active: store.todos.filter(_ => !_.completed).length
         }
         return (
-            <Watch render={ watchedRender } />
+            <div>
+                <div className="counters">
+                    There is a { this.renderFilter('total', false) } of { total } todo(s).
+                    ({ completed } { this.renderFilter('completed') }, { active } { this.renderFilter('active') })
+                </div>
+                <Todos />
+            </div>
+        )
+    }
+
+    render() {
+        return (
+            <Watch render={ this.watchedRender } />
         )
     }
 }
@@ -85,75 +86,81 @@ class NewTodoForm extends PureComponent {
         store.newTodoLabel = ''
     }
 
+    watchedRender = () => (
+        console.log('(update) NewTodoForm') ||
+        <form className="todo__form" onSubmit={ this.submitNewTodo }>
+            <input type="text"
+                placeholder="What should I do…"
+                name="todoname"
+                value={ store.newTodoLabel || '' }
+                onChange={ this.onNewTodoChange }/>
+        </form>
+    )
+
     render() {
         return (
-            <Watch render={ () =>
-                console.log('(update) NewTodoForm') ||
-                <form className="todo__form" onSubmit={ this.submitNewTodo }>
-                    <input type="text"
-                        placeholder="What should I do…"
-                        name="todoname"
-                        value={ store.newTodoLabel || '' }
-                        onChange={ this.onNewTodoChange }/>
-                </form>
-            } />
+            <Watch render={ this.watchedRender } />
         )
     }
 }
 
 class Todos extends PureComponent {
+
+    watchedRender = () => {
+        console.log('(update) Todos')
+
+        const todosList = store.todos.reduce((acc, todo) => {
+            if(
+                !store.filterTodos ||
+                store.filterTodos === 'completed' && todo.completed ||
+                store.filterTodos === 'active' && !todo.completed
+            ) {
+                acc.push(<Todo key={todo.id} todo={ todo } />)
+            }
+            return acc
+        }, [])
+
+        return (
+            <Fragment>
+                <div className="buttons__bar">
+                    <button className="button--unstyled" onClick={ addTodo }>
+                        Add todo
+                    </button>
+                    <button className="button--unstyled" onClick={ completeAll }>
+                        Toggle completion
+                    </button>
+                    <button className="button--unstyled" onClick={ clearCompleted }>
+                        Clear completed
+                    </button>
+                </div>
+                <NewTodoForm />
+                <ul>
+                    { todosList.length > 0 ?
+                        todosList :
+                        <div className="placeholder-text">
+                            <span>There are no </span>
+                            <span>{store.filterTodos || ''} </span>
+                            <span>todos!</span>
+                        </div>
+                    }
+                </ul>
+            </Fragment>
+        )
+    }
+
     render() {
         return (
-            <Watch render={ () => {
-                console.log('(update) Todos')
-
-                const todosList = store.todos.reduce((acc, todo) => {
-                    if(
-                        !store.filterTodos ||
-                        store.filterTodos === 'completed' && todo.completed ||
-                        store.filterTodos === 'active' && !todo.completed
-                    ) {
-                        acc.push(<Todo key={todo.id} todo={ todo } />)
-                    }
-                    return acc
-                }, [])
-
-                return (
-                    <Fragment>
-                        <div className="buttons__bar">
-                            <button className="button--unstyled" onClick={ addTodo }>
-                                Add todo
-                            </button>
-                            <button className="button--unstyled" onClick={ completeAll }>
-                                Toggle completion
-                            </button>
-                            <button className="button--unstyled" onClick={ clearCompleted }>
-                                Clear completed
-                            </button>
-                        </div>
-                        <NewTodoForm />
-                        <ul>
-                            { todosList.length > 0 ?
-                                todosList :
-                                <div className="placeholder-text">
-                                    <span>There are no </span>
-                                    <span>{store.filterTodos || ''} </span>
-                                    <span>todos!</span>
-                                </div>
-                            }
-                        </ul>
-                    </Fragment>
-                )
-            }} />
+            <Watch render={ this.watchedRender } />
         )
     }
 }
 
 class Todo extends PureComponent {
-    render() {
+
+    watchedRender = () => {
         const { todo } = this.props
-        return <Watch render={ () =>
-            console.log('(update) Todo ', JSON.stringify(todo)) ||
+        console.log('(update) Todo ', JSON.stringify(todo))
+        return (
             <div className="todo__bar">
                 <input type="text"
                     className={ todo.completed ? 'done' : '' }
@@ -162,7 +169,11 @@ class Todo extends PureComponent {
                 <button onClick={ () => removeTodo(todo) } className="button--unstyled">✖</button>
                 <input type="checkbox" checked={todo.completed} onChange={ () => todo.completed = !todo.completed } />
             </div>
-        } />
+        )
+    }
+
+    render() {
+        return <Watch render={ this.watchedRender } />
     }
 }
 
