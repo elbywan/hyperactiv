@@ -1,4 +1,4 @@
-import uglify from 'rollup-plugin-uglify'
+import { uglify } from 'rollup-plugin-uglify'
 import { minify } from 'uglify-es'
 
 export default {
@@ -6,7 +6,8 @@ export default {
     output: {
         file: 'handlers/index.js',
         format: 'umd',
-        name: 'hyperactiv-handlers'
+        name: 'hyperactiv-handlers',
+        sourcemap: true
     },
     plugins: [
         uglify({}, minify)

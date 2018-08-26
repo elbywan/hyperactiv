@@ -1,4 +1,4 @@
-import uglify from 'rollup-plugin-uglify'
+import { uglify } from 'rollup-plugin-uglify'
 import { minify } from 'uglify-es'
 
 export default {
@@ -9,14 +9,17 @@ export default {
         name: 'react-hyperactiv',
         globals: {
             react: 'React',
-            'react-dom': 'ReactDOM'
-        }
+            'react-dom': 'ReactDOM',
+            hyperactiv: 'hyperactiv'
+        },
+        sourcemap: true
     },
     plugins: [
         uglify({}, minify)
     ],
     external: [
         'react',
-        'react-dom'
+        'react-dom',
+        'hyperactiv'
     ]
 }

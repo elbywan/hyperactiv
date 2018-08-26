@@ -36,6 +36,11 @@
     margin: 0px;
 }
 
+#todos-root ul div.placeholder-text {
+    margin-top: 10px;
+    color: #666;
+}
+
 div.counters {
     padding: 15px;
     background: #EEE;

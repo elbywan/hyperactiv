@@ -5,6 +5,7 @@
     <a href="https://www.npmjs.com/package/hyperactiv"><img alt="npm-badge" src="https://img.shields.io/npm/v/hyperactiv.svg?colorB=ff733e" height="20"></a>
     <a href="https://travis-ci.org/elbywan/hyperactiv"><img alt="travis-badge" src="https://travis-ci.org/elbywan/hyperactiv.svg?branch=master"></a>
     <a href='https://coveralls.io/github/elbywan/hyperactiv?branch=master'><img src='https://coveralls.io/repos/github/elbywan/hyperactiv/badge.svg?branch=master' alt='Coverage Status' /></a>
+    <a href="https://bundlephobia.com/result?p=hyperactiv"><img src='https://img.shields.io/bundlephobia/minzip/hyperactiv.svg'/></a>
     <a href="https://github.com/elbywan/hyperactiv/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="license-badge" height="20"></a>
 </h1>
 
@@ -15,7 +16,7 @@
 
 ## Description
 
-Hyperactiv is a super small (~ 150 lines of code) library which **observes** object mutations and **computes** functions depending on those changes.
+Hyperactiv is a super small (< 1kb minzipped) library which **observes** object mutations and **computes** functions depending on those changes.
 
 In other terms, whenever an *observed object property* is **mutated**, the *computed functions* that **depend** on this property will be **called**.
 
@@ -367,7 +368,7 @@ The components are rendered in a smart fashion, meaning only when they depend on
 ```js
 // Import the helpers
 import reactHyperactiv from 'hyperactiv/react'
-const { watch, store } = reactHyperactiv
+const { Watch, store } = reactHyperactiv
 ```
 
 Alternatively, if you prefer script tags :
@@ -377,37 +378,39 @@ Alternatively, if you prefer script tags :
 ```
 
 ```js
-const { watch, store } = window['react-hyperactiv']
+const { Watch, store } = window['react-hyperactiv']
 ```
 
 Then :
 
 ```js
-// Store.
-
 const appStore = store({
     firstName: 'Igor',
     lastName: 'Gonzola'
 })
 
-// Base component.
-
-class _App extends React.Component {
+class App extends React.Component {
     render() {
         return (
-             <div>
-                { /* Whenever these inputs are changed, the store will update and the component will re-render. */ }
-                <input type="text" value={ appStore.firstName } onChange={ e => appStore.firstName = e.target.value } />
-                <input type="text" value={ appStore.lastName } onChange={ e => appStore.lastName = e.target.value } />
-                <div>Hello, { appStore.firstName } { appStore.lastName } !</div>
-            </div>
+            <Watch render={ () =>
+                <div>
+                    { /* Whenever these inputs are changed, the store will update and the component will re-render. */ }
+                    <input
+                        value={ appStore.firstName }
+                        onChange={ e => appStore.firstName = e.target.value }
+                    />
+                    <input
+                        value={ appStore.lastName }
+                        onChange={ e => appStore.lastName = e.target.value }
+                    />
+                    <div>
+                        Hello, { appStore.firstName } { appStore.lastName } !
+                    </div>
+                </div>
+            } />
         )
     }
 }
-
-// Watched component.
-
-const App = watch(_App)
 ```
 
 #### Catch the chain of mutated properties and perform an action

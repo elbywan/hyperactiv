@@ -19,7 +19,7 @@
     "build": "rollup -c config/rollup.config.js && npm run build:handlers && npm run build:react",
     "build:handlers": "rollup -c config/rollup.handlers.config.js",
     "build:react": "rollup -c config/rollup.react.config.js",
-    "test": "rollup -c config/rollup.config.js -o ./dist/hyperactiv.map.js -m inline && rollup -c config/rollup.handlers.config.js -o ./handlers/handlers.map.js -m inline && jest --coverage --mapCoverage",
+    "test": "rollup -c config/rollup.config.js -o ./dist/hyperactiv.map.js -m inline && rollup -c config/rollup.handlers.config.js -o ./handlers/handlers.map.js -m inline && jest --coverage",
     "coverage": "cat ./coverage/lcov.info | coveralls",
     "clean": "rimraf {dist,react,handlers}"
   },
@@ -33,18 +33,18 @@
   "author": "Julien Elbaz",
   "license": "MIT",
   "devDependencies": {
-    "babel-eslint": "^8.2.1",
-    "coveralls": "^3.0.0",
-    "eslint": "^4.18.1",
-    "eslint-plugin-jest": "^21.6.2",
-    "eslint-plugin-react": "^7.6.1",
-    "jest": "^22.0.4",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "babel-eslint": "^8.2.6",
+    "coveralls": "^3.0.2",
+    "eslint": "^5.4.0",
+    "eslint-plugin-jest": "^21.22.0",
+    "eslint-plugin-react": "^7.11.1",
+    "jest": "^23.5.0",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
     "rimraf": "^2.6.2",
-    "rollup": "^0.53.2",
-    "rollup-plugin-uglify": "^2.0.1",
-    "uglify-es": "^3.3.4"
+    "rollup": "^0.65.0",
+    "rollup-plugin-uglify": "^4.0.0",
+    "uglify-es": "^3.3.9"
   },
   "dependencies": {}
 }
