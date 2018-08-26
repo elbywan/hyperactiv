@@ -1,18 +1,19 @@
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import { observe, computed, dispose } from 'hyperactiv'
 
-export class Watch extends Component {
+export class Watch extends PureComponent {
     constructor(props) {
         super(props)
         this.state = {}
     }
     componentWillUnmount() {
-        this.__unmounted = true
+        this.__mounted = false
         if(this.state.render) {
             dispose(this.state.render)
         }
     }
     componentDidMount() {
+        this.__mounted = true
         this.refreshWatcherInState()
     }
     componentDidUpdate(prevProps) {
@@ -27,7 +28,7 @@ export class Watch extends Component {
                 render: computed(this.props.render, {
                     autoRun: false,
                     callback: () => {
-                        !this.__unmounted &&
+                        this.__mounted &&
                         this.forceUpdate.bind(this)()
                     }
                 })

@@ -3,11 +3,13 @@
   "version": "0.3.0",
   "description": "Super small observable & reactive objects library.",
   "main": "dist/index.js",
+  "module": "src/index.js",
   "repository": "https://github.com/elbywan/hyperactiv",
   "bugs": {
     "url": "https://github.com/elbywan/hyperactiv/issues"
   },
   "files": [
+    "src",
     "dist",
     "handlers",
     "react"
