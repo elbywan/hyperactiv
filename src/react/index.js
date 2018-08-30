@@ -1,5 +1,7 @@
 import React, { PureComponent, Fragment } from 'react'
-import { observe, computed, dispose } from 'hyperactiv'
+import hyperactiv from 'hyperactiv'
+
+const { observe, computed, dispose } = hyperactiv
 
 export class Watch extends PureComponent {
     constructor(props) {
@@ -46,5 +48,5 @@ export class Watch extends PureComponent {
 }
 
 export const store = function(obj, options = {}) {
-    return observe(obj, { deep: true, batch: true, ...options })
+    return observe(obj, Object.assign({ deep: true, batch: true }, options))
 }

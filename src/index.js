@@ -167,10 +167,10 @@ function observe(obj, options = {}) {
 
     if(bind) {
         // Need this for binding es6 classes methods which are stored in the object prototype
-        const methods = [
-            ...Object.getOwnPropertyNames(obj),
-            ...Object.getOwnPropertyNames(Object.getPrototypeOf(obj))
-        ].filter(prop => prop !== 'constructor' && typeof obj[prop] === 'function')
+        const methods =
+            Object.getOwnPropertyNames(obj)
+                .concat(Object.getOwnPropertyNames(Object.getPrototypeOf(obj)))
+                .filter(prop => prop !== 'constructor' && typeof obj[prop] === 'function')
         methods.forEach(key => obj[key] = obj[key].bind(proxy))
     }
 
