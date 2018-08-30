@@ -18,9 +18,37 @@
 
 Hyperactiv is a super small (< 1kb minzipped) library which **observes** object mutations and **computes** functions depending on those changes.
 
-In other terms, whenever an *observed object property* is **mutated**, the *computed functions* that **depend** on this property will be **called**.
+In other terms whenever a property from an observed object is **mutated**, every function that **depend** on this property are **called** right away.
 
-Of course, Hyperactiv **automatically** handles these dependencies so you **never** have to explicitly declare which *computed function* depends on which *observed property*.
+Of course, Hyperactiv **automatically** handles these dependencies so you **never** have to explicitly declare anything. ✨
+
+----
+
+#### Minimal working example
+
+```js
+import hyperactiv from "hyperactiv"
+const { observe, compute } = hyperactiv
+
+// This object is observed.
+const observed = observe({ a: 1, b: 2, c: 0 })
+
+// This function depends on properties 'a' and 'b'.
+computed(() => {
+    const { a, b } = observed
+    console.log(`<- a + b = ${a + b}`)
+})
+// <- a + b = 3
+
+// Whenever properties 'a' or 'b' are mutated…
+observed.a = 2
+// The function will be automagically be called.
+// <- a + b = 4
+observed.b = 3
+// <- a + b = 5
+observed.c = 1
+// No function depend on 'c', so nothing will happen.
+```
 
 ## Demo
 
@@ -61,7 +89,7 @@ const { computed, observe, dispose } = hyperactiv
 
 ## Usage
 
-#### Observe object and arrays
+#### 1. Observe object and arrays
 
 ```js
 const observedObject = observe({ a: 5, b: 4 })
@@ -72,12 +100,13 @@ const observedObject = observe({ a: 5, b: 4 })
 const observedArray = observe([ 3, 2, 1 ], { deep: true })
 ```
 
-#### Define computed functions
+#### 2. Define computed functions
 
 ```js
 let result = 0
 
-// This function calculates the sum of observedObject and observedArrayvalues, which is 5 + 4 + 3 + 2 + 1 = 15 at this point.
+// This function calculates the sum of observedObject and observedArray values,
+// which is 5 + 4 + 3 + 2 + 1 = 15 at this point.
 
 const computedFunction = computed(() => {
     result = [ ...Object.values(observedObject), ...observedArray].reduce((acc, curr) => acc + curr)
@@ -93,7 +122,7 @@ console.log(result) // -> 15
 const _ = computed(() => {}, { autoRun: false })
 ```
 
-#### Mutate observed properties
+#### 3. Mutate observed properties
 
 ```js
 // computedFunction will be called each time one of its dependencies is changed.
@@ -111,7 +140,7 @@ observedArray.pop()
 console.log(result) // -> 17
 ```
 
-#### Release computed functions
+#### 4. Release computed functions
 
 ```js
 // Observed objects store computed function references in a Set, so you need to
