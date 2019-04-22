@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="../dist/hyperactiv.map.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/proxy-polyfill@0.3.0/proxy.min.js"></script>
+    <script src="../es5/index.js"></script>
     <title>Test hyperactiv</title>
 </head>
 <body>
@@ -19,20 +20,18 @@
     </div>
 
     <script>
-        window.onload = () => {
-            const { observe, computed } = hyperactiv
-
+        window.onload = function() {
             const eltA = document.getElementById("A")
             const eltB = document.getElementById("B")
 
-            const obj = observe({
+            const obj = hyperactiv.observe({
                 a: +(eltA.value),
                 b: +(eltB.value)
             })
             eltA.onchange = function() { obj.a = +(this.value) }
             eltB.onchange = function() { obj.b = +(this.value) }
 
-            computed(() => {
+            hyperactiv.computed(function() {
                 document.getElementById("result").innerText = obj.a + obj.b
             }, true)
         }
