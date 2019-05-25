@@ -1,5 +1,4 @@
-import uglify from 'rollup-plugin-uglify'
-import { minify } from 'uglify-es'
+import { terser } from 'rollup-plugin-terser'
 
 export default {
     input: './src/mixins.js',
@@ -9,6 +8,6 @@ export default {
         name: 'hyperactiv-mixins'
     },
     plugins: [
-        uglify({}, minify)
+        terser()
     ]
 }

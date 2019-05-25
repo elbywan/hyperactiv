@@ -1,5 +1,4 @@
-import uglify from 'rollup-plugin-uglify'
-import { minify } from 'uglify-es'
+import { terser } from 'rollup-plugin-terser'
 
 export default [
     {
@@ -10,7 +9,7 @@ export default [
             name: 'hyperactiv-websocket'
         },
         plugins: [
-            uglify({}, minify)
+            terser()
         ]
     },
     {
