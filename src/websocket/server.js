@@ -7,12 +7,11 @@ function send(socket, obj) {
     socket.send(JSON.stringify(obj))
 }
 
-function findRemoteMethods(obj, stack, methods) {
-    if(!stack) stack = [ ]
-    if(!methods) methods = [ ]
+function findRemoteMethods(obj, stack = [], methods = []) {
     if(typeof obj === 'object') {
         if(obj.__remoteMethods) {
-            if(!Array.isArray(obj.__remoteMethods)) obj.__remoteMethods = [ obj.__remoteMethods ]
+            if(!Array.isArray(obj.__remoteMethods))
+                obj.__remoteMethods = [ obj.__remoteMethods ]
             obj.__remoteMethods.forEach(method => {
                 stack.push(method)
                 methods.push(stack.slice(0))
@@ -32,7 +31,7 @@ function findRemoteMethods(obj, stack, methods) {
 
 function server(wss) {
     wss.host = (data, options) => {
-        const obj = observe(data || { }, options || { deep: true, batch: true, bubble: true })
+        const obj = observe(data || {}, options || { deep: true, batch: true, bubble: true })
         obj.__handler = (keys, value, old) => {
             wss.clients.forEach(client => {
                 if(client.readyState === 1) {
@@ -44,11 +43,11 @@ function server(wss) {
         wss.on('connection', socket => {
             socket.on('error', () => null)
             socket.on('message', async message => {
-                if(message == 'sync') {
+                if(message === 'sync') {
                     send(socket, { type: 'sync', state: obj, methods: findRemoteMethods(obj) })
                 } else {
                     message = JSON.parse(message)
-                    if(message.type && message.type == 'call') {
+                    if(message.type && message.type === 'call') {
                         let cxt = obj, result = null
                         message.keys.forEach(key => cxt = cxt[key])
                         try {
@@ -72,19 +71,22 @@ function client(ws, obj) {
     const update = handlers.write(obj)
     ws.on('message', msg => {
         msg = JSON.parse(msg)
-        if(msg.type == 'sync') {
+        if(msg.type === 'sync') {
             if(obj && typeof obj === 'function') {
-                obj = observe(obj(msg.value), { deep: true, batch: true })
-            } else if(obj == null) obj = observe(msg.value, { deep: true, batch: true })
-            else Object.assign(obj, msg.value)
+                obj = observe(obj(msg.state), { deep: true, batch: true })
+            } else if(!obj) {
+                obj = observe(msg.state, { deep: true, batch: true })
+            } else {
+                Object.assign(obj, msg.state)
+            }
             msg.methods.forEach(keys => update(keys, async (...args) => {
                 const promise = cbs[id] = new Promise()
                 send(ws, { type: 'call', keys: keys, args: args, request: id++ })
                 return promise
             }))
-        } else if(msg.type == 'update') {
+        } else if(msg.type === 'update') {
             update(msg.keys, msg.value)
-        } else if(msg.type == 'response') {
+        } else if(msg.type === 'response') {
             cbs[msg.request].resolve(msg.result)
             delete cbs[msg.request]
         }

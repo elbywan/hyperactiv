@@ -96,13 +96,13 @@ export function observe(obj, options = {}) {
                 defineBubblingProperties(obj[prop], prop, obj)
             }
 
-            // If handler, invoke callback; if a handler explicitly returns 'false' then stop propogation, like jQuery
+            // If handler, invoke callback; if a handler explicitly returns 'false' then stop propagation
             if(!obj.__handler || obj.__handler([ prop ], value, oldValue, proxy) !== false) {
-                // Continue propogation, traversing the mutated property's object hierarchy & call any __handlers along the way
+                // Continue propagation, traversing the mutated property's object hierarchy & call any __handlers along the way
                 const ancestry = [ obj.__key, prop ]
                 let parent = obj.__parent
                 while(parent) {
-                    // If a handler explicitly returns 'false' then stop propogation, like jQuery
+                    // If a handler explicitly returns 'false' then stop propagation
                     if(parent.__handler && parent.__handler(ancestry, value, oldValue, proxy) === false)
                         break
                     if(parent.__key && parent.__parent) {

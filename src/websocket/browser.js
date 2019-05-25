@@ -5,8 +5,9 @@ export default (url, obj, debug, timeout) => {
     let id = 0
     ws.addEventListener('message', msg => {
         msg = JSON.parse(msg.data)
-        if(debug) debug(msg)
-        if(msg.type == 'sync') {
+        if(debug)
+            debug(msg)
+        if(msg.type === 'sync') {
             if(typeof obj === 'function') {
                 obj = obj(msg.state)
             } else {
@@ -15,18 +16,18 @@ export default (url, obj, debug, timeout) => {
             if(Array.isArray(msg.methods)) {
                 msg.methods.forEach(keys => update(keys, async (...args) => {
                     ws.send(JSON.stringify({ type: 'call', keys: keys, args: args, request: ++id }))
-                    return new Promise((yes, no) => {
-                        cbs[id] = yes
+                    return new Promise((resolve, reject) => {
+                        cbs[id] = resolve
                         setTimeout(() => {
                             delete cbs[id]
-                            no(new Error('Timeout on call to ' + keys))
+                            reject(new Error('Timeout on call to ' + keys))
                         }, timeout || 15000)
                     })
                 }))
             }
-        } else if(msg.type == 'update') {
+        } else if(msg.type === 'update') {
             update(msg.keys, msg.value)
-        } else if(msg.type == 'response') {
+        } else if(msg.type === 'response') {
             cbs[msg.request](msg.result)
             delete cbs[msg.request]
         }
