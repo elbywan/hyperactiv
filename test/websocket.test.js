@@ -96,3 +96,7 @@ test('Call remote functions', async () => {
     expect(bPlusOne).toBe(7)
     return expect(clientObjects.one.nested.getError()).rejects.toMatch('bleh')
 })
+
+afterAll(() => {
+    wss.close()
+})
