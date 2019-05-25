@@ -18,6 +18,9 @@ export default [
             file: 'websocket/server.js',
             format: 'cjs',
             name: 'hyperactiv-websocket'
-        }
+        },
+        plugins: [
+            terser()
+        ]
     }
 ]

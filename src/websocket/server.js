@@ -41,22 +41,21 @@ function server(wss) {
         }
 
         wss.on('connection', socket => {
-            socket.on('error', () => null)
             socket.on('message', async message => {
                 if(message === 'sync') {
                     send(socket, { type: 'sync', state: obj, methods: findRemoteMethods(obj) })
                 } else {
                     message = JSON.parse(message)
-                    if(message.type && message.type === 'call') {
-                        let cxt = obj, result = null
-                        message.keys.forEach(key => cxt = cxt[key])
-                        try {
-                            result = await cxt(...message.args)
-                        } catch(ex) {
-                            result = ex
-                        }
-                        send(socket, { type: 'response', result: result, request: message.request })
+                    // if(message.type && message.type === 'call') {
+                    let cxt = obj, result = null, error = null
+                    message.keys.forEach(key => cxt = cxt[key])
+                    try {
+                        result = await cxt(...message.args)
+                    } catch(err) {
+                        error = err.message
                     }
+                    send(socket, { type: 'response', result, error, request: message.request })
+                    // }
                 }
             })
         })
@@ -65,29 +64,27 @@ function server(wss) {
     return wss
 }
 
-let id = 1
-const cbs = {}
-function client(ws, obj) {
-    const update = handlers.write(obj)
+function client(ws, obj = {}) {
+    let id = 1
+    const cbs = {}
     ws.on('message', msg => {
         msg = JSON.parse(msg)
         if(msg.type === 'sync') {
-            if(obj && typeof obj === 'function') {
-                obj = observe(obj(msg.state), { deep: true, batch: true })
-            } else if(!obj) {
-                obj = observe(msg.state, { deep: true, batch: true })
-            } else {
-                Object.assign(obj, msg.state)
-            }
-            msg.methods.forEach(keys => update(keys, async (...args) => {
-                const promise = cbs[id] = new Promise()
-                send(ws, { type: 'call', keys: keys, args: args, request: id++ })
-                return promise
-            }))
+            Object.assign(obj, msg.state)
+            msg.methods.forEach(keys => handlers.write(obj)(keys, async (...args) =>
+                new Promise((resolve, reject) => {
+                    cbs[id] = { resolve, reject }
+                    send(ws, { type: 'call', keys: keys, args: args, request: id++ })
+                })
+            ))
         } else if(msg.type === 'update') {
-            update(msg.keys, msg.value)
+            handlers.write(obj)(msg.keys, msg.value)
         } else if(msg.type === 'response') {
-            cbs[msg.request].resolve(msg.result)
+            if(msg.error) {
+                cbs[msg.request].reject(msg.error)
+            } else {
+                cbs[msg.request].resolve(msg.result)
+            }
             delete cbs[msg.request]
         }
     })

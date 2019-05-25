@@ -8,16 +8,12 @@ export default (url, obj, debug, timeout) => {
         if(debug)
             debug(msg)
         if(msg.type === 'sync') {
-            if(typeof obj === 'function') {
-                obj = obj(msg.state)
-            } else {
-                Object.assign(obj, msg.state)
-            }
+            Object.assign(obj, msg.state)
             if(Array.isArray(msg.methods)) {
                 msg.methods.forEach(keys => update(keys, async (...args) => {
                     ws.send(JSON.stringify({ type: 'call', keys: keys, args: args, request: ++id }))
                     return new Promise((resolve, reject) => {
-                        cbs[id] = resolve
+                        cbs[id] = { resolve, reject }
                         setTimeout(() => {
                             delete cbs[id]
                             reject(new Error('Timeout on call to ' + keys))
@@ -28,7 +24,11 @@ export default (url, obj, debug, timeout) => {
         } else if(msg.type === 'update') {
             update(msg.keys, msg.value)
         } else if(msg.type === 'response') {
-            cbs[msg.request](msg.result)
+            if(msg.error) {
+                cbs[msg.request].reject(msg.error)
+            } else {
+                cbs[msg.request].resolve(msg.result)
+            }
             delete cbs[msg.request]
         }
     })
