@@ -27,7 +27,7 @@ Of course, Hyperactiv **automatically** handles these dependencies so you **neve
 #### Minimal working example
 
 ```js
-import hyperactiv from "hyperactiv"
+import hyperactiv from 'hyperactiv'
 const { observe, compute } = hyperactiv
 
 // This object is observed.
@@ -65,8 +65,6 @@ npm i hyperactiv
 ```html
 <script src="https://unpkg.com/hyperactiv"></script>
 ```
-
-For react users, see [hyperactiv/react](https://github.com/elbywan/hyperactiv#react-store).
 
 ## Import
 
@@ -148,6 +146,26 @@ console.log(result) // -> 17
 
 dispose(computedFunction)
 ```
+
+## Addons
+
+#### Additional features that you can import from a sub path.
+
+- **[hyperactiv/react](https://github.com/elbywan/hyperactiv/tree/master/src/react)**
+
+*A simple but clever react store.*
+
+- **[hyperactiv/handlers](https://github.com/elbywan/hyperactiv/tree/master/src/handlers)**
+
+*Utility callbacks triggered when a property is mutated.*
+
+- **[hyperactiv/classes](https://github.com/elbywan/hyperactiv/tree/master/src/classes)**
+
+*An Observable class.*
+
+- **[hyperactiv/websocket](https://github.com/elbywan/hyperactiv/tree/master/src/websocket)**
+
+*Hyperactiv websocket implementation.*
 
 ## Code samples
 
@@ -337,9 +355,9 @@ console.log(object.sum) // -> 3
 #### Automatically bind methods
 
 ```javascript
-let obj = new SomeClass();
-obj = observe(obj, { bind: true });
-obj.someMethodThatMutatesObjUsingThis();
+let obj = new SomeClass()
+obj = observe(obj, { bind: true })
+obj.someMethodThatMutatesObjUsingThis()
 // observe sees all!
 ```
 
@@ -389,83 +407,6 @@ obj.a = 2
 console.log(obj.sum) // -> 4
 ```
 
-#### React store
-
-Hyperactiv contains built-in helpers to easily create a reactive store which re-renders your React components.
-The components are rendered in a smart fashion, meaning only when they depend on any part of store that has been modified.
-
-```js
-// Import the helpers
-import reactHyperactiv from 'hyperactiv/react'
-const { Watch, store } = reactHyperactiv
-```
-
-Alternatively, if you prefer script tags :
-
-```html
-<script src="https://unpkg.com/hyperactiv/react/index.js"></script>
-```
-
-```js
-const { Watch, store } = window['react-hyperactiv']
-```
-
-Then :
-
-```js
-const appStore = store({
-    firstName: 'Igor',
-    lastName: 'Gonzola'
-})
-
-class App extends React.Component {
-    render() {
-        return (
-            <Watch render={ () =>
-                <div>
-                    { /* Whenever these inputs are changed, the store will update and the component will re-render. */ }
-                    <input
-                        value={ appStore.firstName }
-                        onChange={ e => appStore.firstName = e.target.value }
-                    />
-                    <input
-                        value={ appStore.lastName }
-                        onChange={ e => appStore.lastName = e.target.value }
-                    />
-                    <div>
-                        Hello, { appStore.firstName } { appStore.lastName } !
-                    </div>
-                </div>
-            } />
-        )
-    }
-}
-```
-
-#### Catch the chain of mutated properties and perform an action
-
-```js
-const object = { a: { b: [ { c: 1 } ]}}
-
-const handler = function(keys, value) {
-    console.log('The handler is triggered after each mutation')
-    console.log('The mutated keys are :')
-    console.log(keys)
-    console.log('The new value is :')
-    console.log(value)
-}
-
-// The deep flag ensures that the handler will be triggered when the mutation happens in a nested array/object
-const observer = observe(object, { handler, deep: true })
-object.a.b[0].c = 'value'
-
-// The handler is triggered after each mutation
-// The mutated keys are :
-// [ 'a', 'b', '0', 'c']
-// The new value is :
-// 'value'
-```
-
 ## API
 
 ### observe
@@ -478,8 +419,7 @@ observe(Object | Array, {
     ignore: String[],
     batch: boolean,
     deep: boolean,
-    bind: boolean,
-    handler: function
+    bind: boolean
 }) => Proxy
 ```
 
@@ -504,10 +444,6 @@ Observe nested objects and when setting new properties.
 - `bind: boolean`
 
 Automatically bind methods to the observed object.
-
-- `handler: Function(ancestry: String[], value: Object, originalObject: Object)`
-
-Callback performed whenever the observed object is mutated.
 
 ### computed
 
@@ -537,79 +473,4 @@ Will remove the computed function from the reactive Maps (the next time an bound
 
 ```ts
 dispose(Function) => void
-```
-
-### handlers
-
-Helper handlers used to perform various tasks whenever an observed object is mutated.
-
-Note that handlers are written separately from the main hyperactiv codebase and need to be imported from a separate path.
-
-```js
-import handlers from 'hyperactiv/handlers'
-```
-
-Or alternatively if you prefer script tags :
-
-```html
-<script src="https://unpkg.com/hyperactiv/handlers/index.js" ></script>
-```
-```js
-const { ... } = window['hyperactiv-handlers']
-```
-
-#### write
-
-Will generate a handler to transpose writes onto another object.
-
-```javascript
-import hyperactiv from 'hyperactiv'
-import handlers from 'hyperactiv/handlers'
-
-const { observe } = hyperactiv
-const { write } = handlers
-
-let copy = { }
-let obj = observe(obj, { handler: write(copy) })
-
-obj.a = 10
-copy.a === 10
-```
-
-#### debug
-
-Log mutations.
-
-```javascript
-import hyperactiv from 'hyperactiv'
-import handlers from 'hyperactiv/handlers'
-
-const { observe } = hyperactiv
-const { debug } = handlers
-
-let obj = observe({}, { handler: debug(console) })
-
-obj.a = 10
-
-// a = 10
-```
-
-#### all
-
-Run multiple handlers sequentially.
-
-```javascript
-import hyperactiv from 'hyperactiv'
-import handlers from 'hyperactiv/handlers'
-
-const { observe } = hyperactiv
-const { all, write, debug } = handlers
-
-let copy = {}, copy2 = {}, obj = observe({ observed: 'object' }, {
-    handler: all([
-        debug(),
-        write(copy),
-        write(copy2)
-    ])
-})
 ```

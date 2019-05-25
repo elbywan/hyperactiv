@@ -11,6 +11,7 @@ devDependencies:
   react-dom: 16.8.6
   rimraf: 2.6.3
   rollup: 1.12.3
+  ws: 7.0.0
 lockfileVersion: 5
 packages:
   /@babel/code-frame/7.0.0:
@@ -3993,6 +3994,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-jaHFD6PFv6UgoIVda6qZllptQsMlDEJkTQcybzzXDYM1XO9Y8em691FGMPmM46WGyLU4z9KMgQN+qrux/nhlHA==
+  /ws/7.0.0:
+    dependencies:
+      async-limiter: 1.0.0
+    dev: true
+    resolution:
+      integrity: sha512-cknCal4k0EAOrh1SHHPPWWh4qm93g1IuGGGwBjWkXmCG7LsDtL8w9w+YVfaF+KSVwiHQKDIMsSLBVftKf9d1pg==
   /xml-name-validator/3.0.0:
     dev: true
     resolution:
@@ -4037,3 +4044,4 @@ specifiers:
   rimraf: ^2.6.3
   rollup: ^1.12.3
   rollup-plugin-terser: ^5.0.0
+  ws: ^7.0.0
