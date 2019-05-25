@@ -16,7 +16,7 @@
 
 ## Description
 
-Hyperactiv is a super small (< 1kb minzipped) library which **observes** object mutations and **computes** functions depending on those changes.
+Hyperactiv is a super small (~ 1kb minzipped) library which **observes** object mutations and **computes** functions depending on those changes.
 
 In other terms whenever a property from an observed object is **mutated**, every function that **depend** on this property are **called** right away.
 

@@ -29,6 +29,9 @@ export function observe(obj, options = {}) {
     if(obj.__observed)
         return obj
 
+    // If the prop is explicitely not excluded
+    const isWatched = prop => (!props || props.includes(prop)) && (!ignore || !ignore.includes(prop))
+
     // Add the object to the observers map.
     // observersMap signature : Map<Object, Map<Property, Set<Computed function>>>
     // In other words, observersMap is a map of observed objects.
@@ -55,7 +58,7 @@ export function observe(obj, options = {}) {
                 return true
 
             // If the prop is watched
-            if((!props || props.includes(prop)) && (!ignore || !ignore.includes(prop))) {
+            if(isWatched(prop)) {
                 // If a computed function is being run
                 if(computedStack.length) {
                     const propertiesMap = observersMap.get(obj)
@@ -84,9 +87,8 @@ export function observe(obj, options = {}) {
 
             // Remove bubbling infrastructure and pass old value to handlers
             const oldValue = obj[prop]
-            if(isObj(oldValue)) {
+            if(isObj(oldValue))
                 delete obj[prop]
-            }
 
             // If the deep flag is set we observe the newly set value
             obj[prop] = deeper ? observe(value, options) : value
@@ -96,26 +98,23 @@ export function observe(obj, options = {}) {
                 defineBubblingProperties(obj[prop], prop, obj)
             }
 
-            // If handler, invoke callback; if a handler explicitly returns 'false' then stop propagation
-            if(!obj.__handler || obj.__handler([ prop ], value, oldValue, proxy) !== false) {
+            const ancestry = [ prop ]
+            let parent = obj
+            while(parent) {
+                // If a handler explicitly returns 'false' then stop propagation
+                if(parent.__handler && parent.__handler(ancestry, value, oldValue, proxy) === false)
+                    break
                 // Continue propagation, traversing the mutated property's object hierarchy & call any __handlers along the way
-                const ancestry = [ obj.__key, prop ]
-                let parent = obj.__parent
-                while(parent) {
-                    // If a handler explicitly returns 'false' then stop propagation
-                    if(parent.__handler && parent.__handler(ancestry, value, oldValue, proxy) === false)
-                        break
-                    if(parent.__key && parent.__parent) {
-                        ancestry.unshift(parent.__key)
-                        parent = parent.__parent
-                    } else {
-                        parent = null
-                    }
+                if(parent.__key && parent.__parent) {
+                    ancestry.unshift(parent.__key)
+                    parent = parent.__parent
+                } else {
+                    parent = null
                 }
             }
 
             // If the prop is watched
-            if((!props || props.includes(prop)) && (!ignore || !ignore.includes(prop))) {
+            if(isWatched(prop)) {
                 if(propertiesMap.has(prop)) {
                     // Retrieve the computed functions depending on the prop
                     const dependents = propertiesMap.get(prop)
@@ -132,15 +131,6 @@ export function observe(obj, options = {}) {
                 }
             }
 
-            return true
-        },
-        deleteProperty(_, prop) {
-            // Prevent bubbling mutations from stray objects
-            if(isObj(obj[prop]) && prop !== '__key' && prop !== '__parent') {
-                delete obj[prop].__key
-                delete obj[prop].__parent
-            }
-            delete obj[prop]
             return true
         }
     })
