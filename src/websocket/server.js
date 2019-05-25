@@ -1,5 +1,7 @@
-import { observe } from 'hyperactiv'
-import { write } from 'hyperactiv/handlers'
+import hyperactiv from '../index'
+import handlers from 'hyperactiv/handlers'
+
+const { observe } = hyperactiv
 
 function send(socket, obj) {
     socket.send(JSON.stringify(obj))
@@ -67,7 +69,7 @@ function server(wss) {
 let id = 1
 const cbs = { }
 function client(ws, obj) {
-    const update = write(obj)
+    const update = handlers.write(obj)
     ws.on('message', msg => {
         msg = JSON.parse(msg)
         if(msg.type == 'sync') {

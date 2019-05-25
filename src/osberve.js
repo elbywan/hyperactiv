@@ -5,7 +5,7 @@ import { batcher } from './batcher'
 const { isObj, defineBubblingProperties } = tools
 const { observersMap, computedStack } = data
 
-export function observe(obj, options = { }) {
+export function observe(obj, options = {}) {
     // 'deep' is slower but reasonable; 'shallow' a performance enhancement but with side-effects
     const {
         props = null, ignore = null, batch = false, deep = true, bubble = null, bind = false
@@ -59,7 +59,7 @@ export function observe(obj, options = { }) {
             } else {
                 const propertiesMap = observersMap.get(obj)
                 // If the new/old value are equal, return
-                if((!isArray(obj) || prop !== 'length') && obj[prop] === value) return true
+                if((!Array.isArray(obj) || prop !== 'length') && obj[prop] === value) return true
                 // Remove bubbling infrastructure and pass old value to handlers
                 const oldValue = obj[prop]
                 if(isObj(oldValue)) {
