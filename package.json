@@ -35,18 +35,18 @@
   "author": "Julien Elbaz",
   "license": "MIT",
   "devDependencies": {
-    "babel-eslint": "^8.2.6",
-    "coveralls": "^3.0.2",
-    "eslint": "^5.4.0",
-    "eslint-plugin-jest": "^21.22.0",
-    "eslint-plugin-react": "^7.11.1",
-    "jest": "^23.5.0",
-    "react": "^16.4.2",
-    "react-dom": "^16.4.2",
-    "rimraf": "^2.6.2",
-    "rollup": "^0.65.0",
-    "rollup-plugin-uglify": "^4.0.0",
-    "uglify-es": "^3.3.9"
+    "babel-eslint": "^10.0.1",
+    "coveralls": "^3.0.3",
+    "eslint": "^5.16.0",
+    "eslint-plugin-jest": "^22.6.4",
+    "eslint-plugin-react": "^7.13.0",
+    "jest": "^24.8.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "rimraf": "^2.6.3",
+    "rollup": "^1.12.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "rollup-plugin-terser": "^5.0.0"
+  }
 }

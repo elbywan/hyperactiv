@@ -1,5 +1,4 @@
-import { uglify } from 'rollup-plugin-uglify'
-import { minify } from 'uglify-es'
+import { terser } from 'rollup-plugin-terser'
 
 export default {
     input: './src/index.js',
@@ -10,6 +9,6 @@ export default {
         sourcemap: true
     },
     plugins: [
-        uglify({}, minify)
+        terser()
     ]
 }
