@@ -1,5 +1,5 @@
 import hyperactiv from '../index'
-import handlers from 'hyperactiv/handlers'
+import handlers from '../handlers/index'
 
 const { observe } = hyperactiv
 
