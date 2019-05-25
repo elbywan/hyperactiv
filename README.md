@@ -378,7 +378,7 @@ const obj = observe({
     doSum: function() {
         this.sum = this.a + this.b
     }
-}, { 
+}, {
     // Use the bind flag to bind doSum to the observed object.
     bind: true
 })
