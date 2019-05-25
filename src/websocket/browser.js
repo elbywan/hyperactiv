@@ -1,7 +1,7 @@
 import { writeHandler } from '../handlers/write'
 
 export default (url, obj, debug, timeout) => {
-    const cbs = { }, ws = new WebSocket(url || 'ws://localhost:8080'), update = writeHandler(obj)
+    const cbs = {}, ws = new WebSocket(url || 'ws://localhost:8080'), update = writeHandler(obj)
     let id = 0
     ws.addEventListener('message', msg => {
         msg = JSON.parse(msg.data)

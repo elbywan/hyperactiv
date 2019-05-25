@@ -27,7 +27,7 @@ Of course, Hyperactiv **automatically** handles these dependencies so you **neve
 #### Minimal working example
 
 ```js
-import hyperactiv from "hyperactiv"
+import hyperactiv from 'hyperactiv'
 const { observe, compute } = hyperactiv
 
 // This object is observed.
@@ -337,9 +337,9 @@ console.log(object.sum) // -> 3
 #### Automatically bind methods
 
 ```javascript
-let obj = new SomeClass();
-obj = observe(obj, { bind: true });
-obj.someMethodThatMutatesObjUsingThis();
+let obj = new SomeClass()
+obj = observe(obj, { bind: true })
+obj.someMethodThatMutatesObjUsingThis()
 // observe sees all!
 ```
 
@@ -391,15 +391,15 @@ console.log(obj.sum) // -> 4
 
 #### Reactive Classes
 
-Ground up support for reactive class models using mixins
+Ground up support for reactive class models using mixins.
 
 ```javascript
-const { Observable, Computable } = require("hyperactiv/mixins");
+const { Observable, Computable } = require('hyperactiv/mixins')
 
 class SomeClass extends Computable(Observable(Object)) {
     constructor(data, opts) {
         super(data, opts)
-    
+
         this.value = 10 // writes to observed object automagically
     }
 }
@@ -537,9 +537,11 @@ Observe nested objects and when setting new properties.
 
 - `bind: boolean`
 
-Bubble mutations up the object hierarchy, triggering handlers along the way.
+Automatically bind methods to the observed object.
 
 - `bubble: boolean`
+
+Bubble mutations up the object hierarchy, triggering handlers along the way.
 
 ### computed
 

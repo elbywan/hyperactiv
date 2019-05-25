@@ -1,11 +1,11 @@
 import { terser } from 'rollup-plugin-terser'
 
 export default {
-    input: './src/mixins.js',
+    input: './src/classes/index.js',
     output: {
-        file: 'mixins/index.js',
+        file: 'classes/index.js',
         format: 'umd',
-        name: 'hyperactiv-mixins'
+        name: 'hyperactiv-classes'
     },
     plugins: [
         terser()

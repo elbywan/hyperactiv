@@ -67,7 +67,7 @@ function server(wss) {
 }
 
 let id = 1
-const cbs = { }
+const cbs = {}
 function client(ws, obj) {
     const update = handlers.write(obj)
     ws.on('message', msg => {

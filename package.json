@@ -13,19 +13,19 @@
     "dist",
     "handlers",
     "react",
-    "mixins",
+    "classes",
     "websocket"
   ],
   "scripts": {
     "start": "npm run lint && npm run build && npm run test",
     "lint": "eslint ./src ./test",
     "lint:fix": "eslint --fix ./src ./test",
-    "build": "rollup -c config/rollup.config.js && npm run build:handlers && npm run build:react && npm run build:mixins && npm run build:websocket",
+    "build": "rollup -c config/rollup.config.js && npm run build:handlers && npm run build:react && npm run build:classes && npm run build:websocket",
     "build:handlers": "rollup -c config/rollup.handlers.config.js",
     "build:react": "rollup -c config/rollup.react.config.js",
-    "build:mixins": "rollup -c config/rollup.mixins.config.js",
+    "build:classes": "rollup -c config/rollup.classes.config.js",
     "build:websocket": "rollup -c config/rollup.websocket.config.js",
-    "test": "rollup -c config/rollup.config.js -o ./dist/hyperactiv.map.js -m inline && rollup -c config/rollup.handlers.config.js -o ./handlers/handlers.map.js -m inline && jest --coverage",
+    "test": "rollup -c config/rollup.config.js -o ./dist/hyperactiv.map.js -m inline && rollup -c config/rollup.handlers.config.js -o ./handlers/handlers.map.js -m inline && rollup -c config/rollup.classes.config.js -o ./classes/classes.map.js -m inline && jest --coverage",
     "coverage": "cat ./coverage/lcov.info | coveralls",
     "clean": "rimraf {dist,react,handlers}"
   },

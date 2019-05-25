@@ -3,7 +3,7 @@
 /dist
 /handlers
 /react
-/mixins
+/classes
 /websocket
 
 # Logs
