@@ -3,6 +3,8 @@
 /dist
 /handlers
 /react
+/mixins
+/websocket
 
 # Logs
 logs
