@@ -50,9 +50,7 @@
     "react-dom": "^16.8.6",
     "rimraf": "^2.6.3",
     "rollup": "^1.12.3",
+    "rollup-plugin-terser": "^5.0.0",
     "ws": "^7.0.0"
-  },
-  "dependencies": {
-    "rollup-plugin-terser": "^5.0.0"
   }
 }
