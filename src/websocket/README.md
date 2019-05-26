@@ -83,6 +83,7 @@ Reflect changes made to the server hosted object into the argument object.
 #### __remoteMethods
 
 Use the `__remoteMethods` key to mark methods and make them callable by the clients.
+Alternatively, you can use the `autoExportMethods` option to automatically mark every method as callable.
 
 **Example**
 
@@ -97,6 +98,11 @@ const hostedObject = {
     // Mark getA as callable by the clients
     __remoteMethods: [ 'getA' ]
 }
+
+wss.host(hostedObject)
+
+// OR, omit the __remoteMethods props and call:
+wss.host(hostedObject, { autoExportMethods: true })
 
 /* Client side */
 

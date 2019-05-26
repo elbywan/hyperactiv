@@ -97,6 +97,22 @@ test('Call remote functions', async () => {
     return expect(clientObjects.one.nested.getError()).rejects.toMatch('bleh')
 })
 
+test('autoExportMethods should declare remote methods automatically', async () => {
+    const wss = new WebSocket.Server({ port: 8081 })
+    const baseObj = { a: 1, getA() { return baseObj.a }}
+    const hosted = hyperactivServer(wss).host(baseObj, { autoExportMethods: true })
+    await sleep()
+    const client = hyperactivClient(new WebSocket('ws://localhost:8081'))
+    await sleep()
+    let a = await client.getA()
+    expect(a).toBe(1)
+    hosted.a = 2
+    await sleep()
+    a = await client.getA()
+    expect(a).toBe(2)
+    wss.close()
+})
+
 afterAll(() => {
     wss.close()
 })

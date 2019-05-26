@@ -7,21 +7,30 @@ function send(socket, obj) {
     socket.send(JSON.stringify(obj))
 }
 
-function findRemoteMethods(obj, stack = [], methods = []) {
-    if(typeof obj === 'object') {
-        if(obj.__remoteMethods) {
-            if(!Array.isArray(obj.__remoteMethods))
-                obj.__remoteMethods = [ obj.__remoteMethods ]
-            obj.__remoteMethods.forEach(method => {
+function findRemoteMethods({ target, autoExportMethods, stack = [], methods = [] }) {
+    if(typeof target === 'object') {
+        if(autoExportMethods) {
+            Object.entries(target).forEach(([key, value]) => {
+                if(typeof value === 'function') {
+                    stack.push(key)
+                    methods.push(stack.slice(0))
+                    stack.pop()
+                }
+
+            })
+        } else if(target.__remoteMethods) {
+            if(!Array.isArray(target.__remoteMethods))
+                target.__remoteMethods = [ target.__remoteMethods ]
+            target.__remoteMethods.forEach(method => {
                 stack.push(method)
                 methods.push(stack.slice(0))
                 stack.pop()
             })
         }
 
-        Object.keys(obj).forEach(key => {
+        Object.keys(target).forEach(key => {
             stack.push(key)
-            findRemoteMethods(obj[key], stack, methods)
+            findRemoteMethods({ target: target[key], autoExportMethods, stack, methods })
             stack.pop()
         })
     }
@@ -31,7 +40,9 @@ function findRemoteMethods(obj, stack = [], methods = []) {
 
 function server(wss) {
     wss.host = (data, options) => {
-        const obj = observe(data || {}, options || { deep: true, batch: true, bubble: true })
+        options = Object.assign({}, { deep: true, batch: true, bubble: true }, options || {})
+        const autoExportMethods = options.autoExportMethods
+        const obj = observe(data || {}, options)
         obj.__handler = (keys, value, old) => {
             wss.clients.forEach(client => {
                 if(client.readyState === 1) {
@@ -43,7 +54,7 @@ function server(wss) {
         wss.on('connection', socket => {
             socket.on('message', async message => {
                 if(message === 'sync') {
-                    send(socket, { type: 'sync', state: obj, methods: findRemoteMethods(obj) })
+                    send(socket, { type: 'sync', state: obj, methods: findRemoteMethods({ target: obj, autoExportMethods }) })
                 } else {
                     message = JSON.parse(message)
                     // if(message.type && message.type === 'call') {
