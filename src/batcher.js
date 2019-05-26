@@ -1,15 +1,16 @@
-export const batcher = {
-    timeout: null,
-    queue: new Set(),
-    process() {
-        for(const task of batcher.queue)
-            task()
-        batcher.queue.clear()
-        batcher.timeout = null
-    },
-    enqueue(task) {
-        if(batcher.timeout === null)
-            batcher.timeout = setTimeout(batcher.process, 0)
-        batcher.queue.add(task)
+let timeout = null
+const queue = new Set()
+function process() {
+    for(const task of queue) {
+        task()
     }
+    queue.clear()
+    timeout = null
 }
+
+export function enqueue(task) {
+    if(timeout === null)
+        timeout = setTimeout(process, 0)
+    queue.add(task)
+}
+

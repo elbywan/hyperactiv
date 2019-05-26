@@ -25,10 +25,10 @@
     "build:react": "rollup -c config/rollup.react.config.js",
     "build:classes": "rollup -c config/rollup.classes.config.js",
     "build:websocket": "rollup -c config/rollup.websocket.config.js",
-    "build:test": "rollup -c config/rollup.config.js -o ./dist/hyperactiv.map.js -m inline && rollup -c config/rollup.handlers.config.js -o ./handlers/handlers.map.js -m inline && rollup -c config/rollup.classes.config.js -o ./classes/classes.map.js -m inline && rollup -c config/rollup.websocket.config.js -o ./websocket/websocket.map.js -m inline",
+    "build:test": "env TEST_BUILD=1 npm run build && npm run build:handlers && npm run build:classes && npm run build:websocket",
     "test": "npm run build:test && jest --coverage",
     "coverage": "cat ./coverage/lcov.info | coveralls",
-    "clean": "rimraf {dist,react,handlers}"
+    "clean": "rimraf {dist,react,handlers,websocket,classes}"
   },
   "keywords": [
     "computed properties",

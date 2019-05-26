@@ -1,4 +1,4 @@
-const hyperactiv = require('../dist/hyperactiv.map.js')
+const hyperactiv = require('../dist/hyperactiv.js')
 const { computed, observe, dispose } = hyperactiv
 
 const delay = time => new Promise(resolve => setTimeout(resolve, time))
@@ -369,16 +369,17 @@ test('deep observe nested objects and new properties', () => {
 test('bind methods to the observed object', () => {
     const obj = observe({
         a: 1,
-        b: 2,
+        b: 1,
+        c: new Date(),
         doSum: function() {
             this.sum = this.a + this.b
         }
     }, { bind: true })
 
     obj.doSum = computed(obj.doSum)
-    expect(obj.sum).toBe(3)
+    expect(obj.sum).toBe(2)
     obj.a = 2
-    expect(obj.sum).toBe(4)
+    expect(obj.sum).toBe(3)
 })
 
 test('bind methods to the observed class', () => {

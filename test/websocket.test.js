@@ -1,6 +1,6 @@
 const WebSocket = require('ws')
-const hyperactivServer = require('../websocket/websocket.map.js').server
-const hyperactivClient = require('../websocket/websocket.map.js').client
+const hyperactivServer = require('../websocket/server.full.js').server
+const hyperactivClient = require('../websocket/server.full.js').client
 
 let wss = null
 let hostedObject = null

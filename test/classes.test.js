@@ -1,4 +1,4 @@
-const classes = require('../classes/classes.map.js')
+const classes = require('../classes/classes.js')
 const { Observable } = classes
 
 test('onChange should catch mutation', done => {

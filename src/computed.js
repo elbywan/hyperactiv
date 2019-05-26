@@ -1,11 +1,11 @@
-import data from './data'
+import { data } from './data'
 const { computedStack } = data
 
 export function computed(wrappedFunction, { autoRun = true, callback, bind } = {}) {
     // Proxify the function in order to intercept the calls
     const proxy = new Proxy(wrappedFunction, {
         apply(target, thisArg, argsList) {
-            const observeComputation = function(fun) {
+            function observeComputation(fun) {
                 // Store into the stack a reference to the computed function
                 computedStack.unshift(callback || proxy)
                 // Run the computed function - or the async function
@@ -26,8 +26,11 @@ export function computed(wrappedFunction, { autoRun = true, callback, bind } = {
             return observeComputation()
         }
     })
+
     // If autoRun, then call the function at once
-    if(autoRun)
+    if(autoRun) {
         proxy()
+    }
+
     return proxy
 }

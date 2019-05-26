@@ -1,13 +1,12 @@
-import { terser } from 'rollup-plugin-terser'
+import { IS_TEST_BUILD, plugins, sourcemap } from './common'
 
 export default {
     input: './src/classes/index.js',
     output: {
-        file: 'classes/index.js',
+        file: IS_TEST_BUILD ? 'classes/classes.js' : 'classes/index.js',
         format: 'umd',
-        name: 'hyperactiv-classes'
+        name: 'hyperactiv-classes',
+        sourcemap
     },
-    plugins: [
-        terser()
-    ]
+    plugins
 }

@@ -90,7 +90,7 @@ function client(ws, obj = {}) {
             ))
         } else if(msg.type === 'update') {
             handlers.write(obj)(msg.keys, msg.value)
-        } else if(msg.type === 'response') {
+        } else /* if(msg.type === 'response') */{
             if(msg.error) {
                 cbs[msg.request].reject(msg.error)
             } else {
