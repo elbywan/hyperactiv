@@ -10,7 +10,7 @@ The components are rendered in a smart fashion, meaning only when they depend on
 ```js
 // Import the helpers
 import reactHyperactiv from 'hyperactiv/react'
-const { Watch, store } = reactHyperactiv
+const { Watch, watch, store } = reactHyperactiv
 ```
 
 Alternatively, if you prefer script tags :
@@ -20,21 +20,77 @@ Alternatively, if you prefer script tags :
 ```
 
 ```js
-const { Watch, store } = window['react-hyperactiv']
+const { Watch, watch, store } = window['react-hyperactiv']
 ```
 
 ### Usage
+
+#### Store
 
 ```js
 const appStore = store({
     firstName: 'Igor',
     lastName: 'Gonzola'
 })
+```
 
+#### `watch` higher order component
+
+```js
+// Works with class components…
+const App = watch(class extends React.Component {
+    render() {
+        return (
+            <div>
+                { /* Whenever these inputs are changed, the store will update and the component will re-render. */ }
+                <input
+                    value={ appStore.firstName }
+                    onChange={ e => appStore.firstName = e.target.value }
+                />
+                <input
+                    value={ appStore.lastName }
+                    onChange={ e => appStore.lastName = e.target.value }
+                />
+                <div>
+                    Hello, { appStore.firstName } { appStore.lastName } !
+                </div>
+            </div>
+        )
+    }
+})
+
+// Or functional components.
+const App = watch(function App() {
+    render() {
+        return (
+            <div>
+                { /* Whenever these inputs are changed, the store will update and the component will re-render. */ }
+                <input
+                    value={ appStore.firstName }
+                    onChange={ e => appStore.firstName = e.target.value }
+                />
+                <input
+                    value={ appStore.lastName }
+                    onChange={ e => appStore.lastName = e.target.value }
+                />
+                <div>
+                    Hello, { appStore.firstName } { appStore.lastName } !
+                </div>
+            </div>
+        )
+    }
+})
+```
+
+#### `Watch` component
+
+The `<Watch render={() => { ... }} />` component watches the render function.
+
+```js
 class App extends React.Component {
     render() {
         return (
-            <Watch render={ () =>
+            <Watch render={() =>
                 <div>
                     { /* Whenever these inputs are changed, the store will update and the component will re-render. */ }
                     <input
