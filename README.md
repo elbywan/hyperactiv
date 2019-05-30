@@ -91,11 +91,7 @@ const { computed, observe, dispose } = hyperactiv
 
 ```js
 const observedObject = observe({ a: 5, b: 4 })
-
-// The 'deep' flag allow hyperactiv to observe properties as they are added to an object.
-// It is very useful for Arrays since keys are set dynamically as you add or remove elements.
-
-const observedArray = observe([ 3, 2, 1 ], { deep: true })
+const observedArray = observe([ 3, 2, 1 ])
 ```
 
 #### 2. Define computed functions
@@ -123,14 +119,12 @@ const _ = computed(() => {}, { autoRun: false })
 #### 3. Mutate observed properties
 
 ```js
-// computedFunction will be called each time one of its dependencies is changed.
+// computedFunction will be called each time one of its dependencies has changed.
 
 observedObject.a = 6
 console.log(result) // -> 16
 observedArray[0] = 4
 console.log(result) // -> 17
-
-// This is where the 'deep' flag shines.
 
 observedArray.unshift(1)
 console.log(result) // -> 18
@@ -418,7 +412,7 @@ observe(Object | Array, {
     props: String[],
     ignore: String[],
     batch: boolean,
-    deep: boolean,
+    deep: boolean = true,
     bind: boolean
 }) => Proxy
 ```
@@ -439,7 +433,7 @@ Batch computed properties calls, wrapping them in a setTimeout and executing the
 
 - `deep: boolean`
 
-Observe nested objects and when setting new properties.
+Recursively observe nested objects and when setting new properties.
 
 - `bind: boolean`
 
