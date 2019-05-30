@@ -115,7 +115,7 @@ test('circular computed function', () => {
 })
 
 test('array methods', () => {
-    const arr = observe([{ val: 1 }, { val: 2 }, { val: 3 }], { deep: true })
+    const arr = observe([{ val: 1 }, { val: 2 }, { val: 3 }])
     let sum = 0
     computed(() => { sum = arr.reduce((acc, { val }) => acc + val, 0) })
     expect(sum).toBe(6)
@@ -346,7 +346,7 @@ test('run a callback instead of the computed function', () => {
 test('deep observe nested objects and new properties', () => {
     const o = { a: { b: 1 }, tab: [{ z: 1 }]}
     Object.setPrototypeOf(o, { _unused: true })
-    const obj = observe(o, { deep: true })
+    const obj = observe(o)
 
     obj.c = { d: { e: 2 } }
 
@@ -364,6 +364,20 @@ test('deep observe nested objects and new properties', () => {
     // null check
     obj.a = null
     expect(obj.sum).toBe(5)
+})
+
+test('shallow observe nested objects when deep is false', () => {
+    const o = { a: { b: 1 }, c: 1, tab: [{ z: 1 }]}
+    const obj = observe(o, { deep: false })
+    obj.d = { e: { f: 2 } }
+    computed(() => {
+        obj.sum = obj.a.b + obj.c + obj.d.e.f + obj.tab[0].z
+    })
+    expect(obj.sum).toBe(5)
+    obj.a.b = 2
+    expect(obj.sum).toBe(5)
+    obj.c = 2
+    expect(obj.sum).toBe(7)
 })
 
 test('bind methods to the observed object', () => {
