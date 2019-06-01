@@ -25,9 +25,7 @@ export function useRequest(url, {
         !storedData
     )
     const [ networkData, setNetworkData ] = useState(null)
-    const data = useMemo(() =>
-        cacheLookup ? storedData : networkData
-    , [storedData, cacheLookup])
+    const data = cacheLookup ? storedData : networkData
 
     function refetch() {
         setLoading(true)

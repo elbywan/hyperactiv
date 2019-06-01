@@ -27,12 +27,11 @@ export function useNormalizedRequest(url, {
         !storedMappings
     )
     const [ networkData, setNetworkData ] = useState(null)
-    const data = useMemo(() =>
+    const data =
         cacheLookup ?
             storedMappings &&
             normalizedOperations.read(storedMappings, store) :
             networkData
-    , [storedMappings, cacheLookup])
 
     function refetch() {
         setLoading(true)

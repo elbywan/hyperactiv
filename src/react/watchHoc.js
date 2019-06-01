@@ -35,14 +35,18 @@ const watchClassComponent = Component => new Proxy(Component, {
 const watchStatelessComponent = Component => {
     const wrapper = props => {
         const [, forceUpdate ] = React.useState()
+        const mounted = React.useRef(true)
         const wrappedComponent = React.useMemo(() =>
             computed(Component, {
                 autoRun: false,
                 callback: function() {
-                    forceUpdate({})
+                    mounted.current && forceUpdate({})
                 }
             }), [])
-        React.useEffect(() => () => dispose(wrappedComponent), [])
+        React.useEffect(() => () => {
+            mounted.current = false
+            dispose(wrappedComponent)
+        }, [wrappedComponent])
         return wrappedComponent(props)
     }
     wrapper.displayName = Component.displayName || Component.name
