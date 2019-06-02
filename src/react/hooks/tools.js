@@ -1,6 +1,6 @@
 export const defaultRootKey = '__requests__'
 export const defaultSerialize = (method, url) => `${method}@${url}`
-export const unicity = _ => _
+export const identity = _ => _
 export const normalizedOperations = {
     write(normalizedData, store) {
         Object.entries(normalizedData).forEach(([ entity, entityData ]) => {

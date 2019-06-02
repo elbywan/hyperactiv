@@ -2,22 +2,23 @@ import { useState, useMemo, useEffect, useContext } from 'react'
 import wretch from 'wretch'
 import { normaliz } from 'normaliz'
 
-import { unicity, defaultSerialize, defaultRootKey, normalizedOperations } from './tools'
-import { HyperactivContext } from '../context/index'
+import { identity, defaultSerialize, defaultRootKey, normalizedOperations } from './tools'
+import { HyperactivContext, SSRContext } from '../context/index'
 
 export function useNormalizedRequest(url, {
     store,
     normalize,
     client = wretch(),
     skip = () => false,
-    beforeRequest = unicity,
-    afterRequest = unicity,
+    beforeRequest = identity,
+    afterRequest = identity,
     rootKey = defaultRootKey,
     serialize = defaultSerialize,
     bodyType = 'json',
     policy = 'cache-first'
 }) {
     const contextValue = useContext(HyperactivContext)
+    const ssrContext = useContext(SSRContext)
     store = contextValue && contextValue.store || store
     client = contextValue && contextValue.client || client
 
@@ -68,8 +69,8 @@ export function useNormalizedRequest(url, {
                 if(typeof window === 'undefined')
                     throw error
             })
-        if(contextValue && contextValue.promises) {
-            contextValue.promises.push(promise)
+        if(ssrContext) {
+            ssrContext.push(promise)
         }
         return promise
     }

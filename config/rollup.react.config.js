@@ -9,6 +9,7 @@ export default {
         globals: {
             react: 'React',
             'react-dom': 'ReactDOM',
+            'react-dom/server': 'ReactDOMServer',
             wretch: 'wretch',
             normaliz: 'normaliz'
         },
@@ -20,6 +21,7 @@ export default {
     external: [
         'react',
         'react-dom',
+        'react-dom/server',
         'wretch',
         'normaliz'
     ]
