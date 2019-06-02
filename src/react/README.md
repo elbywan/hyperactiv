@@ -273,7 +273,7 @@ import { HyperactivProvider } from 'hyperactiv/src/react'
 
 /* ... */
 
-<HyperactivProvider store={store} client={client}>
+< store={store} client={client}>
     { children }
 </HyperactivProvider>
 ```
@@ -285,15 +285,17 @@ Fills-up the store, usually before performing Server Side Rendering.
 ```js
 import { preloadData } from 'hyperactiv/src/react'
 
-const jsx = <Root pathname={ url } store={ store }  />
-  try {
+const store = {} // your store
+const jsx = // your jsx root, including an instance of HyperactivProvider with the store
+try {
     await preloadData(jsx, {
-        // "depth" is an optional number that limits the depth of nested queries.
+        // The "depth" property is an optional number that limits the depth of nested queries.
         // Defaults to null, which means unlimited nested queries.
         depth: null
     })
-  } catch(error) {
+} catch(error) {
     /* bad */
     console.error(error)
-  }
+}
+// store is now filled
 ```
