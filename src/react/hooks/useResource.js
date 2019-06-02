@@ -1,5 +1,6 @@
-import { useMemo } from 'react'
+import { useMemo, useContext } from 'react'
 import { useNormalizedRequest } from './useNormalizedRequest'
+import { HyperactivContext } from '../context/index'
 
 export function useResource(entity, url, {
     id,
@@ -14,6 +15,8 @@ export function useResource(entity, url, {
     bodyType,
     policy = 'cache-first'
 }) {
+    const contextValue = useContext(HyperactivContext)
+    store = contextValue && contextValue.store || store
     const storedEntity = id && store[entity] && store[entity][id]
 
     const {

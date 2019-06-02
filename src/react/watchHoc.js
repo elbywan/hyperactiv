@@ -1,5 +1,6 @@
 import React from 'react'
 import hyperactiv from '../../src/index'
+import { useStore } from './hooks/index'
 const { computed, dispose } = hyperactiv
 
 // Wraps a component and automatically updates it when the store mutates.
@@ -35,6 +36,8 @@ const watchClassComponent = Component => new Proxy(Component, {
 const watchStatelessComponent = Component => {
     const wrapper = props => {
         const [, forceUpdate ] = React.useState()
+        const store = useStore()
+        const injectedProps = props.store ? props : { ...props, store }
         const mounted = React.useRef(true)
         const wrappedComponent = React.useMemo(() =>
             computed(Component, {
@@ -47,7 +50,7 @@ const watchStatelessComponent = Component => {
             mounted.current = false
             dispose(wrappedComponent)
         }, [wrappedComponent])
-        return wrappedComponent(props)
+        return wrappedComponent(injectedProps)
     }
     wrapper.displayName = Component.displayName || Component.name
     return wrapper

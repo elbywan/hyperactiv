@@ -268,14 +268,31 @@ const {
 
 Can be used in combination with hooks, in order to provide a global `store` and `client`. (useful for SSR)
 
-```jsx
+```js
 import { HyperactivProvider } from 'hyperactiv/src/react'
 
 /* ... */
 
-< store={store} client={client}>
+<HyperactivProvider store={store} client={client}>
     { children }
 </HyperactivProvider>
+```
+
+To retrieve the store or the client from a component, you can use the following hooks:
+
+```js
+import { useStore, useClient } from 'hyperactiv/src/react'
+
+const store = useStore()
+const client = useClient()
+```
+
+In addition, the `watch` higher order component automatically injects the store as a prop:
+
+```js
+watch(({ store }) => {
+    /* ... */
+})
 ```
 
 ### preloadData
