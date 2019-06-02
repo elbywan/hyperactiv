@@ -20,7 +20,7 @@
     "start": "npm run lint && npm run build && npm run test",
     "lint": "eslint ./src ./test",
     "lint:fix": "eslint --fix ./src ./test",
-    "build": "npm run clean && rollup -c config/rollup.config.js && npm run build:handlers && npm run build:react && npm run build:classes && npm run build:websocket",
+    "build": "rollup -c config/rollup.config.js && npm run build:handlers && npm run build:react && npm run build:classes && npm run build:websocket",
     "build:handlers": "rollup -c config/rollup.handlers.config.js",
     "build:react": "rollup -c config/rollup.react.config.js",
     "build:classes": "rollup -c config/rollup.classes.config.js",
