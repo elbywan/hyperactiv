@@ -9,7 +9,6 @@ export default {
         globals: {
             react: 'React',
             'react-dom': 'ReactDOM',
-            hyperactiv: 'hyperactiv',
             wretch: 'wretch',
             normaliz: 'normaliz'
         },
@@ -21,7 +20,6 @@ export default {
     external: [
         'react',
         'react-dom',
-        'hyperactiv',
         'wretch',
         'normaliz'
     ]

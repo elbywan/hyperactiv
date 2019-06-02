@@ -1,3 +1,4 @@
+export const defaultRootKey = '__requests__'
 export const defaultSerialize = (method, url) => `${method}@${url}`
 export const unicity = _ => _
 export const normalizedOperations = {

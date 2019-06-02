@@ -10,10 +10,11 @@ export function useResource(entity, url, {
     beforeRequest,
     afterRequest,
     serialize,
+    rootKey,
     bodyType,
     policy = 'cache-first'
 }) {
-    const storedEntity = id && store[entity][id]
+    const storedEntity = id && store[entity] && store[entity][id]
 
     const {
         data,
@@ -37,6 +38,7 @@ export function useResource(entity, url, {
         beforeRequest,
         afterRequest,
         serialize,
+        rootKey,
         bodyType,
         policy
     })

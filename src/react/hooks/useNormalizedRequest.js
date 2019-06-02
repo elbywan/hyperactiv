@@ -1,8 +1,9 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useContext } from 'react'
 import wretch from 'wretch'
 import { normaliz } from 'normaliz'
 
-import { unicity, defaultSerialize, normalizedOperations } from './tools'
+import { unicity, defaultSerialize, defaultRootKey, normalizedOperations } from './tools'
+import { HyperactivContext } from '../context/index'
 
 export function useNormalizedRequest(url, {
     store,
@@ -11,13 +12,21 @@ export function useNormalizedRequest(url, {
     skip = () => false,
     beforeRequest = unicity,
     afterRequest = unicity,
+    rootKey = defaultRootKey,
     serialize = defaultSerialize,
     bodyType = 'json',
     policy = 'cache-first'
 }) {
+    const contextValue = useContext(HyperactivContext)
+    store = contextValue && contextValue.store || store
+    client = contextValue && contextValue.client || client
+
     const configuredClient = useMemo(() => beforeRequest(client.url(url)), [client, beforeRequest, url])
     const storeKey = useMemo(() => serialize('get', configuredClient._url), [configuredClient])
-    const storedMappings = store[storeKey]
+    if(!store[rootKey]) {
+        store[rootKey] = {}
+    }
+    const storedMappings = store[rootKey][storeKey]
 
     const cacheLookup = policy !== 'network-only'
 
@@ -33,39 +42,55 @@ export function useNormalizedRequest(url, {
             normalizedOperations.read(storedMappings, store) :
             networkData
 
-    function refetch() {
-        setLoading(true)
-        setError(null)
-        setNetworkData(null)
-        return configuredClient
+    function refetch(noState) {
+        if(!noState) {
+            setLoading(true)
+            setError(null)
+            setNetworkData(null)
+        }
+        const promise = configuredClient
             .get()
             // eslint-disable-next-line no-unexpected-multiline
             [bodyType](body => afterRequest(body))
             .then(result => {
                 const normalizedData = normaliz(result, normalize)
-                store[storeKey] = Object.entries(normalizedData).reduce((mappings, [ entity, dataById ]) => {
+                store[rootKey][storeKey] = Object.entries(normalizedData).reduce((mappings, [ entity, dataById ]) => {
                     mappings[entity] = Object.keys(dataById)
                     return mappings
                 }, {})
                 normalizedOperations.write(normalizedData, store)
-                setNetworkData(normalizedOperations.read(store[storeKey], store))
+                setNetworkData(normalizedOperations.read(store[rootKey][storeKey], store))
                 setLoading(false)
             })
             .catch(error => {
                 setError(error)
                 setLoading(false)
+                if(typeof window === 'undefined')
+                    throw error
             })
+        if(contextValue && contextValue.promises) {
+            contextValue.promises.push(promise)
+        }
+        return promise
     }
 
-    useEffect(function() {
+    function checkAndRefetch(noState = false) {
         if(
             !skip() &&
             !error &&
             (policy !== 'cache-first' || !data)
         ) {
-            refetch()
+            refetch(noState)
         }
+    }
+
+    useEffect(function() {
+        checkAndRefetch()
     }, [ storeKey ])
+
+    if(typeof window === 'undefined') {
+        checkAndRefetch(true)
+    }
 
     return skip() ? {} : {
         loading,

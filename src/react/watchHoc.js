@@ -1,5 +1,5 @@
 import React from 'react'
-import hyperactiv from 'hyperactiv'
+import hyperactiv from '../../src/index'
 const { computed, dispose } = hyperactiv
 
 // Wraps a component and automatically updates it when the store mutates.
