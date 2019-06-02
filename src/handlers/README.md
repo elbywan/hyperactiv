@@ -50,8 +50,10 @@ import handlers from 'hyperactiv/handlers'
 const { observe } = hyperactiv
 const { write } = handlers
 
-let copy = { }
-let obj = observe(obj, { handler: write(copy) })
+let copy = {}
+let obj = observe({
+    __handler: write(copy)
+})
 
 obj.a = 10
 copy.a === 10
@@ -68,7 +70,9 @@ import handlers from 'hyperactiv/handlers'
 const { observe } = hyperactiv
 const { debug } = handlers
 
-let obj = observe({}, { handler: debug(console) })
+let obj = observe({
+    __handler: debug(console)
+})
 
 obj.a = 10
 
@@ -86,8 +90,8 @@ import handlers from 'hyperactiv/handlers'
 const { observe } = hyperactiv
 const { all, write, debug } = handlers
 
-let copy = {}, copy2 = {}, obj = observe({ observed: 'object' }, {
-    handler: all([
+let copy = {}, copy2 = {}, obj = observe({
+    __handler: all([
         debug(),
         write(copy),
         write(copy2)
