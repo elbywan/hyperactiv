@@ -7,54 +7,62 @@ import {
 } from '@testing-library/react'
 import 'jest-dom/extend-expect'
 
-import { Watch, watch, store as createStore } from '../../react/react.js'
-
-const commonJsx = store =>
-    <div>
-        <input data-testid="firstname"
-            value={ store.firstName }
-            onChange={ e => store.firstName = e.target.value }
-        />
-        <input data-testid="lastname"
-            value={ store.lastName }
-            onChange={ e => store.lastName = e.target.value }
-        />
-        <div data-testid="hello">
-            Hello, { store.firstName } { store.lastName } !
-        </div>
-    </div>
-
-async function testStoreUpdate(Component, store) {
-    const { getByTestId } = render(<Component />)
-
-    expect(getByTestId('firstname')).toHaveValue(store.firstName)
-    expect(getByTestId('lastname')).toHaveValue(store.lastName)
-    expect(getByTestId('hello')).toHaveTextContent(`Hello, ${store.firstName} ${store.lastName} !`)
-
-    fireEvent.change(getByTestId('firstname'), {
-        target: {
-            value: 'John'
-        }
-    })
-
-    fireEvent.change(getByTestId('lastname'), {
-        target: {
-            value: 'Doe'
-        }
-    })
-
-    expect(store).toEqual({ firstName: 'John', lastName: 'Doe' })
-
-    await wait(() => {
-        expect(getByTestId('firstname')).toHaveValue(store.firstName)
-        expect(getByTestId('lastname')).toHaveValue(store.lastName)
-        expect(getByTestId('hello')).toHaveTextContent(`Hello, ${store.firstName} ${store.lastName} !`)
-    })
-}
+import {
+    Watch,
+    watch,
+    store as createStore,
+    HyperactivProvider
+} from '../../react/react.js'
 
 afterEach(cleanup)
 
-describe('Components should re-render on change', () => {
+describe('React components test suite', () => {
+
+    const commonJsx = store =>
+        <div>
+            <input data-testid="firstname"
+                value={ store.firstName }
+                onChange={ e => store.firstName = e.target.value }
+            />
+            <input data-testid="lastname"
+                value={ store.lastName }
+                onChange={ e => store.lastName = e.target.value }
+            />
+            <div data-testid="hello">
+                Hello, { store.firstName } { store.lastName } !
+            </div>
+        </div>
+
+    async function testStoreUpdate(Component, store) {
+        const { getByTestId } = render(<Component />)
+
+        expect(getByTestId('firstname')).toHaveValue(store.firstName)
+        expect(getByTestId('lastname')).toHaveValue(store.lastName)
+        expect(getByTestId('hello')).toHaveTextContent(`Hello, ${store.firstName} ${store.lastName} !`)
+
+        fireEvent.change(getByTestId('firstname'), {
+            target: {
+                value: 'John'
+            }
+        })
+
+        fireEvent.change(getByTestId('lastname'), {
+            target: {
+                value: 'Doe'
+            }
+        })
+
+        expect(store).toEqual({ firstName: 'John', lastName: 'Doe' })
+
+        await wait(() => {
+            expect(getByTestId('firstname')).toHaveValue(store.firstName)
+            expect(getByTestId('lastname')).toHaveValue(store.lastName)
+            expect(getByTestId('hello')).toHaveTextContent(`Hello, ${store.firstName} ${store.lastName} !`)
+        })
+    }
+
+    /* watch() */
+
     test('watch() should observe a class component', () => {
         const store = createStore({
             firstName: 'Igor',
@@ -68,17 +76,68 @@ describe('Components should re-render on change', () => {
 
         return testStoreUpdate(ClassComponent, store)
     })
+
     test('watch() should observe a functional component', () => {
         const store = createStore({
             firstName: 'Igor',
             lastName: 'Gonzola'
         })
-        const FunctionalComponent = watch(function() {
-            return commonJsx(store)
-        })
+        const FunctionalComponent = watch(() =>
+            commonJsx(store)
+        )
 
         return testStoreUpdate(FunctionalComponent, store)
     })
+
+    test('watch() wrapping a functional component should inject the `store` prop', () => {
+        const store = createStore({
+            hello: 'World'
+        })
+        const Wrapper = watch(props => <div data-testid="hello-div">{props.store && props.store.hello}</div>)
+        const { getByTestId } = render(
+            <Wrapper />
+        )
+        expect(getByTestId('hello-div')).toContainHTML('')
+        const { getByText } = render(
+            <HyperactivProvider store={store}>
+                <Wrapper />
+            </HyperactivProvider>
+        )
+        expect(getByText('World')).toBeTruthy()
+    })
+
+    test('watch() wrapping a functional component should not inject the `store` prop if a prop with this name already exists', () => {
+        const store = createStore({
+            hello: 'World'
+        })
+        const Wrapper = watch(props => <div data-testid="hello-div">{props.store && props.store.hello}</div>)
+        const { getByTestId } = render(
+            <HyperactivProvider store={store}>
+                <Wrapper store={{ hello: 'bonjour' }}/>
+            </HyperactivProvider>
+        )
+        expect(getByTestId('hello-div')).toHaveTextContent('bonjour')
+    })
+
+    test('watch() wrapping a class component should gracefully unmount if the child component has a componentWillUnmount method', () => {
+        let unmounted = false
+        const Wrapper = watch(class extends React.Component {
+            componentWillUnmount() {
+                unmounted = true
+            }
+            render() {
+                return <div>Hello</div>
+            }
+        })
+        const { getByText, unmount } = render(<Wrapper />)
+        expect(unmounted).toBe(false)
+        expect(getByText('Hello')).toBeTruthy()
+        unmount()
+        expect(unmounted).toBe(true)
+    })
+
+    /* <Watch /> */
+
     test('<Watch /> should observe its render function', () => {
         const store = createStore({
             firstName: 'Igor',
@@ -88,5 +147,9 @@ describe('Components should re-render on change', () => {
             <Watch render={() => commonJsx(store)} />
 
         return testStoreUpdate(ComponentWithWatch, store)
+    })
+    test('<Watch /> should not render anything if no render prop is passed', () => {
+        const { container } = render(<Watch />)
+        expect(container).toContainHTML('')
     })
 })

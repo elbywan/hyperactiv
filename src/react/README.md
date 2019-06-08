@@ -287,10 +287,10 @@ const store = useStore()
 const client = useClient()
 ```
 
-In addition, the `watch` higher order component automatically injects the store as a prop:
+In addition, the `watch` higher order component automatically injects the store as a prop when wrapping functional components:
 
 ```js
-watch(({ store }) => {
+watch(function ({ store }) {
     /* ... */
 })
 ```

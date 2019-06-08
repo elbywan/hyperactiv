@@ -16,11 +16,12 @@ const watchClassComponent = Component => new Proxy(Component, {
         // Monkey patch the componentWillUnmount method to do some clean up on destruction
         const originalUnmount =
             typeof instance.componentWillUnmount === 'function' &&
-            instance.componentWillUnmount.bind(instance)()
+            instance.componentWillUnmount.bind(instance)
         instance.componentWillUnmount = function(...args) {
             dispose(instance.forceUpdate)
-            if(originalUnmount)
+            if(originalUnmount) {
                 originalUnmount(...args)
+            }
         }
         // Return a proxified Component
         return new Proxy(instance, {
@@ -39,7 +40,7 @@ const watchClassComponent = Component => new Proxy(Component, {
  *  Wraps a functional component and automatically updates it when the store mutates.
  * @param {*} Component The component to wrap
  */
-const watchStatelessComponent = Component => {
+function watchFunctionalComponent(Component) {
     const wrapper = props => {
         const [, forceUpdate ] = React.useState()
         const store = useStore()
@@ -67,7 +68,7 @@ const watchStatelessComponent = Component => {
  * @param {*} Component The component to wrap
  */
 export const watch = Component =>
-    !Component.prototype ? Component :
-    !Component.prototype.render ?
-        watchStatelessComponent(Component) :
+    typeof Component === 'function' &&
+    (!Component.prototype || !Component.prototype.isReactComponent) ?
+        watchFunctionalComponent(Component) :
         watchClassComponent(Component)

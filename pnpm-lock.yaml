@@ -2,6 +2,7 @@ devDependencies:
   '@babel/preset-env': 7.4.5
   '@babel/preset-react': 7.0.0
   '@testing-library/react': 8.0.1
+  '@types/jest': 24.0.13
   babel-eslint: 10.0.1
   babel-jest: 24.8.0
   coveralls: 3.0.3
@@ -980,6 +981,16 @@ packages:
     dev: true
     resolution:
       integrity: sha512-UpYjBi8xefVChsCoBpKShdxTllC9pwISirfoZsUa2AAdQg/Jd2KQGtSbw+ya7GPo7x/wAPlH6JBhKhAsXUEZNA==
+  /@types/jest-diff/20.0.1:
+    dev: true
+    resolution:
+      integrity: sha512-yALhelO3i0hqZwhjtcr6dYyaLoCHbAMshwtj6cGxTvHZAKXHsYGdff6E8EPw3xLKY0ELUTQ69Q1rQiJENnccMA==
+  /@types/jest/24.0.13:
+    dependencies:
+      '@types/jest-diff': 20.0.1
+    dev: true
+    resolution:
+      integrity: sha512-3m6RPnO35r7Dg+uMLj1+xfZaOgIHHHut61djNjzwExXN4/Pm9has9C6I1KMYSfz7mahDhWUOVg4HW/nZdv5Pww==
   /@types/node/12.0.4:
     dev: true
     resolution:
@@ -4941,6 +4952,7 @@ specifiers:
   '@babel/preset-env': ^7.4.5
   '@babel/preset-react': ^7.0.0
   '@testing-library/react': ^8.0.1
+  '@types/jest': ^24.0.13
   babel-eslint: ^10.0.1
   babel-jest: ^24.8.0
   coveralls: ^3.0.3
