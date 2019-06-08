@@ -3,8 +3,10 @@ import hyperactiv from '../../src/index'
 import { useStore } from './hooks/index'
 const { computed, dispose } = hyperactiv
 
-// Wraps a component and automatically updates it when the store mutates.
-
+/**
+ *  Wraps a class component and automatically updates it when the store mutates.
+ * @param {*} Component The component to wrap
+ */
 const watchClassComponent = Component => new Proxy(Component, {
     construct: function(Target, argumentsList) {
         // Create a new Component instance
@@ -33,6 +35,10 @@ const watchClassComponent = Component => new Proxy(Component, {
     }
 })
 
+/**
+ *  Wraps a functional component and automatically updates it when the store mutates.
+ * @param {*} Component The component to wrap
+ */
 const watchStatelessComponent = Component => {
     const wrapper = props => {
         const [, forceUpdate ] = React.useState()
@@ -56,6 +62,10 @@ const watchStatelessComponent = Component => {
     return wrapper
 }
 
+/**
+ *  Wraps a component and automatically updates it when the store mutates.
+ * @param {*} Component The component to wrap
+ */
 export const watch = Component =>
     !Component.prototype ? Component :
     !Component.prototype.render ?

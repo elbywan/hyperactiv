@@ -1,9 +1,9 @@
-import { terser } from 'rollup-plugin-terser'
+import { IS_TEST_BUILD, plugins, sourcemap } from './common'
 
 export default {
     input: './src/react/index.js',
     output: {
-        file: 'react/index.js',
+        file: IS_TEST_BUILD ? 'react/react.js' : 'react/index.js',
         format: 'umd',
         name: 'react-hyperactiv',
         globals: {
@@ -13,11 +13,9 @@ export default {
             wretch: 'wretch',
             normaliz: 'normaliz'
         },
-        sourcemap: true
+        sourcemap
     },
-    plugins: [
-        terser()
-    ],
+    plugins,
     external: [
         'react',
         'react-dom',
