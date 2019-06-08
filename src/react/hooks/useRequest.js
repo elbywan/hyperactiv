@@ -51,6 +51,7 @@ export function useRequest(url, {
                 store[rootKey][storeKey] = result
                 setNetworkData(result)
                 setLoading(false)
+                return result
             })
             .catch(error => {
                 setError(error)

@@ -60,8 +60,10 @@ export function useNormalizedRequest(url, {
                     return mappings
                 }, {})
                 normalizedOperations.write(normalizedData, store)
-                setNetworkData(normalizedOperations.read(store[rootKey][storeKey], store))
+                const storeSlice = normalizedOperations.read(store[rootKey][storeKey], store)
+                setNetworkData(storeSlice)
                 setLoading(false)
+                return storeSlice
             })
             .catch(error => {
                 setError(error)

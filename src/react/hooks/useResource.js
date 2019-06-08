@@ -2,6 +2,16 @@ import { useMemo, useContext } from 'react'
 import { useNormalizedRequest } from './useNormalizedRequest'
 import { HyperactivContext } from '../context/index'
 
+function formatData(data, entity, id) {
+    return (
+        data ?
+            id ?
+                data[entity] && data[entity][id] :
+                data[entity] && Object.values(data[entity]) :
+            data
+    )
+}
+
 export function useResource(entity, url, {
     id,
     store,
@@ -23,7 +33,7 @@ export function useResource(entity, url, {
         data,
         loading,
         error,
-        refetch
+        refetch: normalizedRefetch
     } = useNormalizedRequest(url, {
         store,
         normalize: {
@@ -47,12 +57,12 @@ export function useResource(entity, url, {
     })
 
     const formattedData = useMemo(() =>
-        data ?
-            id ?
-                data[entity] && data[entity][id] :
-                data[entity] && Object.values(data[entity]) :
-            data
+        formatData(data, entity, id)
     , [data, entity, id])
+
+    const refetch = normalizedRefetch.then(data =>
+        formatData(data, entity, id)
+    )
 
     if(policy !== 'network-only' && storedEntity) {
         return {
