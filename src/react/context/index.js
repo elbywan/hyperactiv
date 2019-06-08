@@ -8,7 +8,7 @@ export const HyperactivContext = React.createContext({
 
 export const SSRContext = React.createContext(null)
 
-export function HyperactivProvider({ children, store, client } = {}) {
+export function HyperactivProvider({ children, store, client }) {
     return React.createElement(
         HyperactivContext.Provider,
         {
@@ -18,7 +18,7 @@ export function HyperactivProvider({ children, store, client } = {}) {
     )
 }
 
-export function SSRProvider({ children, promises } = {}) {
+export function SSRProvider({ children, promises }) {
     return React.createElement(
         SSRContext.Provider,
         {

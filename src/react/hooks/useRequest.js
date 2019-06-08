@@ -56,7 +56,7 @@ export function useRequest(url, {
             .catch(error => {
                 setError(error)
                 setLoading(false)
-                if(typeof window === 'undefined')
+                if(ssrContext)
                     throw error
             })
 
@@ -80,7 +80,7 @@ export function useRequest(url, {
         checkAndRefetch()
     }, [ storeKey ])
 
-    if(typeof window === 'undefined') {
+    if(ssrContext) {
         checkAndRefetch(true)
     }
 

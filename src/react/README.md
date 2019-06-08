@@ -175,7 +175,7 @@ const {
     loading, // True if a network request is in-flight.
     error,   // Defined if an error was thrown, null otherwise
     refetch  // Call this function to refetch the data from the network
-} = useResource(
+} = useNormalizedRequest(
     // The server route to hit.
     '/entity',
     {
@@ -226,7 +226,7 @@ const {
     loading, // True if a network request is in-flight.
     error,   // Defined if an error was thrown, null otherwise
     refetch  // Call this function to refetch the data from the network
-} = useResource(
+} = useRequest(
     // The server route to hit.
     '/entity',
     {

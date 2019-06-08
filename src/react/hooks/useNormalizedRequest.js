@@ -68,7 +68,7 @@ export function useNormalizedRequest(url, {
             .catch(error => {
                 setError(error)
                 setLoading(false)
-                if(typeof window === 'undefined')
+                if(ssrContext)
                     throw error
             })
         if(ssrContext) {
@@ -91,7 +91,7 @@ export function useNormalizedRequest(url, {
         checkAndRefetch()
     }, [ storeKey ])
 
-    if(typeof window === 'undefined') {
+    if(ssrContext) {
         checkAndRefetch(true)
     }
 

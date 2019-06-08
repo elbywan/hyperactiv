@@ -11,6 +11,7 @@ devDependencies:
   eslint-plugin-react: 7.13.0
   jest: 24.8.0
   jest-dom: 3.5.0
+  node-fetch: 2.6.0
   normaliz: 0.1.1
   react: 16.8.6
   react-dom: 16.8.6
@@ -3433,6 +3434,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
+  /node-fetch/2.6.0:
+    dev: true
+    engines:
+      node: 4.x || >=6.0.0
+    resolution:
+      integrity: sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
   /node-int64/0.4.0:
     dev: true
     resolution:
@@ -4961,6 +4968,7 @@ specifiers:
   eslint-plugin-react: ^7.13.0
   jest: ^24.8.0
   jest-dom: ^3.5.0
+  node-fetch: ^2.6.0
   normaliz: ^0.1.1
   react: ^16.8.6
   react-dom: ^16.8.6

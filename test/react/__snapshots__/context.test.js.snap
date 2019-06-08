@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`React context test suite SSR Provider and preloadData should resolve promises and render markup 1`] = `
+<div>
+  hello world
+   
+  bonjour le monde
+</div>
+`;
+
+exports[`React context test suite preloadData should resolve promises based on its depth option 1`] = `
+<div>
+  hello world
+   
+</div>
+`;
