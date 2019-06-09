@@ -18,7 +18,7 @@ import {
 import {
     normalizedOperations
 } from '../../src/react/hooks/tools'
-import { ignoreActErrors } from './utils'
+import { ignoreActErrors, sleep } from './utils'
 
 wretch().polyfills({
     fetch: require('node-fetch')
@@ -96,8 +96,9 @@ describe('React hooks test suite', () => {
             const fakeClient = wretch().middlewares([
                 () => () => Promise.resolve({
                     ok: true,
-                    json() {
-                        return Promise.resolve(
+                    async json() {
+                        await sleep()
+                        return (
                             counter++ === 0 ?
                                 { hello: 'hello world'} :
                                 { hello: 'bonjour le monde'}
@@ -280,13 +281,16 @@ describe('React hooks test suite', () => {
             const fakeClient = wretch().middlewares([
                 () => () => Promise.resolve({
                     ok: true,
-                    json() {
-                        if(counter++ >= 1)
-                            return Promise.resolve({
-                                ...payload,
-                                title: 'Updated Title'
-                            })
-                        return Promise.resolve(payload)
+                    async json() {
+                        await sleep()
+                        return (
+                            counter++ >= 1 ?
+                                {
+                                    ...payload,
+                                    title: 'Updated Title'
+                                } :
+                                payload
+                        )
                     }
                 })
             ])
@@ -428,13 +432,12 @@ describe('React hooks test suite', () => {
             const fakeClient = wretch().middlewares([
                 () => () => Promise.resolve({
                     ok: true,
-                    json() {
-                        return new Promise(resolve => {
-                            setTimeout(() => resolve({
-                                id: 1,
-                                title: 'Updated title'
-                            }), 500)
-                        })
+                    async json() {
+                        await sleep()
+                        return {
+                            id: 1,
+                            title: 'Updated title'
+                        }
                     }
                 })
             ])
@@ -490,13 +493,12 @@ describe('React hooks test suite', () => {
             const fakeClient = wretch().middlewares([
                 () => () => Promise.resolve({
                     ok: true,
-                    json() {
-                        return new Promise(resolve => {
-                            setTimeout(() => resolve({
-                                id: 1,
-                                title: 'Updated title'
-                            }), 500)
-                        })
+                    async json() {
+                        await sleep()
+                        return {
+                            id: 1,
+                            title: 'Updated title'
+                        }
                     }
                 })
             ])
