@@ -56,6 +56,8 @@ observed.c = 1
 
 **[React store demo](https://elbywan.github.io/hyperactiv/todos)**
 
+**[React hooks demo](https://github.com/elbywan/hyperactiv-hooks-demo)**
+
 ## Setup
 
 ```bash
