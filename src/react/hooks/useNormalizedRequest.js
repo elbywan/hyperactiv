@@ -15,10 +15,11 @@ export function useNormalizedRequest(url, {
     rootKey = defaultRootKey,
     serialize = defaultSerialize,
     bodyType = 'json',
-    policy = 'cache-first'
+    policy = 'cache-first',
+    ssr = true
 }) {
     const contextValue = useContext(HyperactivContext)
-    const ssrContext = useContext(SSRContext)
+    const ssrContext = ssr && useContext(SSRContext)
     store = contextValue && contextValue.store || store
     client = contextValue && contextValue.client || client
 

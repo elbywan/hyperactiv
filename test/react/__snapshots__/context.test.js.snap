@@ -17,3 +17,10 @@ exports[`React context test suite preloadData should resolve promises based on i
    
 </div>
 `;
+
+exports[`React context test suite preloadData should skip promises if the ssr option if false 1`] = `
+<div>
+   
+   
+</div>
+`;

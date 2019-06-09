@@ -7,13 +7,13 @@ import {
 } from '@testing-library/react'
 import 'jest-dom/extend-expect'
 
+import { ignoreActErrors } from './utils'
 import {
     Watch,
     watch,
     store as createStore,
     HyperactivProvider
 } from '../../src/react'
-import { ignoreActErrors } from './utils'
 
 ignoreActErrors()
 afterEach(cleanup)

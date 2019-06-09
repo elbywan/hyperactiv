@@ -7,6 +7,7 @@ import {
     fireEvent
 } from '@testing-library/react'
 import 'jest-dom/extend-expect'
+import { ignoreActErrors, sleep } from './utils'
 
 import {
     watch,
@@ -18,14 +19,13 @@ import {
 import {
     normalizedOperations
 } from '../../src/react/hooks/tools'
-import { ignoreActErrors, sleep } from './utils'
+
+ignoreActErrors()
+afterEach(cleanup)
 
 wretch().polyfills({
     fetch: require('node-fetch')
 })
-
-ignoreActErrors()
-afterEach(cleanup)
 
 describe('React hooks test suite', () => {
 

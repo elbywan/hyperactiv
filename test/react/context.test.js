@@ -7,6 +7,7 @@ import {
 import 'jest-dom/extend-expect'
 import TestRenderer from 'react-test-renderer'
 
+import { ignoreActErrors } from './utils'
 import {
     store as createStore,
     HyperactivProvider,
@@ -18,10 +19,12 @@ import {
     useClient
 } from '../../src/react'
 
+ignoreActErrors()
+afterEach(cleanup)
+
 wretch().polyfills({
     fetch: require('node-fetch')
 })
-afterEach(cleanup)
 
 describe('React context test suite', () => {
     test('Context provider should inject a client and a store', () => {
@@ -83,16 +86,20 @@ describe('React context test suite', () => {
                 }
             })
     ])
-    const SSRComponent = ({ error, errorNormalized }) => {
+    const SSRComponent = ({ error, errorNormalized, noSSR }) => {
         const { data, loading } = useRequest(
             error ? '/error' : '/hello',
-            { serialize: () => 'test' }
+            {
+                serialize: () => 'test',
+                ssr: !noSSR
+            }
         )
         const { data: data2 } = useRequest(
             '/bonjour',
             {
                 skip: () => loading,
-                serialize: () => 'test2'
+                serialize: () => 'test2',
+                ssr: !noSSR
             }
         )
         const { data: data3 } = useNormalizedRequest(
@@ -103,7 +110,8 @@ describe('React context test suite', () => {
                 normalize: {
                     schema: [],
                     entity: 'entity'
-                }
+                },
+                ssr: !noSSR
             }
         )
         return <div>{data && data.hello} {data2 && data2.bonjour} {data3 && data3.entity['1'].id }</div>
@@ -152,6 +160,20 @@ describe('React context test suite', () => {
                     hello: 'hello world'
                 }
             }
+        })
+        expect(TestRenderer.create(jsx).toJSON()).toMatchSnapshot()
+    })
+
+    test('preloadData should skip promises if the ssr option if false', async () => {
+        const store = createStore({})
+        const jsx =
+            <HyperactivProvider store={store} client={fakeClient}>
+                <SSRComponent noSSR/>
+            </HyperactivProvider>
+
+        await preloadData(jsx)
+        expect(store).toEqual({
+            __requests__: {}
         })
         expect(TestRenderer.create(jsx).toJSON()).toMatchSnapshot()
     })

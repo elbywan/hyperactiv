@@ -159,7 +159,10 @@ const {
         rootKey,
         // The expected body type, which is the name of the wretch function to apply to response.
         // Defaults to 'json'.
-        bodyType
+        bodyType,
+        // If false, the request will not be performed from the network in ssr mode.
+        // Defaults to 'true'.
+        ssr
     }
 )
 ```
@@ -211,7 +214,10 @@ const {
         rootKey,
         // The expected body type, which is the name of the wretch function to apply to response.
         // Defaults to 'json'.
-        bodyType
+        bodyType,
+        // If false, the request will not be performed from the network in ssr mode.
+        // Defaults to 'true'.
+        ssr
     }
 )
 ```
@@ -259,7 +265,10 @@ const {
         rootKey,
         // The expected body type, which is the name of the wretch function to apply to response.
         // Defaults to 'json'.
-        bodyType
+        bodyType,
+        // If false, the request will not be performed from the network in ssr mode.
+        // Defaults to 'true'.
+        ssr
     }
 )
 ```
