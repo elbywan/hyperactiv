@@ -40,6 +40,7 @@ export function useRequest(url, {
 
     const unmounted = useRef(false)
     useEffect(() => () => unmounted.current = false, [])
+    const pendingRequests = useRef([])
 
     function refetch(noState) {
         if(!noState && !unmounted.current) {
@@ -53,14 +54,16 @@ export function useRequest(url, {
             [bodyType](body => afterRequest(body))
             .then(result => {
                 store[rootKey][storeKey] = result
-                if(!unmounted.current) {
+                pendingRequests.current.splice(pendingRequests.current.indexOf(promise), 1)
+                if(!unmounted.current && pendingRequests.current.length === 0) {
                     setNetworkData(result)
                     setLoading(false)
                 }
                 return result
             })
             .catch(error => {
-                if(!unmounted.current) {
+                pendingRequests.current.splice(pendingRequests.current.indexOf(promise), 1)
+                if(!unmounted.current && pendingRequests.current.length === 0) {
                     setError(error)
                     setLoading(false)
                 }
@@ -68,6 +71,7 @@ export function useRequest(url, {
                     throw error
             })
 
+        pendingRequests.current.push(promise)
         if(ssrContext) {
             ssrContext.push(promise)
         }

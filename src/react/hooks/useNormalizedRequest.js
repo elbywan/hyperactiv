@@ -46,6 +46,7 @@ export function useNormalizedRequest(url, {
 
     const unmounted = useRef(false)
     useEffect(() => () => unmounted.current = false, [])
+    const pendingRequests = useRef([])
 
     function refetch(noState) {
         if(!noState && !unmounted.current) {
@@ -65,20 +66,24 @@ export function useNormalizedRequest(url, {
                 }, {})
                 normalizedOperations.write(normalizedData, store)
                 const storeSlice = normalizedOperations.read(store[rootKey][storeKey], store)
-                if(!unmounted.current) {
+                pendingRequests.current.splice(pendingRequests.current.indexOf(promise), 1)
+                if(!unmounted.current && pendingRequests.current.length === 0) {
                     setNetworkData(storeSlice)
                     setLoading(false)
                 }
                 return storeSlice
             })
             .catch(error => {
-                if(!unmounted.current) {
+                pendingRequests.current.splice(pendingRequests.current.indexOf(promise), 1)
+                if(!unmounted.current && pendingRequests.current.length === 0) {
                     setError(error)
                     setLoading(false)
                 }
                 if(ssrContext)
                     throw error
             })
+
+        pendingRequests.current.push(promise)
         if(ssrContext) {
             ssrContext.push(promise)
         }
