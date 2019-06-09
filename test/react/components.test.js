@@ -12,8 +12,10 @@ import {
     watch,
     store as createStore,
     HyperactivProvider
-} from '../../react/react.js'
+} from '../../src/react'
+import { ignoreActErrors } from './utils'
 
+ignoreActErrors()
 afterEach(cleanup)
 
 describe('React components test suite', () => {
@@ -61,95 +63,97 @@ describe('React components test suite', () => {
         })
     }
 
-    /* watch() */
+    describe('watch()', () => {
 
-    test('watch() should observe a class component', () => {
-        const store = createStore({
-            firstName: 'Igor',
-            lastName: 'Gonzola'
+        it('should observe a class component', () => {
+            const store = createStore({
+                firstName: 'Igor',
+                lastName: 'Gonzola'
+            })
+            const ClassComponent = watch(class extends React.Component {
+                render() {
+                    return commonJsx(store)
+                }
+            })
+
+            return testStoreUpdate(ClassComponent, store)
         })
-        const ClassComponent = watch(class extends React.Component {
-            render() {
-                return commonJsx(store)
-            }
+
+        it('should observe a functional component', () => {
+            const store = createStore({
+                firstName: 'Igor',
+                lastName: 'Gonzola'
+            })
+            const FunctionalComponent = watch(() =>
+                commonJsx(store)
+            )
+
+            return testStoreUpdate(FunctionalComponent, store)
         })
 
-        return testStoreUpdate(ClassComponent, store)
-    })
-
-    test('watch() should observe a functional component', () => {
-        const store = createStore({
-            firstName: 'Igor',
-            lastName: 'Gonzola'
-        })
-        const FunctionalComponent = watch(() =>
-            commonJsx(store)
-        )
-
-        return testStoreUpdate(FunctionalComponent, store)
-    })
-
-    test('watch() wrapping a functional component should inject the `store` prop', () => {
-        const store = createStore({
-            hello: 'World'
-        })
-        const Wrapper = watch(props => <div data-testid="hello-div">{props.store && props.store.hello}</div>)
-        const { getByTestId } = render(
-            <Wrapper />
-        )
-        expect(getByTestId('hello-div')).toContainHTML('')
-        const { getByText } = render(
-            <HyperactivProvider store={store}>
+        test('wrapping a functional component should inject the `store` prop', () => {
+            const store = createStore({
+                hello: 'World'
+            })
+            const Wrapper = watch(props => <div data-testid="hello-div">{props.store && props.store.hello}</div>)
+            const { getByTestId } = render(
                 <Wrapper />
-            </HyperactivProvider>
-        )
-        expect(getByText('World')).toBeTruthy()
-    })
-
-    test('watch() wrapping a functional component should not inject the `store` prop if a prop with this name already exists', () => {
-        const store = createStore({
-            hello: 'World'
+            )
+            expect(getByTestId('hello-div')).toContainHTML('')
+            const { getByText } = render(
+                <HyperactivProvider store={store}>
+                    <Wrapper />
+                </HyperactivProvider>
+            )
+            expect(getByText('World')).toBeTruthy()
         })
-        const Wrapper = watch(props => <div data-testid="hello-div">{props.store && props.store.hello}</div>)
-        const { getByTestId } = render(
-            <HyperactivProvider store={store}>
-                <Wrapper store={{ hello: 'bonjour' }}/>
-            </HyperactivProvider>
-        )
-        expect(getByTestId('hello-div')).toHaveTextContent('bonjour')
-    })
 
-    test('watch() wrapping a class component should gracefully unmount if the child component has a componentWillUnmount method', () => {
-        let unmounted = false
-        const Wrapper = watch(class extends React.Component {
-            componentWillUnmount() {
-                unmounted = true
-            }
-            render() {
-                return <div>Hello</div>
-            }
+        test('wrapping a functional component should not inject the `store` prop if a prop with this name already exists', () => {
+            const store = createStore({
+                hello: 'World'
+            })
+            const Wrapper = watch(props => <div data-testid="hello-div">{props.store && props.store.hello}</div>)
+            const { getByTestId } = render(
+                <HyperactivProvider store={store}>
+                    <Wrapper store={{ hello: 'bonjour' }}/>
+                </HyperactivProvider>
+            )
+            expect(getByTestId('hello-div')).toHaveTextContent('bonjour')
         })
-        const { getByText, unmount } = render(<Wrapper />)
-        expect(unmounted).toBe(false)
-        expect(getByText('Hello')).toBeTruthy()
-        unmount()
-        expect(unmounted).toBe(true)
-    })
 
-    /* <Watch /> */
-
-    test('<Watch /> should observe its render function', () => {
-        const store = createStore({
-            firstName: 'Igor',
-            lastName: 'Gonzola'
+        test('wrapping a class component should gracefully unmount if the child component has a componentWillUnmount method', () => {
+            let unmounted = false
+            const Wrapper = watch(class extends React.Component {
+                componentWillUnmount() {
+                    unmounted = true
+                }
+                render() {
+                    return <div>Hello</div>
+                }
+            })
+            const { getByText, unmount } = render(<Wrapper />)
+            expect(unmounted).toBe(false)
+            expect(getByText('Hello')).toBeTruthy()
+            unmount()
+            expect(unmounted).toBe(true)
         })
-        const ComponentWithWatch = () =>
-            <Watch render={() => commonJsx(store)} />
+    })
 
-        return testStoreUpdate(ComponentWithWatch, store)
+    describe('<Watch />', () => {
+        it('should observe its render function', () => {
+            const store = createStore({
+                firstName: 'Igor',
+                lastName: 'Gonzola'
+            })
+            const ComponentWithWatch = () =>
+                <Watch render={() => commonJsx(store)} />
+
+            return testStoreUpdate(ComponentWithWatch, store)
+        })
+        it('should not render anything if no render prop is passed', () => {
+            const { container } = render(<Watch />)
+            expect(container).toContainHTML('')
+        })
     })
-    test('<Watch /> should not render anything if no render prop is passed', () => {
-        const { container } = render(<Watch />)
-        expect(container).toContainHTML('')
-    })
+
 })

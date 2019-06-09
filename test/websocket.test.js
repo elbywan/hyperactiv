@@ -1,6 +1,8 @@
 const WebSocket = require('ws')
-const hyperactivServer = require('../websocket/server.full.js').server
-const hyperactivClient = require('../websocket/server.full.js').client
+const {
+    server: hyperactivServer,
+    client: hyperactivClient
+} = require('../src/websocket/server').default
 
 let wss = null
 let hostedObject = null

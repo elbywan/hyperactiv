@@ -1,4 +1,4 @@
-const hyperactiv = require('../dist/hyperactiv.js')
+const hyperactiv = require('../src/index').default
 const { computed, observe, dispose } = hyperactiv
 
 const delay = time => new Promise(resolve => setTimeout(resolve, time))

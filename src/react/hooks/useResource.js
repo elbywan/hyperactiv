@@ -5,7 +5,7 @@ import { HyperactivContext } from '../context/index'
 function formatData(data, entity, id) {
     return (
         data ?
-            id ?
+            id !== null ?
                 data[entity] && data[entity][id] :
                 data[entity] && Object.values(data[entity]) :
             data
@@ -13,7 +13,7 @@ function formatData(data, entity, id) {
 }
 
 export function useResource(entity, url, {
-    id,
+    id = null,
     store,
     normalize,
     client,
@@ -60,7 +60,7 @@ export function useResource(entity, url, {
         formatData(data, entity, id)
     , [data, entity, id])
 
-    const refetch = normalizedRefetch.then(data =>
+    const refetch = () => normalizedRefetch().then(data =>
         formatData(data, entity, id)
     )
 

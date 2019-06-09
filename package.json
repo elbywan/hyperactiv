@@ -25,8 +25,7 @@
     "build:react": "rollup -c config/rollup.react.config.js",
     "build:classes": "rollup -c config/rollup.classes.config.js",
     "build:websocket": "rollup -c config/rollup.websocket.config.js",
-    "build:test": "env TEST_BUILD=1 npm run build && npm run build:handlers && npm run build:classes && npm run build:websocket && npm run build:react",
-    "test": "npm run build:test && jest --coverage",
+    "test": "jest",
     "coverage": "cat ./coverage/lcov.info | coveralls",
     "clean": "rimraf {dist,react,handlers,websocket,classes}"
   },
@@ -39,6 +38,15 @@
   ],
   "author": "Julien Elbaz",
   "license": "MIT",
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [ "src/**/*.js"],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/",
+      "/src/websocket/browser.js"
+    ]
+  },
   "devDependencies": {
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.0.0",

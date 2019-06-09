@@ -5,12 +5,15 @@ exports[`React context test suite SSR Provider and preloadData should resolve pr
   hello world
    
   bonjour le monde
+   
+  1
 </div>
 `;
 
 exports[`React context test suite preloadData should resolve promises based on its depth option 1`] = `
 <div>
   hello world
+   
    
 </div>
 `;

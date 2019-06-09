@@ -12,13 +12,15 @@ import {
     HyperactivProvider,
     HyperactivContext,
     preloadData,
-    useRequest
-} from '../../react/react.js'
+    useRequest,
+    useNormalizedRequest,
+    useStore,
+    useClient
+} from '../../src/react'
 
 wretch().polyfills({
     fetch: require('node-fetch')
 })
-
 afterEach(cleanup)
 
 describe('React context test suite', () => {
@@ -46,23 +48,44 @@ describe('React context test suite', () => {
         expect(getByText('nothing here')).toBeTruthy()
     })
 
+    test('useStore and useClient should read the store and client from the context', () => {
+        const client = 'client'
+        const store = 'store'
+        const Component = () => {
+            const store = useStore()
+            const client = useClient()
+
+            return <div>{store} {client}</div>
+        }
+        const { getByText } = render(
+            <HyperactivProvider store={store} client={client}>
+                <Component />
+            </HyperactivProvider>
+        )
+        expect(getByText('store client')).toBeTruthy()
+    })
+
     const fakeClient = wretch().middlewares([
         () => url =>
             Promise.resolve({
                 ok: true,
                 json() {
                     switch (url) {
+                        case '/error':
+                            return Promise.reject('rejected')
                         case '/hello':
                             return Promise.resolve({ hello: 'hello world'})
                         case '/bonjour':
                             return Promise.resolve({ bonjour: 'bonjour le monde'})
+                        case '/entity':
+                            return Promise.resolve({ id: 1 })
                     }
                 }
             })
     ])
-    const SSRComponent = () => {
+    const SSRComponent = ({ error, errorNormalized }) => {
         const { data, loading } = useRequest(
-            '/hello',
+            error ? '/error' : '/hello',
             { serialize: () => 'test' }
         )
         const { data: data2 } = useRequest(
@@ -72,7 +95,18 @@ describe('React context test suite', () => {
                 serialize: () => 'test2'
             }
         )
-        return <div>{data && data.hello} {data2 && data2.bonjour}</div>
+        const { data: data3 } = useNormalizedRequest(
+            errorNormalized ? '/error' : '/entity',
+            {
+                skip: () => loading,
+                serialize: () => 'test3',
+                normalize: {
+                    schema: [],
+                    entity: 'entity'
+                }
+            }
+        )
+        return <div>{data && data.hello} {data2 && data2.bonjour} {data3 && data3.entity['1'].id }</div>
     }
 
     test('SSR Provider and preloadData should resolve promises and render markup', async () => {
@@ -84,12 +118,20 @@ describe('React context test suite', () => {
 
         await preloadData(jsx)
         expect(store).toEqual({
+            entity: {
+                1: {
+                    id: 1
+                }
+            },
             __requests__: {
                 test: {
                     hello: 'hello world'
                 },
                 test2: {
                     bonjour: 'bonjour le monde'
+                },
+                test3: {
+                    entity: [ '1' ]
                 }
             }
         })
@@ -112,5 +154,38 @@ describe('React context test suite', () => {
             }
         })
         expect(TestRenderer.create(jsx).toJSON()).toMatchSnapshot()
+    })
+
+    test('preloadData should propagate errors', async () => {
+        const store = createStore({})
+        const jsx =
+            <HyperactivProvider store={store} client={fakeClient}>
+                <SSRComponent error/>
+            </HyperactivProvider>
+        const jsx2 =
+            <HyperactivProvider store={store} client={fakeClient}>
+                <SSRComponent errorNormalized/>
+            </HyperactivProvider>
+
+        try {
+            await expect(preloadData(jsx)).rejects.toThrowError('rejected')
+        } catch(error) {
+            // silent
+        }
+        try {
+            await expect(preloadData(jsx2)).rejects.toThrowError('rejected')
+        } catch(error) {
+            // silent
+        }
+        expect(store).toEqual({
+            __requests__: {
+                test: {
+                    hello: 'hello world'
+                },
+                test2: {
+                    bonjour: 'bonjour le monde'
+                }
+            }
+        })
     })
 })

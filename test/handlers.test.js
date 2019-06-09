@@ -1,5 +1,5 @@
-const hyperactiv = require('../dist/hyperactiv.js')
-const handlers = require('../handlers/handlers.js')
+const hyperactiv = require('../src/index').default
+const handlers = require('../src/handlers').default
 const { observe } = hyperactiv
 const { all, write, debug } = handlers
 

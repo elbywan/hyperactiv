@@ -78,13 +78,18 @@ export function useRequest(url, {
 
     useEffect(function() {
         checkAndRefetch()
-    }, [ storeKey ])
+    }, [ storeKey, skip() ])
 
     if(ssrContext) {
         checkAndRefetch(true)
     }
 
-    return skip() ? {} : {
+    return skip() ? {
+        data: null,
+        error: null,
+        loading: false,
+        refetch
+    } : {
         loading,
         data,
         error,
