@@ -27,7 +27,8 @@
     "build:websocket": "rollup -c config/rollup.websocket.config.js",
     "test": "jest",
     "coverage": "cat ./coverage/lcov.info | coveralls",
-    "clean": "rimraf {dist,react,handlers,websocket,classes}"
+    "clean": "rimraf {dist,react,handlers,websocket,classes}",
+    "prepublish": "npm start"
   },
   "keywords": [
     "computed properties",
