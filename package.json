@@ -28,7 +28,7 @@
     "test": "jest",
     "coverage": "cat ./coverage/lcov.info | coveralls",
     "clean": "rimraf {dist,react,handlers,websocket,classes}",
-    "prepublish": "npm start"
+    "prepublishOnly": "npm start"
   },
   "keywords": [
     "computed properties",
@@ -41,7 +41,9 @@
   "license": "MIT",
   "jest": {
     "collectCoverage": true,
-    "collectCoverageFrom": [ "src/**/*.js"],
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/test/",

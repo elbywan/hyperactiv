@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useContext } from 'react'
+import { useState, useMemo, useEffect, useContext, useRef } from 'react'
 import wretch from 'wretch'
 import { normaliz } from 'normaliz'
 
@@ -44,8 +44,11 @@ export function useNormalizedRequest(url, {
             normalizedOperations.read(storedMappings, store) :
             networkData
 
+    const unmounted = useRef(false)
+    useEffect(() => () => unmounted.current = false, [])
+
     function refetch(noState) {
-        if(!noState) {
+        if(!noState && !unmounted.current) {
             setLoading(true)
             setError(null)
             setNetworkData(null)
@@ -62,13 +65,17 @@ export function useNormalizedRequest(url, {
                 }, {})
                 normalizedOperations.write(normalizedData, store)
                 const storeSlice = normalizedOperations.read(store[rootKey][storeKey], store)
-                setNetworkData(storeSlice)
-                setLoading(false)
+                if(!unmounted.current) {
+                    setNetworkData(storeSlice)
+                    setLoading(false)
+                }
                 return storeSlice
             })
             .catch(error => {
-                setError(error)
-                setLoading(false)
+                if(!unmounted.current) {
+                    setError(error)
+                    setLoading(false)
+                }
                 if(ssrContext)
                     throw error
             })

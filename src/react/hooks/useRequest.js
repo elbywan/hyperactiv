@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useContext } from 'react'
+import { useState, useMemo, useEffect, useContext, useRef } from 'react'
 import wretch from 'wretch'
 
 import { identity, defaultSerialize, defaultRootKey } from './tools'
@@ -38,8 +38,11 @@ export function useRequest(url, {
     const [ networkData, setNetworkData ] = useState(null)
     const data = cacheLookup ? storedData : networkData
 
+    const unmounted = useRef(false)
+    useEffect(() => () => unmounted.current = false, [])
+
     function refetch(noState) {
-        if(!noState) {
+        if(!noState && !unmounted.current) {
             setLoading(true)
             setError(null)
             setNetworkData(null)
@@ -50,13 +53,17 @@ export function useRequest(url, {
             [bodyType](body => afterRequest(body))
             .then(result => {
                 store[rootKey][storeKey] = result
-                setNetworkData(result)
-                setLoading(false)
+                if(!unmounted.current) {
+                    setNetworkData(result)
+                    setLoading(false)
+                }
                 return result
             })
             .catch(error => {
-                setError(error)
-                setLoading(false)
+                if(!unmounted.current) {
+                    setError(error)
+                    setLoading(false)
+                }
                 if(ssrContext)
                     throw error
             })
