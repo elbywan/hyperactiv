@@ -2,22 +2,49 @@
 
 ### A simple but clever react store
 
-Hyperactiv contains built-in helpers to easily create a reactive store which re-renders your React components.
+Hyperactiv contains built-in helpers to easily create a reactive global store which re-renders your React components.
 The components are rendered in a smart fashion, meaning only when they depend on any part of store that has been modified.
+
+Hyperactiv/react also provides hooks that can fetch, normalize and cache data.
+
+## Features
+
+- ☢️Mutable
+
+*Just mutate the store…*
+
+- ⚡ Reactive
+
+*and it will re-render components that use the part of the store that was touched.*
+
+- 💸Lightweight
+
+*hyperactiv/react weight around **3KB** minzipped, and is **tree-shakable** for more savings.*
+
+- 🏗️Normalized
+
+*Optionally, data can be automatically normalized when fetching data from the network into the store.*
+
+- 🗄️Request caching
+
+*Caches requests, saves bandwidth and time.*
+
+- 👌SSR friendly
+
+*SSR is supported out of the box.*
 
 ## Import
 
 The UMD way, compatible with most environments:
 
 ```js
-import reactHyperactiv from 'hyperactiv/react'
-const { Watch, watch, store } = reactHyperactiv
+import { watch, store, ... } from 'hyperactiv/react'
 ```
 
 Add `/src` for the esm, tree-shakable version:
 
 ```js
-import reactHyperactiv from 'hyperactiv/src/react'
+import { watch, store, ... } from 'hyperactiv/src/react'
 ```
 
 And alternatively, if you prefer script tags:
@@ -27,15 +54,32 @@ And alternatively, if you prefer script tags:
 ```
 
 ```js
-const { Watch, watch, store } = window['react-hyperactiv']
+const { watch, store, ... } = window['react-hyperactiv']
 ```
+
+### Peer dependencies
+
+`hyperactiv/react` depends on external libraries that need to be installed separately.
+
+```sh
+# Obviously
+npm i react react-dom
+# For all hooks
+npm i wretch
+# For the useResource and useNormalizedRequest hooks
+npm i normaliz
+```
+
+## Demo
+
+**[React hooks demo](https://github.com/elbywan/hyperactiv-hooks-demo)**
 
 ## Usage
 
 ### Store
 
 ```js
-const appStore = store({
+const myStore = store({
     firstName: 'Igor',
     lastName: 'Gonzola'
 })
@@ -51,15 +95,15 @@ const App = watch(class extends React.Component {
             { /* Whenever these inputs are changed, the store will update and the component will re-render. */ }
             <div>
                 <input
-                    value={ appStore.firstName }
-                    onChange={ e => appStore.firstName = e.target.value }
+                    value={ myStore.firstName }
+                    onChange={ e => myStore.firstName = e.target.value }
                 />
                 <input
-                    value={ appStore.lastName }
-                    onChange={ e => appStore.lastName = e.target.value }
+                    value={ myStore.lastName }
+                    onChange={ e => myStore.lastName = e.target.value }
                 />
                 <div>
-                    Hello, { appStore.firstName } { appStore.lastName } !
+                    Hello, { myStore.firstName } { myStore.lastName } !
                 </div>
             </div>
         )
@@ -81,20 +125,7 @@ class App extends React.Component {
     render() {
         return (
             <Watch render={() =>
-                { /* Whenever these inputs are changed, the store will update and the component will re-render. */ }
-                <div>
-                    <input
-                        value={ appStore.firstName }
-                        onChange={ e => appStore.firstName = e.target.value }
-                    />
-                    <input
-                        value={ appStore.lastName }
-                        onChange={ e => appStore.lastName = e.target.value }
-                    />
-                    <div>
-                        Hello, { appStore.firstName } { appStore.lastName } !
-                    </div>
-                </div>
+                /* … */
             } />
         )
     }
@@ -105,6 +136,73 @@ class App extends React.Component {
 
 Fetches data and cache the result, supports multiple fetch policies and options.
 Inspired by [react-apollo](https://github.com/apollographql/react-apollo).
+
+#### Minimal working example
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>react/hyperactiv MWE</title>
+    <script defer src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script defer src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script defer src="https://unpkg.com/wretch" crossorigin></script>
+    <script defer src="https://unpkg.com/normaliz" crossorigin></script>
+    <script defer src="https://unpkg.com/hyperactiv/react/index.js" crossorigin></script>
+    <script defer src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { watch, store: createStore, useResource } = window['react-hyperactiv']
+
+        // Creates a global reactive store.
+        const store = createStore({ todos: {} })
+
+        // `watch()` wraps components so that they will get re-renders on store change.
+        const TodoTitle = watch(() =>
+            <p>
+                { store.todos[1] &&
+                    <input
+                        value={store.todos[1].title || ''}
+                        onChange={e => store.todos[1].title = e.target.value }
+                    /> }
+            </p>
+        )
+
+        const TodoDetails = watch(() => {
+            const { data: todo, loading, refetch } = useResource(
+                'todos',
+                'https://jsonplaceholder.typicode.com/todos/1',
+                {
+                    id: 1,
+                    // `store` can be omitted when using <HyperactivProvider />
+                    store
+                }
+            )
+            return (
+                loading ? 'Loading…' :
+                <>
+                    <p><button onClick={refetch}>Refetch</button></p>
+                    <pre>{ JSON.stringify(todo, null, 2)}</pre>
+                </>
+            )
+        })
+
+        const Root = () => (
+            <>
+                <TodoTitle />
+                <TodoDetails />
+            </>
+        )
+
+        const container = document.querySelector('#root')
+        ReactDOM.render(<Root />, container);
+    </script>
+</body>
+</html>
+```
 
 #### `useResource`
 
@@ -134,7 +232,7 @@ const {
         // Defaults to 'cache-first'.
         policy,
         // The hyperactiv store.
-        // If omitted, will check if a parent context exposes a store.
+        // If omitted, will check if a parent context provides a store.
         store,
         // Normalize options, see https://github.com/elbywan/normaliz for more details.
         // If omitted, an empty schema will be used.
@@ -143,7 +241,7 @@ const {
         // If omitted, a fresh wretch() will be used.
         client,
         // A function that returns a boolean. If true, the network call is entirely skipped.
-        // If omitted, will check if a parent context exposes a client.
+        // If omitted, will check if a parent context provides a client.
         skip,
         // A function that takes the client configured with the url as an argument, and can modify it before returning it.
         // Defaults to the identity function.
@@ -189,7 +287,7 @@ const {
         // Defaults to 'cache-first'.
         policy,
         // The hyperactiv store.
-        // If omitted, will check if a parent context exposes a store.
+        // If omitted, will check if a parent context provides a store.
         store,
         // Normalize options, see https://github.com/elbywan/normaliz for more details.
         // If omitted, an empty schema will be used.
@@ -198,7 +296,7 @@ const {
         // If omitted, a fresh wretch() will be used.
         client,
         // A function that returns a boolean. If true, the network call is entirely skipped.
-        // If omitted, will check if a parent context exposes a client.
+        // If omitted, will check if a parent context provides a client.
         skip,
         // A function that takes the client configured with the url as an argument, and can modify it before returning it.
         // Defaults to the identity function.
@@ -243,13 +341,13 @@ const {
         // Defaults to 'cache-first'.
         policy,
         // The hyperactiv store.
-        // If omitted, will check if a parent context exposes a store.
+        // If omitted, will check if a parent context provides a store.
         store,
         // An initialized wretch instance, see https://github.com/elbywan/wretch for more details.
         // If omitted, a fresh wretch() will be used.
         client,
         // A function that returns a boolean. If true, the network call is entirely skipped.
-        // If omitted, will check if a parent context exposes a client.
+        // If omitted, will check if a parent context provides a client.
         skip,
         // A function that takes the client configured with the url as an argument, and can modify it before returning it.
         // Defaults to the identity function.
@@ -275,7 +373,7 @@ const {
 
 ### Context
 
-Can be used in combination with hooks, in order to provide a global `store` and `client`. (useful for SSR)
+Can be used in combination with hooks, in order to provide a global `store` and `client`.
 
 ```js
 import { HyperactivProvider } from 'hyperactiv/src/react'
@@ -306,7 +404,7 @@ watch(function ({ store }) {
 
 ### preloadData
 
-Fills-up the store, usually before performing Server Side Rendering.
+Fills-up the store, usually before performing SSR.
 
 ```js
 import { preloadData } from 'hyperactiv/src/react'

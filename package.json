@@ -35,7 +35,10 @@
     "computed",
     "reactive",
     "observable",
-    "observe"
+    "observe",
+    "react",
+    "store",
+    "normalize"
   ],
   "author": "Julien Elbaz",
   "license": "MIT",

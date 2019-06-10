@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>react/hyperactiv MWE</title>
+    <script defer src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script defer src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script defer src="https://unpkg.com/wretch" crossorigin></script>
+    <script defer src="https://unpkg.com/normaliz" crossorigin></script>
+    <script defer src="https://unpkg.com/hyperactiv/react/index.js" crossorigin></script>
+    <script defer src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { watch, store: createStore, useResource } = window['react-hyperactiv']
+
+        const store = createStore({ todos: {} })
+
+        const TodoTitle = watch(() =>
+            <p>
+                { store.todos[1] &&
+                    <input
+                        value={store.todos[1].title || ''}
+                        onChange={e => store.todos[1].title = e.target.value }
+                    /> }
+            </p>
+        )
+
+        const TodoDetails = watch(() => {
+            const { data: todo, loading, refetch } = useResource(
+                'todos',
+                'https://jsonplaceholder.typicode.com/todos/1',
+                {
+                    id: 1,
+                    store
+                }
+            )
+            return (
+                loading ? 'Loading…' :
+                <>
+                    <p><button onClick={refetch}>Refetch</button></p>
+                    <pre>{ JSON.stringify(todo, null, 2)}</pre>
+                </>
+            )
+        })
+
+        const Root = () => (
+            <>
+                <TodoTitle />
+                <TodoDetails />
+            </>
+        )
+
+        const container = document.querySelector('#root')
+        ReactDOM.render(<Root />, container);
+    </script>
+</body>
+</html>
