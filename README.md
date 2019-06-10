@@ -147,21 +147,21 @@ dispose(computedFunction)
 
 #### Additional features that you can import from a sub path.
 
-- *A simple but clever react store.*
+- **[hyperactiv/react](https://github.com/elbywan/hyperactiv/tree/master/src/react)**
 
-**[hyperactiv/react](https://github.com/elbywan/hyperactiv/tree/master/src/react)**
+*A simple but clever react store.*
 
-- *Utility callbacks triggered when a property is mutated.*
+- **[hyperactiv/handlers](https://github.com/elbywan/hyperactiv/tree/master/src/handlers)**
 
-**[hyperactiv/handlers](https://github.com/elbywan/hyperactiv/tree/master/src/handlers)**
+*Utility callbacks triggered when a property is mutated.*
 
-- *An Observable class.*
+- **[hyperactiv/classes](https://github.com/elbywan/hyperactiv/tree/master/src/classes)**
 
-**[hyperactiv/classes](https://github.com/elbywan/hyperactiv/tree/master/src/classes)**
+*An Observable class.*
 
-- *Hyperactiv websocket implementation.*
+- **[hyperactiv/websocket](https://github.com/elbywan/hyperactiv/tree/master/src/websocket)**
 
-**[hyperactiv/websocket](https://github.com/elbywan/hyperactiv/tree/master/src/websocket)**
+*Hyperactiv websocket implementation.*
 
 ## Code samples
 

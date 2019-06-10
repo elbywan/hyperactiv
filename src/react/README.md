@@ -1,4 +1,12 @@
-# hyperactiv/react
+<h1 align="center">
+    <img alt="Hyperactiv logo" src="https://cdn.rawgit.com/elbywan/hyperactiv/747e759b/logo.svg" width="100px"/>
+	<br>
+    hyperactiv/react<br>
+     <a href="https://www.npmjs.com/package/hyperactiv"><img alt="npm-badge" src="https://img.shields.io/npm/v/hyperactiv.svg?colorB=ff733e" height="20"></a>
+    <a href="https://travis-ci.org/elbywan/hyperactiv"><img alt="travis-badge" src="https://travis-ci.org/elbywan/hyperactiv.svg?branch=master"></a>
+    <a href='https://coveralls.io/github/elbywan/hyperactiv?branch=master'><img src='https://coveralls.io/repos/github/elbywan/hyperactiv/badge.svg?branch=master' alt='Coverage Status' /></a>
+    <a href="https://github.com/elbywan/hyperactiv/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="license-badge" height="20"></a>
+</h1>
 
 ### A simple but clever react store
 
@@ -9,7 +17,7 @@ Hyperactiv/react also provides hooks that can fetch, normalize and cache data.
 
 ## Features
 
-- ☢️Mutable
+- ☢️ Mutable
 
 *Just mutate the store…*
 
@@ -17,19 +25,19 @@ Hyperactiv/react also provides hooks that can fetch, normalize and cache data.
 
 *and it will re-render components that use the part of the store that was touched.*
 
-- 💸Lightweight
+- 💸 Lightweight
 
 *hyperactiv/react weight around **3KB** minzipped, and is **tree-shakable** for more savings.*
 
-- 🏗️Normalized
+- 🏗️ Normalized
 
 *Optionally, data can be automatically normalized when fetching data from the network into the store.*
 
-- 🗄️Request caching
+- 🗄️ Request caching
 
 *Caches requests, saves bandwidth and time.*
 
-- 👌SSR friendly
+- 👌 SSR friendly
 
 *SSR is supported out of the box.*
 
@@ -73,6 +81,78 @@ npm i normaliz
 ## Demo
 
 **[React hooks demo](https://github.com/elbywan/hyperactiv-hooks-demo)**
+
+## Minimal working example
+
+[Hosted here.](https://elbywan.github.io/hyperactiv/mwe/react.html)
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>react/hyperactiv MWE</title>
+    <script defer src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script defer src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script defer src="https://unpkg.com/wretch" crossorigin></script>
+    <script defer src="https://unpkg.com/normaliz" crossorigin></script>
+    <script defer src="https://unpkg.com/hyperactiv/react/index.js" crossorigin></script>
+    <script defer src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { watch, store: createStore, useResource } = window['react-hyperactiv']
+
+        // Creates a global reactive store.
+        const store = createStore({ todos: {} })
+
+        // `watch()` wraps components so that they will get updated on store change.
+        // Even though <TodoDetails /> loads the data, <TodoTitle /> will be re-rendered whenever needed.
+        const TodoTitle = watch(() =>
+            <p>
+                { store.todos[1] &&
+                    <input
+                        value={store.todos[1].title || ''}
+                        onChange={e => store.todos[1].title = e.target.value }
+                    /> }
+            </p>
+        )
+
+        // Same here, whenever <TodoTitle /> changes the title this component will be re-rendered.
+        const TodoDetails = watch(() => {
+            // Fetch data from the network since the cache is empty at first.
+            const { data: todo, loading, refetch } = useResource(
+                'todos',
+                'https://jsonplaceholder.typicode.com/todos/1',
+                {
+                    id: 1,
+                    // `store` can be omitted when using <HyperactivProvider />
+                    store
+                }
+            )
+            return (
+                loading ? 'Loading…' :
+                <>
+                    <p><button onClick={refetch}>Refetch</button></p>
+                    <pre>{ JSON.stringify(todo, null, 2)}</pre>
+                </>
+            )
+        })
+
+        const Root = () => (
+            <>
+                <TodoTitle />
+                <TodoDetails />
+            </>
+        )
+
+        const container = document.querySelector('#root')
+        ReactDOM.render(<Root />, container);
+    </script>
+</body>
+</html>
+```
 
 ## Usage
 
@@ -136,80 +216,6 @@ class App extends React.Component {
 
 Fetches data and cache the result, supports multiple fetch policies and options.
 Inspired by [react-apollo](https://github.com/apollographql/react-apollo).
-
-#### Minimal working example
-
-[Hosted here.](https://elbywan.github.io/hyperactiv/mwe/react.html)
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>react/hyperactiv MWE</title>
-    <script defer src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
-    <script defer src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
-    <script defer src="https://unpkg.com/wretch" crossorigin></script>
-    <script defer src="https://unpkg.com/normaliz" crossorigin></script>
-    <script defer src="https://unpkg.com/hyperactiv/react/index.js" crossorigin></script>
-    <script defer src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
-</head>
-<body>
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { watch, store: createStore, useResource } = window['react-hyperactiv']
-
-        // Creates a global reactive store.
-        const store = createStore({ todos: {} })
-
-        // `watch()` wraps components so that they will get re-renders on store change.
-        // Even if it is <TodoDetails /> that loads the data, <TodoTitle />
-        // will be re-rendered whenever needed.
-        const TodoTitle = watch(() =>
-            <p>
-                { store.todos[1] &&
-                    <input
-                        value={store.todos[1].title || ''}
-                        onChange={e => store.todos[1].title = e.target.value }
-                    /> }
-            </p>
-        )
-
-        // Same with <TodoDetails />, whenever <TodoTitle /> changes the title,
-        // this component will be re-rendered.
-        const TodoDetails = watch(() => {
-            // Fetch data from the network since the cache is empty at first.
-            const { data: todo, loading, refetch } = useResource(
-                'todos',
-                'https://jsonplaceholder.typicode.com/todos/1',
-                {
-                    id: 1,
-                    // `store` can be omitted when using <HyperactivProvider />
-                    store
-                }
-            )
-            return (
-                loading ? 'Loading…' :
-                <>
-                    <p><button onClick={refetch}>Refetch</button></p>
-                    <pre>{ JSON.stringify(todo, null, 2)}</pre>
-                </>
-            )
-        })
-
-        const Root = () => (
-            <>
-                <TodoTitle />
-                <TodoDetails />
-            </>
-        )
-
-        const container = document.querySelector('#root')
-        ReactDOM.render(<Root />, container);
-    </script>
-</body>
-</html>
-```
 
 #### `useResource`
 
