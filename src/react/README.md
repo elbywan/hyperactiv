@@ -139,6 +139,8 @@ Inspired by [react-apollo](https://github.com/apollographql/react-apollo).
 
 #### Minimal working example
 
+[Hosted here.](https://elbywan.github.io/hyperactiv/mwe/react.html)
+
 ```html
 <!DOCTYPE html>
 <html>
@@ -161,6 +163,8 @@ Inspired by [react-apollo](https://github.com/apollographql/react-apollo).
         const store = createStore({ todos: {} })
 
         // `watch()` wraps components so that they will get re-renders on store change.
+        // Even if it is <TodoDetails /> that loads the data, <TodoTitle />
+        // will be re-rendered whenever needed.
         const TodoTitle = watch(() =>
             <p>
                 { store.todos[1] &&
@@ -171,7 +175,10 @@ Inspired by [react-apollo](https://github.com/apollographql/react-apollo).
             </p>
         )
 
+        // Same with <TodoDetails />, whenever <TodoTitle /> changes the title,
+        // this component will be re-rendered.
         const TodoDetails = watch(() => {
+            // Fetch data from the network since the cache is empty at first.
             const { data: todo, loading, refetch } = useResource(
                 'todos',
                 'https://jsonplaceholder.typicode.com/todos/1',
