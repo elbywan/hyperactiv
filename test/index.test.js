@@ -428,3 +428,34 @@ test('bind computed functions using the bind option', () => {
     obj.a = 2
     expect(obj.sum).toBe(4)
 })
+
+test('eliminate unused function dependencies', () => {
+    const observed = observe({
+        condition: true,
+        a: 0,
+        b: 0
+    })
+
+    const object = {
+        counter: 0
+    }
+
+    computed(() => {
+        if(observed.condition) {
+            observed.a++
+        } else {
+            observed.b++
+        }
+        object.counter++
+    })
+
+    expect(object.counter).toBe(1)
+    observed.a++
+    expect(object.counter).toBe(2)
+    observed.condition = false
+    expect(object.counter).toBe(3)
+    observed.a++
+    expect(object.counter).toBe(3)
+    observed.b++
+    expect(object.counter).toBe(4)
+})

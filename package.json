@@ -20,7 +20,8 @@
     "start": "npm run lint && npm run build && npm run test",
     "lint": "eslint ./src ./test",
     "lint:fix": "eslint --fix ./src ./test",
-    "build": "rollup -c config/rollup.config.js && npm run build:handlers && npm run build:react && npm run build:classes && npm run build:websocket",
+    "build": "npm run build:core && npm run build:handlers && npm run build:react && npm run build:classes && npm run build:websocket",
+    "build:core": "rollup -c config/rollup.config.js",
     "build:handlers": "rollup -c config/rollup.handlers.config.js",
     "build:react": "rollup -c config/rollup.react.config.js",
     "build:classes": "rollup -c config/rollup.classes.config.js",
@@ -54,6 +55,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.0.0",
     "@testing-library/react": "^8.0.1",

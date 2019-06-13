@@ -7,7 +7,7 @@ import {
 import { data } from './data'
 import { enqueue } from './batcher'
 
-const { observersMap, computedStack } = data
+const { observersMap, computedStack, computedDependenciesTracker } = data
 
 export function observe(obj, options = {}) {
     // 'deep' is slower but reasonable; 'shallow' a performance enhancement but with side-effects
@@ -61,6 +61,11 @@ export function observe(obj, options = {}) {
                     const propertiesMap = observersMap.get(obj)
                     if(!propertiesMap.has(prop))
                         propertiesMap.set(prop, new Set())
+                    // Tracks object and properties accessed during the function call
+                    const tracker = computedDependenciesTracker.get(computedStack[0])
+                    if(!tracker.has(obj))
+                        tracker.set(obj, new Set())
+                    tracker.get(obj).add(prop)
                     // Link the computed function and the property being accessed
                     propertiesMap.get(prop).add(computedStack[0])
                 }
@@ -113,8 +118,10 @@ export function observe(obj, options = {}) {
                 if(dependents) {
                     // Retrieve the computed functions depending on the prop
                     for(const dependent of dependents) {
-                        // If disposed, delete the function reference
-                        if(dependent.__disposed) {
+                        const tracker = computedDependenciesTracker.get(dependent)
+                        // If the function has been disposed or if the prop has not been used
+                        // during the latest function call, delete the function reference
+                        if(dependent.__disposed || !tracker || !tracker.has(obj) || !tracker.get(obj).has(prop)) {
                             dependents.delete(dependent)
                         } else if(dependent !== computedStack[0]) {
                             // Run the computed function
