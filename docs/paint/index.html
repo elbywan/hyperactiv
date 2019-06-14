@@ -166,11 +166,16 @@
                         square,
                         ...tools.getNeighbours(i, j)
                     ]
-                    computed(({ computeAsync }) => tools.delay(10).then(() => computeAsync(() => {
-                        square.r = tools.weightedMean(square.r, neighbours.map(_ => _.r), 3)
-                        square.g = tools.weightedMean(square.g, neighbours.map(_ => _.g), 3)
-                        square.b = tools.weightedMean(square.b, neighbours.map(_ => _.b), 3)
-                    })))
+                    computed(({ computeAsync }) => tools.delay(1).then(() => computeAsync(() => {
+                        const weight = 2
+                        const means = ['r','g','b'].reduce((result, color) => {
+                            result[color] = tools.weightedMean(square[color], neighbours.map(_ => _[color]), weight)
+                            return result
+                        }, {})
+                        square.r = means.r
+                        square.g = means.g
+                        square.b = means.b
+                    })), { disableTracking: true })
                 }
             }
         }
