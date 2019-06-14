@@ -62,10 +62,15 @@ export function observe(obj, options = {}) {
                     if(!propertiesMap.has(prop))
                         propertiesMap.set(prop, new Set())
                     // Tracks object and properties accessed during the function call
-                    const tracker = computedDependenciesTracker.get(computedStack[0])
-                    if(!tracker.has(obj))
-                        tracker.set(obj, new Set())
-                    tracker.get(obj).add(prop)
+                    computedStack.forEach(fun => {
+                        const tracker = computedDependenciesTracker.get(fun)
+                        if(tracker) {
+                            if(!tracker.has(obj)) {
+                                tracker.set(obj, new Set())
+                            }
+                            tracker.get(obj).add(prop)
+                        }
+                    })
                     // Link the computed function and the property being accessed
                     propertiesMap.get(prop).add(computedStack[0])
                 }
@@ -121,7 +126,7 @@ export function observe(obj, options = {}) {
                         const tracker = computedDependenciesTracker.get(dependent)
                         // If the function has been disposed or if the prop has not been used
                         // during the latest function call, delete the function reference
-                        if(dependent.__disposed || !tracker || !tracker.has(obj) || !tracker.get(obj).has(prop)) {
+                        if(dependent.__disposed || tracker && (!tracker.has(obj) || !tracker.get(obj).has(prop))) {
                             dependents.delete(dependent)
                         } else if(dependent !== computedStack[0]) {
                             // Run the computed function

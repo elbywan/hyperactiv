@@ -429,7 +429,7 @@ test('bind computed functions using the bind option', () => {
     expect(obj.sum).toBe(4)
 })
 
-test('eliminate unused function dependencies', () => {
+test('track unused function dependencies', () => {
     const observed = observe({
         condition: true,
         a: 0,
@@ -458,4 +458,35 @@ test('eliminate unused function dependencies', () => {
     expect(object.counter).toBe(3)
     observed.b++
     expect(object.counter).toBe(4)
+})
+
+test('not track unused function dependencies if the disableTracking flag is true', () => {
+    const observed = observe({
+        condition: true,
+        a: 0,
+        b: 0
+    })
+
+    const object = {
+        counter: 0
+    }
+
+    computed(() => {
+        if(observed.condition) {
+            observed.a++
+        } else {
+            observed.b++
+        }
+        object.counter++
+    }, { disableTracking: true })
+
+    expect(object.counter).toBe(1)
+    observed.a++
+    expect(object.counter).toBe(2)
+    observed.condition = false
+    expect(object.counter).toBe(3)
+    observed.a++
+    expect(object.counter).toBe(4)
+    observed.b++
+    expect(object.counter).toBe(5)
 })
