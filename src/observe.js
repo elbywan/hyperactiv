@@ -62,15 +62,13 @@ export function observe(obj, options = {}) {
                     if(!propertiesMap.has(prop))
                         propertiesMap.set(prop, new Set())
                     // Tracks object and properties accessed during the function call
-                    computedStack.forEach(fun => {
-                        const tracker = computedDependenciesTracker.get(fun)
-                        if(tracker) {
-                            if(!tracker.has(obj)) {
-                                tracker.set(obj, new Set())
-                            }
-                            tracker.get(obj).add(prop)
+                    const tracker = computedDependenciesTracker.get(computedStack[0])
+                    if(tracker) {
+                        if(!tracker.has(obj)) {
+                            tracker.set(obj, new Set())
                         }
-                    })
+                        tracker.get(obj).add(prop)
+                    }
                     // Link the computed function and the property being accessed
                     propertiesMap.get(prop).add(computedStack[0])
                 }
