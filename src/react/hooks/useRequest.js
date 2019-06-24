@@ -55,7 +55,7 @@ export function useRequest(url, {
             .then(result => {
                 store[rootKey][storeKey] = result
                 pendingRequests.current.splice(pendingRequests.current.indexOf(promise), 1)
-                if(!unmounted.current && pendingRequests.current.length === 0) {
+                if(!ssrContext && !unmounted.current && pendingRequests.current.length === 0) {
                     setNetworkData(result)
                     setLoading(false)
                 }
@@ -63,7 +63,7 @@ export function useRequest(url, {
             })
             .catch(error => {
                 pendingRequests.current.splice(pendingRequests.current.indexOf(promise), 1)
-                if(!unmounted.current && pendingRequests.current.length === 0) {
+                if(!ssrContext && !unmounted.current && pendingRequests.current.length === 0) {
                     setError(error)
                     setLoading(false)
                 }

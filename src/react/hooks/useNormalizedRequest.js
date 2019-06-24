@@ -67,7 +67,7 @@ export function useNormalizedRequest(url, {
                 normalizedOperations.write(normalizedData, store)
                 const storeSlice = normalizedOperations.read(store[rootKey][storeKey], store)
                 pendingRequests.current.splice(pendingRequests.current.indexOf(promise), 1)
-                if(!unmounted.current && pendingRequests.current.length === 0) {
+                if(!ssrContext && !unmounted.current && pendingRequests.current.length === 0) {
                     setNetworkData(storeSlice)
                     setLoading(false)
                 }
@@ -75,7 +75,7 @@ export function useNormalizedRequest(url, {
             })
             .catch(error => {
                 pendingRequests.current.splice(pendingRequests.current.indexOf(promise), 1)
-                if(!unmounted.current && pendingRequests.current.length === 0) {
+                if(!ssrContext && !unmounted.current && pendingRequests.current.length === 0) {
                     setError(error)
                     setLoading(false)
                 }
