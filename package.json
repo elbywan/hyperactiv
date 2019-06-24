@@ -1,6 +1,6 @@
 {
   "name": "hyperactiv",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "Super small observable & reactive objects library.",
   "main": "dist/index.js",
   "module": "src/index.js",
