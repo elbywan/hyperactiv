@@ -10,10 +10,11 @@
 
 ### A simple but clever react store
 
-Hyperactiv contains built-in helpers to easily create a reactive global store which re-renders your React components.
-The components are rendered in a smart fashion, meaning only when they depend on any part of store that has been modified.
+Hyperactiv/react is an hyperactiv addon that handles a global state and reacts on change.
 
-Hyperactiv/react also provides hooks that can fetch, normalize and cache data.
+With it, you can easily create a reactive global store which re-renders your React components in a smart fashion when the data is touched and only the components that depend on the parts that were modified.
+
+This library also provides hooks that can fetch, normalize and cache data.
 
 ## Features
 
