@@ -33,26 +33,28 @@ observed.computed(function() {
     this.sum = this.a + this.b
 })
 
-console.log(observed.sum) // 2
+console.log(observed.sum) 
+// log> 2
 
 // Same syntax as handlers. See: hyperactiv/handlers
-observed.onChange(function((keys, value, old, obj)) {
+observed.onChange(function(keys, value, old, obj) {
     console.log('Assigning', value, 'to', keys)
 })
 
 observed.a = 2
-// Assigning 2 to a
+// log> Assigning 2 to a
+// log> Assigning 3 to sum
 
-console.log(sum)
-// 3
+console.log(observed.sum)
+// log> 3
 
 observed.dispose() //cleans up computed functions
 
 observed.a = 1
-// Assigning 1 to a
+// log> Assigning 1 to a
 
-console.log(sum)
-// 3
+console.log(observed.sum)
+// log> 3
 ```
 
 ### API
