@@ -92,8 +92,8 @@ npm i normaliz
 <html>
 <head>
     <title>react/hyperactiv MWE</title>
-    <script defer src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
-    <script defer src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script defer src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
+    <script defer src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
     <script defer src="https://unpkg.com/wretch" crossorigin></script>
     <script defer src="https://unpkg.com/normaliz" crossorigin></script>
     <script defer src="https://unpkg.com/hyperactiv/react/index.js" crossorigin></script>
@@ -105,51 +105,60 @@ npm i normaliz
     <script type="text/babel">
         const { watch, store: createStore, useResource } = window['react-hyperactiv']
 
-        // Creates a global reactive store.
         const store = createStore({ todos: {} })
 
-        // `watch()` wraps components so that they will get updated on store change.
-        // Even though <TodoDetails /> loads the data, <TodoTitle /> will be re-rendered whenever needed.
-        const TodoTitle = watch(() =>
-            <p>
-                { store.todos[1] &&
-                    <input
-                        value={store.todos[1].title || ''}
-                        onChange={e => store.todos[1].title = e.target.value }
-                    /> }
-            </p>
-        )
+        const EditTodo = watch(function EditTodo() {
+            const todo = store.todos[1]
+            return (
+                <p>
+                    {
+                        todo &&
+                        <>
+                            <input
+                                value={todo.title || ''}
+                                onChange={e => todo.title = e.target.value }
+                            />
+                            <input
+                                type='checkbox'
+                                checked={todo.completed}
+                                onChange={() => todo.completed = !todo.completed}
+                            />
+                        </>
 
-        // Same here, whenever <TodoTitle /> changes the title this component will be re-rendered.
-        const TodoDetails = watch(() => {
-            // Fetch data from the network since the cache is empty at first.
+                    }
+                </p>
+            )
+        })
+
+        const ViewTodo = watch(function ViewTodo() {
             const { data: todo, loading, refetch } = useResource(
                 'todos',
                 'https://jsonplaceholder.typicode.com/todos/1',
                 {
                     id: 1,
-                    // `store` can be omitted when using <HyperactivProvider />
                     store
                 }
             )
             return (
                 loading ? 'Loading…' :
                 <>
-                    <p><button onClick={refetch}>Refetch</button></p>
+                    <p><button onClick={refetch}>Re-fetch from server</button></p>
                     <pre>{ JSON.stringify(todo, null, 2)}</pre>
                 </>
             )
         })
 
-        const Root = () => (
-            <>
-                <TodoTitle />
-                <TodoDetails />
-            </>
-        )
+        function Root() {
+            return (
+                <>
+                    <EditTodo />
+                    <ViewTodo />
+                </>
+            )
+        }
 
         const container = document.querySelector('#root')
-        ReactDOM.render(<Root />, container);
+        ReactDOM.render(<Root />, container)
     </script>
 </body>
 </html>
