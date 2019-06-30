@@ -23,7 +23,8 @@ export function useResource(entity, url, {
     serialize,
     rootKey,
     bodyType,
-    policy = 'cache-first'
+    policy = 'cache-first',
+    ssr = true
 }) {
     const contextValue = useContext(HyperactivContext)
     store = contextValue && contextValue.store || store
@@ -53,7 +54,8 @@ export function useResource(entity, url, {
         serialize,
         rootKey,
         bodyType,
-        policy
+        policy,
+        ssr
     })
 
     const formattedData = useMemo(() =>

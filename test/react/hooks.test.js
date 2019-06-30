@@ -18,7 +18,7 @@ import {
 } from '../../src/react'
 import {
     normalizedOperations
-} from '../../src/react/hooks/tools'
+} from '../../src/http/tools'
 
 ignoreActErrors()
 afterEach(cleanup)

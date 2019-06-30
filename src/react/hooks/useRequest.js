@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useContext, useRef } from 'react'
 import wretch from 'wretch'
 
-import { identity, defaultSerialize, defaultRootKey } from './tools'
+import { identity, defaultSerialize, defaultRootKey } from '../../http/tools'
 import { HyperactivContext, SSRContext } from '../context/index'
 
 export function useRequest(url, {

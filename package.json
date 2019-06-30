@@ -24,6 +24,7 @@
     "build:core": "rollup -c config/rollup.config.js",
     "build:handlers": "rollup -c config/rollup.handlers.config.js",
     "build:react": "rollup -c config/rollup.react.config.js",
+    "build:http": "rollup -c config/rollup.http.config.js",
     "build:classes": "rollup -c config/rollup.classes.config.js",
     "build:websocket": "rollup -c config/rollup.websocket.config.js",
     "test": "jest",

@@ -143,13 +143,17 @@ console.log(result) // -> 17
 dispose(computedFunction)
 ```
 
-## Addons
+## Add-ons
 
 #### Additional features that you can import from a sub path.
 
 - **[hyperactiv/react](https://github.com/elbywan/hyperactiv/tree/master/src/react)**
 
 *A simple but clever react store.*
+
+- **[hyperactiv/http](https://github.com/elbywan/hyperactiv/tree/master/src/http)**
+
+*A reactive http cache.*
 
 - **[hyperactiv/handlers](https://github.com/elbywan/hyperactiv/tree/master/src/handlers)**
 

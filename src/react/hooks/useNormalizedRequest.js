@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useContext, useRef } from 'react'
 import wretch from 'wretch'
 import { normaliz } from 'normaliz'
 
-import { identity, defaultSerialize, defaultRootKey, normalizedOperations } from './tools'
+import { identity, defaultSerialize, defaultRootKey, normalizedOperations } from '../../http/tools'
 import { HyperactivContext, SSRContext } from '../context/index'
 
 export function useNormalizedRequest(url, {
