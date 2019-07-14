@@ -1,74 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>react/hyperactiv MWE</title>
-    <script defer src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
-    <script defer src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
-    <script defer src="https://unpkg.com/wretch" crossorigin></script>
-    <script defer src="https://unpkg.com/normaliz" crossorigin></script>
-    <script defer src="https://unpkg.com/hyperactiv/react/index.js" crossorigin></script>
-    <script defer src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
+  <script defer src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
+  <script defer src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
+  <script defer src="https://unpkg.com/wretch" crossorigin></script>
+  <script defer src="https://unpkg.com/normaliz" crossorigin></script>
+  <script defer src="https://unpkg.com/hyperactiv/react/index.js" crossorigin></script>
+  <script defer src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
 </head>
 <body>
-    <div id="root"></div>
+  <div id="root"></div>
 
-    <script type="text/babel">
-        const { watch, store: createStore, useResource } = window['react-hyperactiv']
+  <script type="text/babel">
+    // react-hyperactiv was imported with a script tag, so it is defined as a global variable.
+    const {
+      watch,
+      store: createStore,
+      useResource
+    } = window['react-hyperactiv']
 
-        const store = createStore({ todos: {} })
+    // The global store containing todos.
+    const store = createStore({ todos: {} })
 
-        const EditTodo = watch(function EditTodo() {
-            const todo = store.todos[1]
-            return (
-                <p>
-                    {
-                        todo &&
-                        <>
-                            <input
-                                value={todo.title || ''}
-                                onChange={e => todo.title = e.target.value }
-                            />
-                            <input
-                                type='checkbox'
-                                checked={todo.completed}
-                                onChange={() => todo.completed = !todo.completed}
-                            />
-                        </>
+    // A component that edits todo n°1 by mutating its properties in the store.
+    // Wrapping with watch() is essential, it makes components re-render when the store is updated.
+    const EditTodo = watch(function EditTodo() {
+      const todo = store.todos[1]
+      return !todo ? null :
+        <p>
+          <input
+            value={todo.title || ''}
+            onChange={e => todo.title = e.target.value }
+          />
+          <input
+            type='checkbox'
+            checked={todo.completed}
+            onChange={() => todo.completed = !todo.completed}
+          />
+        </p>
+    })
 
-                    }
-                </p>
-            )
-        })
-
-        const ViewTodo = watch(function ViewTodo() {
-            const { data: todo, loading, refetch } = useResource(
-                'todos',
-                'https://jsonplaceholder.typicode.com/todos/1',
-                {
-                    id: 1,
-                    store
-                }
-            )
-            return (
-                loading ? 'Loading…' :
-                <>
-                    <p><button onClick={refetch}>Re-fetch from server</button></p>
-                    <pre>{ JSON.stringify(todo, null, 2)}</pre>
-                </>
-            )
-        })
-
-        function Root() {
-            return (
-                <>
-                    <EditTodo />
-                    <ViewTodo />
-                </>
-            )
+    // A component that fetches and displays todo n°1 data by reading the store.
+    const ViewTodo = watch(function ViewTodo() {
+      // Fetch the data from the server, normalize it and store it into the global store.
+      // If the data is already in the store, it just reads it.
+      const { data: todo, loading, refetch } = useResource(
+        'todos',
+        'https://jsonplaceholder.typicode.com/todos/1',
+        {
+          id: 1,
+          store
         }
+      )
+      if(loading)
+        return 'Loading'
+      return (
+        <>
+          <p>
+            <button onClick={refetch}>
+              Re-fetch from server
+            </button>
+          </p>
+          <pre>
+            { JSON.stringify(todo, null, 2)}
+          </pre>
+        </>
+      )
+    })
 
-        const container = document.querySelector('#root')
-        ReactDOM.render(<Root />, container)
-    </script>
+    // Render both components.
+    const container = document.querySelector('#root')
+    ReactDOM.render(<>
+      <EditTodo />
+      <ViewTodo />
+    </>, container)
+  </script>
 </body>
 </html>

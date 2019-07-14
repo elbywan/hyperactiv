@@ -31,23 +31,30 @@ import hyperactiv from 'hyperactiv'
 const { observe, compute } = hyperactiv
 
 // This object is observed.
-const observed = observe({ a: 1, b: 2, c: 0 })
+const observed = observe({
+    a: 1,
+    b: 2,
+    c: 0 
+})
 
-// This function depends on properties 'a' and 'b'.
+// Calling computed(...) runs the function and memorize its dependencies.
+// Here, the function depends on properties 'a' and 'b'.
 computed(() => {
     const { a, b } = observed
-    console.log(`<- a + b = ${a + b}`)
+    console.log(`a + b = ${a + b}`)
 })
-// <- a + b = 3
+// Prints: a + b = 3
 
 // Whenever properties 'a' or 'b' are mutated…
 observed.a = 2
 // The function will be automagically be called.
-// <- a + b = 4
+// Prints: a + b = 4
+
 observed.b = 3
-// <- a + b = 5
+// Prints: a + b = 5
+
 observed.c = 1
-// No function depend on 'c', so nothing will happen.
+// Nothing depends on 'c', so nothing will happen.
 ```
 
 ## Demo
@@ -92,55 +99,51 @@ const { computed, observe, dispose } = hyperactiv
 #### 1. Observe object and arrays
 
 ```js
-const observedObject = observe({ a: 5, b: 4 })
-const observedArray = observe([ 3, 2, 1 ])
+const object = observe({ one: 1, two: 2 })
+const array = observe([ 3, 4, 5 ])
 ```
 
 #### 2. Define computed functions
 
 ```js
-let result = 0
+let sum = 0
 
-// This function calculates the sum of observedObject and observedArray values,
-// which is 5 + 4 + 3 + 2 + 1 = 15 at this point.
-
-const computedFunction = computed(() => {
-    result = [ ...Object.values(observedObject), ...observedArray].reduce((acc, curr) => acc + curr)
+// This function calculates the sum of all elements,
+// which is 1 + 2 + 3 + 4 + 5 = 15 at this point.
+const calculateSum = computed(() => {
+    sum = [
+        ...Object.values(object),
+        ...array
+    ].reduce((acc, curr) => acc + curr)
 })
 
-// By default, a computed function is automatically called when declared.
-
-console.log(result) // -> 15
-
-// To prevent this behaviour set the autoRun option to false.
-// Warning : the computed function *must* be called at least once to calculate its dependencies.
-
-const _ = computed(() => {}, { autoRun: false })
+// A computed function is called when declared.
+console.log(sum) // -> 15
 ```
 
 #### 3. Mutate observed properties
 
 ```js
-// computedFunction will be called each time one of its dependencies has changed.
+// calculateSum will be called each time one of its dependencies has changed.
 
-observedObject.a = 6
-console.log(result) // -> 16
-observedArray[0] = 4
-console.log(result) // -> 17
+object.one = 2
+console.log(sum) // -> 16
+array[0]++
+console.log(sum) // -> 17
 
-observedArray.unshift(1)
-console.log(result) // -> 18
-observedArray.pop()
-console.log(result) // -> 17
+array.unshift(1)
+console.log(sum) // -> 18
+array.shift()
+console.log(sum) // -> 17
 ```
 
 #### 4. Release computed functions
 
 ```js
-// Observed objects store computed function references in a Set, so you need to
-// release those yourself whenever needed to prevent memory leaks.
-
-dispose(computedFunction)
+// Observed objects store computed function references in a Set,
+// which prevents garbage collection as long as the object lives.
+// Calling dispose allows the function to be garbage collected.
+dispose(calculateSum)
 ```
 
 ## Add-ons
@@ -173,23 +176,26 @@ dispose(computedFunction)
 
 ```js
 // Observe an object and its properties.
-
 const obj = observe({
-    a: 1, b: 2, sum: 0, counter: 0
+    a: 1,
+    b: 2,
+    sum: 0,
+    counter: 0
 })
 
 // The computed function auto-runs by default.
-
 computed(() => {
-    // This function depends on obj.a, obj.b and obj.counter.
+    // This function depends on a, b and counter.
     obj.sum = obj.a + obj.b
-    // It also sets the value of obj.counter, which is circular (get & set).
+    // It also sets the value of counter, which is circular (get & set).
     obj.counter++
 })
 
+// The function gets executed when computed() is called…
 console.log(obj.sum)     // -> 3
 console.log(obj.counter) // -> 1
 obj.a = 2
+// …and when a or b are mutated.
 console.log(obj.sum)     // -> 4
 console.log(obj.counter) // -> 2
 obj.b = 3
@@ -215,7 +221,7 @@ const cPlusD = () => {
     return obj.c + obj.d
 }
 
-// Depends on a, b, c, d
+// Depends on a, b, c and d.
 computed(() => {
     obj.totalSum = aPlusB() + cPlusD()
 })
@@ -249,7 +255,6 @@ console.log(obj.d) // -> 80
 
 ```js
 // Promisified setTimeout.
-
 const delay = time => new Promise(resolve => setTimeout(resolve, time))
 
 const obj = observe({ a: 0, b: 0, c: 0 })
@@ -271,6 +276,7 @@ delayedMultiply().then(() => {
     console.log(obj.b) // -> 0
     obj.a = 2
     obj.b = 2
+    console.log(obj.c) // -> 0
     return delay(200)
 }).then(() => {
     console.log(obj.c) // -> 4
@@ -281,11 +287,9 @@ delayedMultiply().then(() => {
 
 ```js
 // Promisified setTimeout.
-
 const delay = time => new Promise(resolve => setTimeout(resolve, time))
 
 // Enable batch mode.
-
 const array = observe([0, 0, 0], { batch: true })
 
 let sum = 0
@@ -461,7 +465,9 @@ computed(fun: Function, { 
 
 - `autoRun: boolean`
 
-Runs the function argument at once.
+If false, will not run the function argument when calling `computed(function)`.
+
+The computed function **must** be called **at least once** to calculate its dependencies.
 
 - `callback: Function`
 
