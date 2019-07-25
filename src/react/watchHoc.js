@@ -52,11 +52,13 @@ function watchFunctionalComponent(Component) {
                 callback: function() {
                     mounted.current && forceUpdate({})
                 }
-            }), [])
+            }), [Component])
         React.useEffect(() => () => {
-            mounted.current = false
             dispose(wrappedComponent)
         }, [wrappedComponent])
+        React.useEffect(() => () => {
+            mounted.current = false
+        }, [])
         return wrappedComponent(injectedProps)
     }
     wrapper.displayName = Component.displayName || Component.name
