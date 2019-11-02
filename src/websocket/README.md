@@ -92,11 +92,11 @@ Alternatively, you can use the `autoExportMethods` option to automatically mark 
 
 const hostedObject = {
     a: 1,
-    getAPlus(number) {
+    getAPlusOne(number) {
         return hostedObject.a + 1
     },
-    // Mark getA as callable by the clients
-    __remoteMethods: [ 'getA' ]
+    // Mark getAPlusOne as callable by the clients
+    __remoteMethods: [ 'getAPlusOne' ]
 }
 
 wss.host(hostedObject)
@@ -106,6 +106,6 @@ wss.host(hostedObject, { autoExportMethods: true })
 
 /* Client side */
 
-const a = await clientObject.getAPlus(1)
+const a = await clientObject.getAPlusOne(1)
 // a = 2
 ```
