@@ -129,7 +129,7 @@ export function observe(obj, options = {}) {
                         } else if(dependent !== computedStack[0]) {
                             // Run the computed function
                             if(batch) {
-                                enqueue(dependent)
+                                enqueue(dependent, batch)
                             } else {
                                 dependent()
                             }

@@ -8,9 +8,9 @@ function process() {
     timeout = null
 }
 
-export function enqueue(task) {
+export function enqueue(task, batch) {
     if(timeout === null)
-        timeout = setTimeout(process, 0)
+        timeout = setTimeout(process, batch === true ? 0 : batch)
     queue.add(task)
 }
 

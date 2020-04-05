@@ -437,9 +437,10 @@ Observe only the properties listed.
 
 Ignore the properties listed.
 
-- `batch: boolean`
+- `batch: boolean | int`
 
 Batch computed properties calls, wrapping them in a setTimeout and executing them in a new context and preventing excessive calls.
+If batch is an integer greater than zero, the calls will be debounced by the value in milliseconds.
 
 - `deep: boolean`
 

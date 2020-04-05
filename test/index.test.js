@@ -310,6 +310,7 @@ test('batch computations', async () => {
 
     expect(sum).toBe(0)
 
+    array[0] = 0
     array[0] = 1
     array[1] = 2
     array[2] = 3
@@ -317,11 +318,46 @@ test('batch computations', async () => {
     await delay(100)
     expect(sum).toBe(6)
 
+    array[0] = 6
     array[0] = 7
     array[1] = 8
     array[2] = 10
 
     await delay(100)
+    expect(sum).toBe(25)
+})
+
+test('batch computations with custom debounce', async () => {
+    expect.assertions(8)
+
+    const array = observe([0, 0, 0], { batch: 1000 })
+    let sum = 0
+
+    computed(() => {
+        expect(true).toBe(true)
+        sum = array.reduce((acc, curr) => acc + curr)
+    })
+
+    expect(sum).toBe(0)
+
+    array[0] = 0
+    array[1] = 2
+    array[2] = 3
+
+    await delay(500)
+    expect(sum).toBe(0)
+    array[0] = 1
+    await delay(500)
+    expect(sum).toBe(6)
+
+    array[0] = 6
+    array[1] = 8
+    array[2] = 10
+
+    await delay(500)
+    array[0] = 7
+    expect(sum).toBe(6)
+    await delay(500)
     expect(sum).toBe(25)
 })
 
