@@ -2,11 +2,11 @@ import React from 'react'
 import wretch from 'wretch'
 import {
     render,
-    wait,
+    waitFor,
     cleanup,
     fireEvent
 } from '@testing-library/react'
-import 'jest-dom/extend-expect'
+import '@testing-library/jest-dom/extend-expect'
 import { ignoreActErrors, sleep } from './utils'
 
 import {
@@ -59,7 +59,7 @@ describe('React hooks test suite', () => {
 
             const { getByText } = render(<Component />)
             expect(getByText('loading')).toBeTruthy()
-            await wait(() => {
+            await waitFor(() => {
                 expect(getByText('text')).toBeTruthy()
             })
         })
@@ -84,7 +84,7 @@ describe('React hooks test suite', () => {
             }
             const { getByText } = render(<Component />)
             expect(getByText('loading')).toBeTruthy()
-            await wait(() => {
+            await waitFor(() => {
                 expect(getByText('Only absolute URLs are supported')).toBeTruthy()
             })
         })
@@ -140,10 +140,10 @@ describe('React hooks test suite', () => {
 
             const { getByText } = render(<Component />)
             expect(getByText('loading…')).toBeTruthy()
-            await wait(() => {
+            await waitFor(() => {
                 expect(getByText('hello world')).toBeTruthy()
             })
-            await wait(() => {
+            await waitFor(() => {
                 expect(getByText('bonjour le monde bonjour le monde')).toBeTruthy()
             })
         })
@@ -245,7 +245,7 @@ describe('React hooks test suite', () => {
 
             const { getByText, getByTestId } = render(<Component />)
             expect(getByText('loading')).toBeTruthy()
-            await wait(() => {
+            await waitFor(() => {
                 expect(getByTestId('stringified-data')).toBeTruthy()
             })
             expect(JSON.parse(getByTestId('stringified-data').textContent)).toEqual(normalizedPayload)
@@ -269,7 +269,7 @@ describe('React hooks test suite', () => {
             }
             const { getByText } = render(<Component />)
             expect(getByText('loading')).toBeTruthy()
-            await wait(() => {
+            await waitFor(() => {
                 expect(getByText('Only absolute URLs are supported')).toBeTruthy()
             })
         })
@@ -330,10 +330,10 @@ describe('React hooks test suite', () => {
 
             const { getByText } = render(<Component />)
             expect(getByText('loading…')).toBeTruthy()
-            await wait(() => {
+            await waitFor(() => {
                 expect(getByText('My Item')).toBeTruthy()
             })
-            await wait(() => {
+            await waitFor(() => {
                 expect(getByText('Updated Title Updated Title')).toBeTruthy()
             })
         })
@@ -372,7 +372,7 @@ describe('React hooks test suite', () => {
 
             const { getByText, getByTestId } = render(<Component />)
             expect(getByText('loading')).toBeTruthy()
-            await wait(() => {
+            await waitFor(() => {
                 expect(getByTestId('data-item')).toBeTruthy()
             })
             expect(JSON.parse(getByTestId('data-item').textContent)).toEqual(normalizedPayload.items['1'])
@@ -408,7 +408,7 @@ describe('React hooks test suite', () => {
 
             const { getByText, getByTestId } = render(<Component />)
             expect(getByText('loading')).toBeTruthy()
-            await wait(() => {
+            await waitFor(() => {
                 expect(getByTestId('data-item')).toBeTruthy()
             })
             expect(JSON.parse(getByTestId('data-item').textContent)).toEqual([normalizedPayload.items['1']])
@@ -467,7 +467,7 @@ describe('React hooks test suite', () => {
                 id: 1,
                 title: 'Title'
             })
-            await wait(() => {
+            await waitFor(() => {
                 expect(JSON.parse(getByTestId('data-item').textContent)).toEqual({
                     id: 1,
                     title: 'Updated title'
@@ -533,7 +533,7 @@ describe('React hooks test suite', () => {
                 title: 'Title'
             })
             fireEvent.click(getByTestId('refetch-button'))
-            await wait(() => {
+            await waitFor(() => {
                 expect(JSON.parse(getByTestId('data-item').textContent)).toEqual({
                     id: 1,
                     title: 'Updated title'

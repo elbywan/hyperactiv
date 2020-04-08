@@ -4,7 +4,7 @@ import {
     render,
     cleanup
 } from '@testing-library/react'
-import 'jest-dom/extend-expect'
+import '@testing-library/jest-dom/extend-expect'
 import TestRenderer from 'react-test-renderer'
 
 import { ignoreActErrors } from './utils'

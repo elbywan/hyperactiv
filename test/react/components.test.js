@@ -3,9 +3,9 @@ import {
     render,
     fireEvent,
     cleanup,
-    wait
+    waitFor
 } from '@testing-library/react'
-import 'jest-dom/extend-expect'
+import '@testing-library/jest-dom/extend-expect'
 
 import { ignoreActErrors } from './utils'
 import {
@@ -56,7 +56,7 @@ describe('React components test suite', () => {
 
         expect(store).toEqual({ firstName: 'John', lastName: 'Doe' })
 
-        await wait(() => {
+        await waitFor(() => {
             expect(getByTestId('firstname')).toHaveValue(store.firstName)
             expect(getByTestId('lastname')).toHaveValue(store.lastName)
             expect(getByTestId('hello')).toHaveTextContent(`Hello, ${store.firstName} ${store.lastName} !`)
