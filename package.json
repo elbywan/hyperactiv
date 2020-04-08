@@ -1,83 +1,83 @@
 {
-  "name": "hyperactiv",
-  "version": "0.8.1",
-  "description": "Super small observable & reactive objects library.",
-  "main": "dist/index.js",
-  "module": "src/index.js",
-  "repository": "https://github.com/elbywan/hyperactiv",
-  "bugs": {
-    "url": "https://github.com/elbywan/hyperactiv/issues"
-  },
-  "files": [
-    "src",
-    "dist",
-    "handlers",
-    "react",
-    "classes",
-    "websocket"
-  ],
-  "scripts": {
-    "start": "npm run lint && npm run build && npm run test",
-    "lint": "eslint ./src ./test",
-    "lint:fix": "eslint --fix ./src ./test",
-    "build": "npm run build:core && npm run build:handlers && npm run build:react && npm run build:classes && npm run build:websocket",
-    "build:core": "rollup -c config/rollup.config.js",
-    "build:handlers": "rollup -c config/rollup.handlers.config.js",
-    "build:react": "rollup -c config/rollup.react.config.js",
-    "build:http": "rollup -c config/rollup.http.config.js",
-    "build:classes": "rollup -c config/rollup.classes.config.js",
-    "build:websocket": "rollup -c config/rollup.websocket.config.js",
-    "test": "jest",
-    "coverage": "cat ./coverage/lcov.info | coveralls",
-    "clean": "rimraf {dist,react,handlers,websocket,classes}",
-    "prepublishOnly": "npm start"
-  },
-  "keywords": [
-    "computed properties",
-    "computed",
-    "reactive",
-    "observable",
-    "observe",
-    "react",
-    "store",
-    "normalize"
-  ],
-  "author": "Julien Elbaz",
-  "license": "MIT",
-  "jest": {
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.js"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/test/",
-      "/src/websocket/browser.js"
-    ]
-  },
-  "devDependencies": {
-    "@babel/core": "7.9.0",
-    "@babel/preset-env": "7.9.5",
-    "@babel/preset-react": "7.9.4",
-    "@testing-library/jest-dom": "^5.3.0",
-    "@testing-library/react": "10.0.2",
-    "@types/jest": "25.2.1",
-    "babel-eslint": "10.1.0",
-    "babel-jest": "25.2.6",
-    "coveralls": "3.0.11",
-    "eslint": "6.8.0",
-    "eslint-plugin-jest": "23.8.2",
-    "eslint-plugin-react": "7.19.0",
-    "jest": "25.2.7",
-    "node-fetch": "^2.6.0",
-    "normaliz": "^0.1.1",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
-    "react-test-renderer": "16.13.1",
-    "rimraf": "3.0.2",
-    "rollup": "2.3.4",
-    "rollup-plugin-terser": "5.3.0",
-    "wretch": "1.7.1",
-    "ws": "7.2.3"
-  }
+	"name": "hyperactiv",
+	"version": "0.8.2",
+	"description": "Super small observable & reactive objects library.",
+	"main": "dist/index.js",
+	"module": "src/index.js",
+	"repository": "https://github.com/elbywan/hyperactiv",
+	"bugs": {
+		"url": "https://github.com/elbywan/hyperactiv/issues"
+	},
+	"files": [
+		"src",
+		"dist",
+		"handlers",
+		"react",
+		"classes",
+		"websocket"
+	],
+	"scripts": {
+		"start": "npm run lint && npm run build && npm run test",
+		"lint": "eslint ./src ./test",
+		"lint:fix": "eslint --fix ./src ./test",
+		"build": "npm run build:core && npm run build:handlers && npm run build:react && npm run build:classes && npm run build:websocket",
+		"build:core": "rollup -c config/rollup.config.js",
+		"build:handlers": "rollup -c config/rollup.handlers.config.js",
+		"build:react": "rollup -c config/rollup.react.config.js",
+		"build:http": "rollup -c config/rollup.http.config.js",
+		"build:classes": "rollup -c config/rollup.classes.config.js",
+		"build:websocket": "rollup -c config/rollup.websocket.config.js",
+		"test": "jest",
+		"coverage": "cat ./coverage/lcov.info | coveralls",
+		"clean": "rimraf {dist,react,handlers,websocket,classes}",
+		"prepublishOnly": "npm start"
+	},
+	"keywords": [
+		"computed properties",
+		"computed",
+		"reactive",
+		"observable",
+		"observe",
+		"react",
+		"store",
+		"normalize"
+	],
+	"author": "Julien Elbaz",
+	"license": "MIT",
+	"jest": {
+		"collectCoverage": true,
+		"collectCoverageFrom": [
+			"src/**/*.js"
+		],
+		"coveragePathIgnorePatterns": [
+			"/node_modules/",
+			"/test/",
+			"/src/websocket/browser.js"
+		]
+	},
+	"devDependencies": {
+		"@babel/core": "7.9.0",
+		"@babel/preset-env": "7.9.5",
+		"@babel/preset-react": "7.9.4",
+		"@testing-library/jest-dom": "^5.3.0",
+		"@testing-library/react": "10.0.2",
+		"@types/jest": "25.2.1",
+		"babel-eslint": "10.1.0",
+		"babel-jest": "25.2.6",
+		"coveralls": "3.0.11",
+		"eslint": "6.8.0",
+		"eslint-plugin-jest": "23.8.2",
+		"eslint-plugin-react": "7.19.0",
+		"jest": "25.2.7",
+		"node-fetch": "^2.6.0",
+		"normaliz": "^0.1.1",
+		"react": "16.13.1",
+		"react-dom": "16.13.1",
+		"react-test-renderer": "16.13.1",
+		"rimraf": "3.0.2",
+		"rollup": "2.3.4",
+		"rollup-plugin-terser": "5.3.0",
+		"wretch": "1.7.1",
+		"ws": "7.2.3"
+	}
 }
