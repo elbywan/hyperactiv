@@ -28,7 +28,7 @@ This library also provides hooks that can fetch, normalize and cache data.
 
 - 💸 Lightweight
 
-*hyperactiv/react weight around **3KB** minzipped, and is **tree-sheakable** for more savings.*
+*hyperactiv/react weight around **3KB** minzipped, and is **tree-shakeable** for more savings.*
 
 - 🏗️ Normalized
 
