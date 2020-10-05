@@ -15,6 +15,11 @@
         "eslint:recommended",
         "plugin:react/recommended"
     ],
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
     "rules": {
         "no-console": ["warn"],
         "no-extra-parens": ["warn", "all"],
