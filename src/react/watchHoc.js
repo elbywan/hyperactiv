@@ -4,7 +4,7 @@ import { useStore } from './hooks/index'
 const { computed, dispose } = hyperactiv
 
 /**
- *  Wraps a class component and automatically updates it when the store mutates.
+ * Wraps a class component and automatically updates it when the store mutates.
  * @param {*} Component The component to wrap
  */
 const watchClassComponent = Component => new Proxy(Component, {
@@ -37,38 +37,35 @@ const watchClassComponent = Component => new Proxy(Component, {
 })
 
 /**
- *  Wraps a functional component and automatically updates it when the store mutates.
- * @param {*} Component The component to wrap
+ * Wraps a functional component and automatically updates it when the store mutates.
+ * @param {*} component The component to wrap
  */
-function watchFunctionalComponent(Component) {
+function watchFunctionalComponent(component) {
     const wrapper = props => {
-        const [, forceUpdate ] = React.useState()
+        const [, forceUpdate] = React.useReducer(x => x + 1, 0)
         const store = useStore()
-        const injectedProps = props.store ? props : { ...props, store }
-        const mounted = React.useRef(true)
-        const callback = React.useCallback(() => {
-            mounted.current && forceUpdate({})
-        })
-        const wrappedComponent = React.useMemo(() =>
-            computed(Component, {
+        const injectedProps = props.store ? props : {
+            ...props,
+            store
+        }
+        const [child, setChild] = React.useState(null)
+        React.useEffect(function onMount() {
+            setChild(() => computed(component, {
                 autoRun: false,
-                callback: callback
-            })
-        , [Component])
-        React.useEffect(() => () => {
-            dispose(callback)
-        }, [wrappedComponent])
-        React.useEffect(() => () => {
-            mounted.current = false
+                callback: forceUpdate
+            }))
+            return function onUnmount() {
+                dispose(forceUpdate)
+            }
         }, [])
-        return wrappedComponent(injectedProps)
+        return child ? child(injectedProps) : component(injectedProps)
     }
-    wrapper.displayName = Component.displayName || Component.name
+    wrapper.displayName = component.displayName || component.name
     return wrapper
 }
 
 /**
- *  Wraps a component and automatically updates it when the store mutates.
+ * Wraps a component and automatically updates it when the store mutates.
  * @param {*} Component The component to wrap
  */
 export const watch = Component =>
