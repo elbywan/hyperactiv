@@ -46,15 +46,17 @@ function watchFunctionalComponent(Component) {
         const store = useStore()
         const injectedProps = props.store ? props : { ...props, store }
         const mounted = React.useRef(true)
+        const callback = React.useCallback(() => {
+            mounted.current && forceUpdate({})
+        })
         const wrappedComponent = React.useMemo(() =>
             computed(Component, {
                 autoRun: false,
-                callback: function() {
-                    mounted.current && forceUpdate({})
-                }
-            }), [Component])
+                callback: callback
+            })
+        , [Component])
         React.useEffect(() => () => {
-            dispose(wrappedComponent)
+            dispose(callback)
         }, [wrappedComponent])
         React.useEffect(() => () => {
             mounted.current = false
