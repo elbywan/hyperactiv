@@ -135,19 +135,18 @@ describe('React http test suite', () => {
     const normalizeOptions = {
         entity: 'items',
         schema: [
-            'post', [
-                'users', [
-                    'comments'
-                ]
+            [ 'post', { mapping: 'posts' } ],
+            [ 'users',
+                [
+                    ['comments', {
+                        key: comment => comment.id + ' - ' + comment.subId
+                    }]
+                ],
+                {
+                    key: 'userId'
+                }
             ]
         ],
-        mappings: {
-            post: 'posts'
-        },
-        keys: {
-            users: 'userId',
-            comments: comment => comment.id + ' - ' + comment.subId
-        },
         from: {
             itemsContainer: 'container_1'
         }
