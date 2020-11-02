@@ -28,26 +28,26 @@ Of course, Hyperactiv **automatically** handles these dependencies so you **neve
 
 ```js
 import hyperactiv from 'hyperactiv'
-const { observe, compute } = hyperactiv
+const { observe, compute } = hyperactiv
 
 // This object is observed.
 const observed = observe({
     a: 1,
     b: 2,
-    c: 0 
+    c: 0
 })
 
 // Calling computed(...) runs the function and memorize its dependencies.
 // Here, the function depends on properties 'a' and 'b'.
 computed(() => {
-    const { a, b } = observed
+    const { a, b } = observed
     console.log(`a + b = ${a + b}`)
 })
 // Prints: a + b = 3
 
 // Whenever properties 'a' or 'b' are mutated…
 observed.a = 2
-// The function will be automagically be called.
+// The function will automagically be called.
 // Prints: a + b = 4
 
 observed.b = 3
@@ -99,7 +99,7 @@ const { computed, observe, dispose } = hyperactiv
 #### 1. Observe object and arrays
 
 ```js
-const object = observe({ one: 1, two: 2 })
+const object = observe({ one: 1, two: 2 })
 const array = observe([ 3, 4, 5 ])
 ```
 
@@ -269,7 +269,7 @@ const delayedMultiply = computed(
     ({ computeAsync }) =>
         delay(100).then(() =>
             computeAsync(multiply)),
-    { autoRun: false }
+    { autoRun: false }
 )
 
 delayedMultiply().then(() => {
@@ -290,7 +290,7 @@ delayedMultiply().then(() => {
 const delay = time => new Promise(resolve => setTimeout(resolve, time))
 
 // Enable batch mode.
-const array = observe([0, 0, 0], { batch: true })
+const array = observe([0, 0, 0], { batch: true })
 
 let sum = 0
 let triggerCount = 0
@@ -418,7 +418,7 @@ console.log(obj.sum) // -> 4
 Observes an object or an array and returns a proxified version which reacts on mutations.
 
 ```ts
-observe(Object | Array, {
+observe(Object | Array, {
     props: String[],
     ignore: String[],
     batch: boolean,
@@ -456,7 +456,7 @@ Wraps a function and captures observed properties which are accessed during the 
 When those properties are mutated, the function is called to reflect the changes.
 
 ```ts
-computed(fun: Function, { 
+computed(fun: Function, {
     autoRun: boolean,
     callback: Function
 }) => Proxy
