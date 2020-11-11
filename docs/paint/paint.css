@@ -41,12 +41,12 @@ div#container {
 }
 
 div#container > div {
-    flex: 1 0 auto;
+    flex: 1;
     display: inline-flex;
 }
 
 div#container > div > span {
-    flex: 1 0 auto;
+    flex: 1;
 }
 div#container > div > span:hover {
     border: 1px solid black;

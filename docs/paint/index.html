@@ -35,7 +35,7 @@
         <button onclick="window.setColor(this, 'green')">Green</button>
         <button onclick="window.setColor(this, 'blue')">Blue</button>
         <button class='selected' onclick="window.setColor(this, 'random')">Random</button>
-        <input type="color" onchange="window.setColor(this, hexToRgb(this.value))"/>
+        <input type="color" oninput="window.setColor(this, hexToRgb(this.value))"  onclick="window.setColor(this, hexToRgb(this.value))" />
     </div>
     <div id="container"></div>
 
@@ -70,7 +70,7 @@
             const squares = []
             const container = document.getElementById('container')
             container.onmousedown = (event) => {
-                const { square } = event.target
+                const { square } = event.target
 
                 if(window.color instanceof Object) {
                     square.r = window.color.r
@@ -149,7 +149,7 @@
                         r: 255,
                         g: 255,
                         b: 255
-                    }, { batch: true })
+                    }, { batch: true })
                     computed(() => {
                         square.style.background = `rgb(${square.square.r},${square.square.g},${square.square.b})`
                     })
