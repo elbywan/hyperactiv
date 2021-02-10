@@ -275,7 +275,7 @@ test('"class" syntax', () => {
     expect(obj.sum).toBe(4)
 })
 
-test('observe only certain object properties', () => {
+test('not observe ignored properties (props & ignore: array<string>)', () => {
     const object = {
         a: 0,
         b: 0,
@@ -283,6 +283,28 @@ test('observe only certain object properties', () => {
     }
     const observeA = observe(object, { props:  ['a'] })
     const observeB = observe(object, { ignore: ['a', 'sum'] })
+
+    computed(function() {
+        observeA.sum = observeA.a + observeB.b
+    })
+
+    observeA.a = 2
+    expect(object.sum).toBe(2)
+    observeA.b = 1
+    observeB.a = 1
+    expect(object.sum).toBe(2)
+    observeB.b = 2
+    expect(object.sum).toBe(3)
+})
+
+test('not observe ignored properties (props & ignore: function)', () => {
+    const object = {
+        a: 0,
+        b: 0,
+        sum: 0
+    }
+    const observeA = observe(object, { props:  key => key === 'a' })
+    const observeB = observe(object, { ignore: key => ['a', 'sum'].includes(key) })
 
     computed(function() {
         observeA.sum = observeA.a + observeB.b

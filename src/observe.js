@@ -26,7 +26,17 @@ export function observe(obj, options = {}) {
     }
 
     // If the prop is explicitely not excluded
-    const isWatched = prop => (!props || props.includes(prop)) && (!ignore || !ignore.includes(prop))
+    const isWatched = (prop, value) =>
+        (
+            !props ||
+            props instanceof Array && props.includes(prop) ||
+            typeof props === 'function' && props(prop, value)
+        ) && (
+            !ignore ||
+            !(ignore instanceof Array && ignore.includes(prop)) &&
+            !(typeof ignore === 'function' && ignore(prop, value))
+        )
+
 
     // Add the object to the observers map.
     // observersMap signature : Map<Object, Map<Property, Set<Computed function>>>
@@ -38,7 +48,7 @@ export function observe(obj, options = {}) {
     // If the deep flag is set, observe nested objects/arrays
     if(deep) {
         Object.entries(obj).forEach(function([key, val]) {
-            if(isObj(val) && isWatched(key)) {
+            if(isObj(val) && isWatched(key, val)) {
                 obj[key] = observe(val, options)
                 // If bubble is set, we add keys to the object used to bubble up the mutation
                 if(bubble) {
@@ -55,7 +65,7 @@ export function observe(obj, options = {}) {
                 return true
 
             // If the prop is watched
-            if(isWatched(prop)) {
+            if(isWatched(prop, obj[prop])) {
                 // If a computed function is being run
                 if(computedStack.length) {
                     const propertiesMap = observersMap.get(obj)
@@ -80,7 +90,7 @@ export function observe(obj, options = {}) {
             if(prop === '__handler') {
                 // Don't track bubble handlers
                 setHiddenKey(obj, '__handler', value)
-            } else if(!isWatched(prop)) {
+            } else if(!isWatched(prop, value)) {
                 // If the prop is ignored
                 obj[prop] = value
             } else if(Array.isArray(obj) && prop === 'length' || obj[prop] !== value) {
