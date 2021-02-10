@@ -38,7 +38,7 @@ export function observe(obj, options = {}) {
     // If the deep flag is set, observe nested objects/arrays
     if(deep) {
         Object.entries(obj).forEach(function([key, val]) {
-            if(isObj(val)) {
+            if(isObj(val) && isWatched(key)) {
                 obj[key] = observe(val, options)
                 // If bubble is set, we add keys to the object used to bubble up the mutation
                 if(bubble) {
