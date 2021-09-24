@@ -13,8 +13,8 @@ import classes from 'hyperactiv/classes'
 Or alternatively if you prefer script tags :
 
 ```html
-<script src="https://unpkg.com/hyperactiv/index.js"></script>
-<script src="https://unpkg.com/hyperactiv/classes/index.js" ></script>
+<script src="https://unpkg.com/hyperactiv"></script>
+<script src="https://unpkg.com/hyperactiv/classes" ></script>
 ```
 
 ```js

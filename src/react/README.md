@@ -59,8 +59,8 @@ import { watch, store, ... } from 'hyperactiv/src/react'
 And alternatively, if you prefer script tags:
 
 ```html
-<script src="https://unpkg.com/hyperactiv/index.js"></script>
-<script src="https://unpkg.com/hyperactiv/react/index.js"></script>
+<script src="https://unpkg.com/hyperactiv"></script>
+<script src="https://unpkg.com/hyperactiv/react"></script>
 ```
 
 ```js
