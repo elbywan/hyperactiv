@@ -1,6 +1,8 @@
 /* global React, ReactDOM */
 const { Fragment, memo } = React
-const { watch, Watch, store: hyperactivStore } = window['react-hyperactiv']
+const { watch, Watch, store: hyperactivStore, setHooksDependencies } = window['react-hyperactiv']
+
+setHooksDependencies({ wretch: window.wretch })
 
 /* Store */
 

@@ -1,16 +1,11 @@
-import { useContext } from 'react'
-import { HyperactivContext } from '../context/index'
+import dependencies from './dependencies'
+
+export function setHooksDependencies({ wretch, normaliz }) {
+    if(wretch) dependencies.references.wretch = wretch
+    if(normaliz) dependencies.references.normaliz = normaliz
+}
 
 export * from './useNormalizedRequest'
 export * from './useRequest'
 export * from './useResource'
-
-export function useStore() {
-    const context = useContext(HyperactivContext)
-    return context && context.store
-}
-
-export function useClient() {
-    const context = useContext(HyperactivContext)
-    return context && context.client
-}
+export * from './context'

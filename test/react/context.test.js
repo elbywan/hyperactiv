@@ -1,5 +1,6 @@
 import React from 'react'
 import wretch from 'wretch'
+import { normaliz } from 'normaliz'
 import {
     render,
     cleanup
@@ -16,12 +17,13 @@ import {
     useRequest,
     useNormalizedRequest,
     useStore,
-    useClient
+    useClient,
+    setHooksDependencies
 } from '../../src/react'
 
 ignoreActErrors()
 afterEach(cleanup)
-
+setHooksDependencies({ wretch, normaliz })
 wretch().polyfills({
     fetch: require('node-fetch')
 })

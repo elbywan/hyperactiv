@@ -1,12 +1,11 @@
 import { useState, useMemo, useEffect, useContext, useRef } from 'react'
-import wretch from 'wretch'
-
 import { identity, defaultSerialize, defaultRootKey } from '../../http/tools'
 import { HyperactivContext, SSRContext } from '../context/index'
+import dependencies from './dependencies'
 
 export function useRequest(url, {
     store,
-    client = wretch(),
+    client,
     skip = () => false,
     beforeRequest = identity,
     afterRequest = identity,
@@ -19,7 +18,7 @@ export function useRequest(url, {
     const contextValue = useContext(HyperactivContext)
     const ssrContext = ssr && useContext(SSRContext)
     store = contextValue && contextValue.store || store
-    client = contextValue && contextValue.client || client
+    client = contextValue && contextValue.client || client || dependencies.references.wretch()
 
     const configuredClient = useMemo(() => beforeRequest(client.url(url)), [client, beforeRequest, url])
     const storeKey = useMemo(() => serialize('get', configuredClient._url), [configuredClient])

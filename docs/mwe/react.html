@@ -5,6 +5,7 @@
   <script defer src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
   <script defer src="https://unpkg.com/wretch" crossorigin></script>
   <script defer src="https://unpkg.com/normaliz" crossorigin></script>
+  <script defer src="https://unpkg.com/hyperactiv/index.js" crossorigin></script>
   <script defer src="https://unpkg.com/hyperactiv/react/index.js" crossorigin></script>
   <script defer src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
 </head>
@@ -16,8 +17,11 @@
     const {
       watch,
       store: createStore,
-      useResource
+      useResource,
+      setHooksDependencies
     } = window['react-hyperactiv']
+
+    setHooksDependencies({ wretch: window.wretch, normaliz: window.normaliz.normaliz })
 
     // The global store containing todos.
     const store = createStore({ todos: {} })

@@ -59,6 +59,7 @@ import { watch, store, ... } from 'hyperactiv/src/react'
 And alternatively, if you prefer script tags:
 
 ```html
+<script src="https://unpkg.com/hyperactiv/index.js"></script>
 <script src="https://unpkg.com/hyperactiv/react/index.js"></script>
 ```
 
@@ -95,6 +96,7 @@ npm i normaliz
   <script defer src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
   <script defer src="https://unpkg.com/wretch" crossorigin></script>
   <script defer src="https://unpkg.com/normaliz" crossorigin></script>
+  <script defer src="https://unpkg.com/hyperactiv/index.js" crossorigin></script>
   <script defer src="https://unpkg.com/hyperactiv/react/index.js" crossorigin></script>
   <script defer src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
 </head>
@@ -106,8 +108,11 @@ npm i normaliz
     const {
       watch,
       store: createStore,
-      useResource
+      useResource,
+      setHooksDependencies
     } = window['react-hyperactiv']
+
+    setHooksDependencies({ wretch: window.wretch, normaliz: window.normaliz.normaliz })
 
     // The global store containing todos.
     const store = createStore({ todos: {} })
@@ -231,6 +236,21 @@ class App extends React.Component {
 
 Fetches data and cache the result, supports multiple fetch policies and options.
 Inspired by [react-apollo](https://github.com/apollographql/react-apollo).
+
+
+#### setHooksDependencies
+
+Before using the hooks you need to register the dependencies using `.setHooksDependencies`.
+
+*The reason why this method exists (and not done automatically) is to reduce the bundling size and to allow using most of the `hyperactiv/react` features without the need to `npm i` these packages.*
+
+```js
+import { setHooksDependencies } from 'hyperactiv/react'
+import wretch from 'wretch'
+import { normaliz } from 'normaliz'
+
+setHooksDependencies({ wretch, normaliz })
+```
 
 #### `useResource`
 

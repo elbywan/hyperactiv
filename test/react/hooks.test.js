@@ -1,5 +1,6 @@
 import React from 'react'
 import wretch from 'wretch'
+import { normaliz } from 'normaliz'
 import {
     render,
     waitFor,
@@ -14,7 +15,8 @@ import {
     store as createStore,
     useRequest,
     useNormalizedRequest,
-    useResource
+    useResource,
+    setHooksDependencies
 } from '../../src/react'
 import {
     normalizedOperations
@@ -22,13 +24,12 @@ import {
 
 ignoreActErrors()
 afterEach(cleanup)
-
+setHooksDependencies({ wretch, normaliz })
 wretch().polyfills({
     fetch: require('node-fetch')
 })
 
 describe('React hooks test suite', () => {
-
     describe('useRequest', () => {
         it('should fetch data', async () => {
             const store = {}

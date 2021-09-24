@@ -13,6 +13,7 @@ import classes from 'hyperactiv/classes'
 Or alternatively if you prefer script tags :
 
 ```html
+<script src="https://unpkg.com/hyperactiv/index.js"></script>
 <script src="https://unpkg.com/hyperactiv/classes/index.js" ></script>
 ```
 
@@ -33,7 +34,7 @@ observed.computed(function() {
     this.sum = this.a + this.b
 })
 
-console.log(observed.sum) 
+console.log(observed.sum)
 // log> 2
 
 // Same syntax as handlers. See: hyperactiv/handlers

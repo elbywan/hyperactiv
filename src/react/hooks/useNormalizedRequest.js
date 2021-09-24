@@ -1,14 +1,13 @@
 import { useState, useMemo, useEffect, useContext, useRef } from 'react'
-import wretch from 'wretch'
-import { normaliz } from 'normaliz'
 
 import { identity, defaultSerialize, defaultRootKey, normalizedOperations } from '../../http/tools'
 import { HyperactivContext, SSRContext } from '../context/index'
+import dependencies from './dependencies'
 
 export function useNormalizedRequest(url, {
     store,
     normalize,
-    client = wretch(),
+    client,
     skip = () => false,
     beforeRequest = identity,
     afterRequest = identity,
@@ -21,7 +20,7 @@ export function useNormalizedRequest(url, {
     const contextValue = useContext(HyperactivContext)
     const ssrContext = ssr && useContext(SSRContext)
     store = contextValue && contextValue.store || store
-    client = contextValue && contextValue.client || client
+    client = contextValue && contextValue.client || client || dependencies.references.wretch()
 
     const configuredClient = useMemo(() => beforeRequest(client.url(url)), [client, beforeRequest, url])
     const storeKey = useMemo(() => serialize('get', configuredClient._url), [configuredClient])
@@ -59,7 +58,7 @@ export function useNormalizedRequest(url, {
             // eslint-disable-next-line no-unexpected-multiline
             [bodyType](body => afterRequest(body))
             .then(result => {
-                const normalizedData = normaliz(result, normalize)
+                const normalizedData = dependencies.references.normaliz(result, normalize)
                 store[rootKey][storeKey] = Object.entries(normalizedData).reduce((mappings, [ entity, dataById ]) => {
                     mappings[entity] = Object.keys(dataById)
                     return mappings
