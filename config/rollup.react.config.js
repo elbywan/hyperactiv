@@ -1,4 +1,4 @@
-import { IS_TEST_BUILD, plugins, sourcemap } from './common'
+import { IS_TEST_BUILD, HYPERACTIV_PATH, plugins, sourcemap } from './common'
 
 export default {
     input: './src/react/index.js',
@@ -11,7 +11,11 @@ export default {
             'react-dom': 'ReactDOM',
             'react-dom/server': 'ReactDOMServer',
             wretch: 'wretch',
-            normaliz: 'normaliz'
+            normaliz: 'normaliz',
+            [HYPERACTIV_PATH]: 'hyperactiv'
+        },
+        paths: {
+            [HYPERACTIV_PATH]: 'hyperactiv'
         },
         sourcemap
     },
@@ -21,6 +25,7 @@ export default {
         'react-dom',
         'react-dom/server',
         'wretch',
-        'normaliz'
+        'normaliz',
+        HYPERACTIV_PATH
     ]
 }

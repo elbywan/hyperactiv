@@ -1,5 +1,7 @@
+import path from 'path'
 import { terser } from 'rollup-plugin-terser'
 
+export const HYPERACTIV_PATH = path.resolve(__dirname, '../src/index.js')
 export const IS_TEST_BUILD = process.env.TEST_BUILD
 
 export const plugins = [

@@ -6,7 +6,8 @@ const serverBuild = {
         file: IS_TEST_BUILD ? 'websocket/server.full.js' : 'websocket/server.js',
         format: 'cjs',
         name: 'hyperactiv-websocket',
-        sourcemap
+        sourcemap,
+        exports: 'default'
     },
     plugins
 }
