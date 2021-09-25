@@ -42,6 +42,23 @@ This library also provides hooks that can fetch, normalize and cache data.
 
 *SSR is supported out of the box.*
 
+## Minimal Working Example
+
+```js
+import { watch, store as createStore } from 'hyperactiv/src/react'
+
+const store = createStore({ counter: 0 })
+
+const Counter = watch(() =>
+  <div>
+    <h1>Counter: {store.counter}</h1>
+    <button onClick={() => store.counter += 1}>Click me</button>
+  </div>
+)
+```
+
+<img src="assets/counter.gif" alt="counter-gif" height="100">
+
 ## Import
 
 The UMD way, compatible with most environments:
@@ -84,7 +101,7 @@ npm i normaliz
 
 **[React hooks demo](https://github.com/elbywan/hyperactiv-hooks-demo)**
 
-## Minimal working example
+## Self-contained example
 
 [Hosted here.](https://elbywan.github.io/hyperactiv/mwe/react.html)
 
