@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react'
 import wretch from 'wretch'
 import { normaliz } from 'normaliz'
@@ -8,7 +12,7 @@ import {
     fireEvent
 } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
-import { ignoreActErrors, sleep } from './utils'
+import { sleep } from './utils'
 
 import {
     watch,
@@ -22,7 +26,6 @@ import {
     normalizedOperations
 } from '../../src/http/tools'
 
-ignoreActErrors()
 afterEach(cleanup)
 setHooksDependencies({ wretch, normaliz })
 wretch().polyfills({

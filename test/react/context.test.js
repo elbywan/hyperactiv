@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react'
 import wretch from 'wretch'
 import { normaliz } from 'normaliz'
@@ -8,7 +12,6 @@ import {
 import '@testing-library/jest-dom/extend-expect'
 import TestRenderer from 'react-test-renderer'
 
-import { ignoreActErrors } from './utils'
 import {
     store as createStore,
     HyperactivProvider,
@@ -21,7 +24,6 @@ import {
     setHooksDependencies
 } from '../../src/react'
 
-ignoreActErrors()
 afterEach(cleanup)
 setHooksDependencies({ wretch, normaliz })
 wretch().polyfills({
@@ -126,7 +128,10 @@ describe('React context test suite', () => {
                 <SSRComponent />
             </HyperactivProvider>
 
-        await preloadData(jsx)
+        await TestRenderer.act(async () => {
+            await preloadData(jsx)
+        })
+
         expect(store).toEqual({
             entity: {
                 1: {
@@ -155,7 +160,9 @@ describe('React context test suite', () => {
                 <SSRComponent />
             </HyperactivProvider>
 
-        await preloadData(jsx, { depth: 1 })
+        await TestRenderer.act(async () => {
+            await preloadData(jsx, { depth: 1 })
+        })
         expect(store).toEqual({
             __requests__: {
                 test: {
@@ -173,7 +180,9 @@ describe('React context test suite', () => {
                 <SSRComponent noSSR/>
             </HyperactivProvider>
 
-        await preloadData(jsx)
+        await TestRenderer.act(async () => {
+            await preloadData(jsx)
+        })
         expect(store).toEqual({
             __requests__: {}
         })

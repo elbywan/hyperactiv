@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react'
 import {
     render,
@@ -7,7 +11,6 @@ import {
 } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 
-import { ignoreActErrors } from './utils'
 import {
     Watch,
     watch,
@@ -15,7 +18,6 @@ import {
     HyperactivProvider
 } from '../../src/react'
 
-ignoreActErrors()
 afterEach(cleanup)
 
 describe('React components test suite', () => {
