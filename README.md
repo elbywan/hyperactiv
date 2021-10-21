@@ -28,7 +28,7 @@ Of course, Hyperactiv **automatically** handles these dependencies so you **neve
 
 ```js
 import hyperactiv from 'hyperactiv'
-const { observe, compute } = hyperactiv
+const { observe, computed } = hyperactiv
 
 // This object is observed.
 const observed = observe({
