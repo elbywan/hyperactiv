@@ -1,7 +1,7 @@
 import wretch from 'wretch'
 import { normaliz } from 'normaliz'
 
-import { identity, defaultSerialize, defaultRootKey, normalizedOperations } from './tools'
+import { identity, defaultSerialize, defaultRootKey, normalizedOperations } from './tools.js'
 
 export function normalized(url, {
     store,

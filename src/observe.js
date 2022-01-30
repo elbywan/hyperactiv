@@ -3,12 +3,32 @@ import {
     defineBubblingProperties,
     getInstanceMethodKeys,
     setHiddenKey
-} from './tools'
-import { data } from './data'
-import { enqueue } from './batcher'
+} from './tools.js'
+import { data } from './data.js'
+import { enqueue } from './batcher.js'
 
 const { observersMap, computedStack, computedDependenciesTracker } = data
 
+/**
+ * @typedef {Object} Options - Observe options.
+ * @property {string[]} [prop] - Observe only the properties listed.
+ * @property {string[]} [ignore] - Ignore the properties listed.
+ * @property {boolean | number} [batch] -
+ *  Batch computed properties calls, wrapping them in a setTimeout and
+ *  executing them in a new context and preventing excessive calls.
+ *  If batch is an integer greater than zero, the calls will be debounced by the value in milliseconds.
+ * @prop {number} [deep] - Recursively observe nested objects and when setting new properties.
+ * @prop {number} [bind] - Automatically bind methods to the observed object.
+ */
+
+/**
+ * Observes an object or an array and returns a proxified version which reacts on mutations.
+ *
+ * @template O
+ * @param {O} obj - The object to observe.
+ * @param {Options} options - Options
+ * @returns {O} - A proxy wrapping the object.
+ */
 export function observe(obj, options = {}) {
     // 'deep' is slower but reasonable; 'shallow' a performance enhancement but with side-effects
     const {

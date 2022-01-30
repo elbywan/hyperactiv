@@ -1,4 +1,4 @@
-import { writeHandler } from '../handlers/write'
+import { writeHandler } from '../handlers/write.js'
 
 export default (url, obj, debug, timeout) => {
     const cbs = {}, ws = new WebSocket(url || 'ws://localhost:8080'), update = writeHandler(obj)

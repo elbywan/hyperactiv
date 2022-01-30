@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { HyperactivContext } from '../context/index'
+import { HyperactivContext } from '../context/index.js'
 
 export function useStore() {
     const context = useContext(HyperactivContext)

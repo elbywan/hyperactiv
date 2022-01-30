@@ -5,6 +5,8 @@
 /react
 /classes
 /websocket
+/types
+/temp
 
 # Logs
 logs

@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect, useContext, useRef } from 'react'
 
-import { identity, defaultSerialize, defaultRootKey, normalizedOperations } from '../../http/tools'
-import { HyperactivContext, SSRContext } from '../context/index'
-import dependencies from './dependencies'
+import { identity, defaultSerialize, defaultRootKey, normalizedOperations } from '../../http/tools.js'
+import { HyperactivContext, SSRContext } from '../context/index.js'
+import dependencies from './dependencies.js'
 
 export function useNormalizedRequest(url, {
     store,

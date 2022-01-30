@@ -1,6 +1,6 @@
-import { observe } from './observe'
-import { computed } from './computed'
-import { dispose } from './dispose'
+import { observe } from './observe.js'
+import { computed } from './computed.js'
+import { dispose } from './dispose.js'
 
 export default {
     observe,

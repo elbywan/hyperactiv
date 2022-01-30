@@ -1,4 +1,4 @@
-import { normalized } from './normalized'
+import { normalized } from './normalized.js'
 
 function formatData(data, entity, id) {
     return (

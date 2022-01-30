@@ -1,3 +1,3 @@
-export { request } from './request'
-export { normalized } from './normalized'
-export { resource } from './resource'
+export { request } from './request.js'
+export { normalized } from './normalized.js'
+export { resource } from './resource.js'

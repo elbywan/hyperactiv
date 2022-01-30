@@ -1,6 +1,6 @@
 import React from 'react'
-import hyperactiv from '../../src/index'
-import { useStore } from './hooks/context'
+import hyperactiv from '../../src/index.js'
+import { useStore } from './hooks/context.js'
 const { computed, dispose } = hyperactiv
 
 /**

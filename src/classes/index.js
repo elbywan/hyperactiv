@@ -1,4 +1,4 @@
-import hyperactiv from '../index'
+import hyperactiv from '../index.js'
 const { observe, computed, dispose } = hyperactiv
 
 export class Observable {

@@ -1,6 +1,6 @@
 import { useMemo, useContext } from 'react'
-import { useNormalizedRequest } from './useNormalizedRequest'
-import { HyperactivContext } from '../context/index'
+import { useNormalizedRequest } from './useNormalizedRequest.js'
+import { HyperactivContext } from '../context/index.js'
 
 function formatData(data, entity, id) {
     return (

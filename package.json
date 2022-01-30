@@ -2,14 +2,78 @@
 	"name": "hyperactiv",
 	"version": "0.9.0",
 	"description": "Super small observable & reactive objects library.",
-	"main": "dist/index.js",
-	"module": "src/index.js",
+	"type": "module",
+	"main": "./dist/index.js",
+	"module": "./src/index.js",
+	"types": "./types/index.d.ts",
+	"typesVersions": {
+		"*": {
+			"react": [
+				"./types/react/index.d.ts"
+			],
+			"src/react": [
+				"./types/react/index.d.ts"
+			],
+			"classes": [
+				"./types/classes/index.d.ts"
+			],
+			"src/classes": [
+				"./types/classes/index.d.ts"
+			],
+			"handlers": [
+				"./types/handlers/index.d.ts"
+			],
+			"src/handlers": [
+				"./types/handlers/index.d.ts"
+			],
+			"http": [
+				"./types/http/index.d.ts"
+			],
+			"src/http": [
+				"./types/http/index.d.ts"
+			],
+			"websocket": [
+				"./types/websocket/index.d.ts"
+			],
+			"src/websocket": [
+				"./types/websocket/index.d.ts"
+			]
+		}
+	},
+	"exports": {
+		".": {
+			"import": "./src/index.js",
+			"require": "./dist/index.js"
+		},
+		"./react": {
+			"import": "./src/react/index.js",
+			"require": "./dist/react/index.js"
+		},
+		"./classes": {
+			"import": "./src/classes/index.js",
+			"require": "./dist/classes/index.js"
+		},
+		"./handlers": {
+			"import": "./src/handlers/index.js",
+			"require": "./dist/handlers/index.js"
+		},
+		"./http": {
+			"import": "./src/http/index.js",
+			"require": "./dist/http/index.js"
+		},
+		"./websocket": {
+			"import": "./src/websocket/index.js",
+			"require": "./dist/websocket/index.js"
+		},
+		"./package.json": "./package.json"
+	},
 	"repository": "https://github.com/elbywan/hyperactiv",
 	"bugs": {
 		"url": "https://github.com/elbywan/hyperactiv/issues"
 	},
 	"files": [
 		"src",
+		"types",
 		"dist",
 		"handlers",
 		"react",
@@ -21,6 +85,7 @@
 		"lint": "eslint ./src ./test",
 		"lint:fix": "eslint --fix ./src ./test",
 		"build": "npm run build:core && npm run build:handlers && npm run build:react && npm run build:classes && npm run build:websocket",
+		"build:types": "tsc",
 		"build:core": "rollup -c config/rollup.config.js",
 		"build:handlers": "rollup -c config/rollup.handlers.config.js",
 		"build:react": "rollup -c config/rollup.react.config.js",
@@ -29,7 +94,7 @@
 		"build:websocket": "rollup -c config/rollup.websocket.config.js",
 		"test": "jest",
 		"coverage": "cat ./coverage/lcov.info | coveralls",
-		"clean": "rimraf {dist,react,handlers,websocket,classes}",
+		"clean": "rimraf {dist,react,handlers,websocket,classes,types}",
 		"prepublishOnly": "npm start"
 	},
 	"keywords": [
@@ -56,28 +121,29 @@
 		]
 	},
 	"devDependencies": {
-		"@babel/core": "7.15.5",
-		"@babel/eslint-parser": "^7.15.7",
-		"@babel/preset-env": "7.15.6",
-		"@babel/preset-react": "7.14.5",
-		"@testing-library/jest-dom": "5.14.1",
-		"@testing-library/react": "12.1.0",
-		"@types/jest": "27.0.2",
-		"babel-jest": "27.2.1",
+		"@babel/core": "7.16.12",
+		"@babel/eslint-parser": "^7.16.5",
+		"@babel/preset-env": "7.16.11",
+		"@babel/preset-react": "7.16.7",
+		"@testing-library/jest-dom": "5.16.1",
+		"@testing-library/react": "12.1.2",
+		"@types/jest": "27.4.0",
+		"babel-jest": "27.4.6",
 		"coveralls": "3.1.1",
-		"eslint": "7.32.0",
-		"eslint-plugin-jest": "24.4.2",
-		"eslint-plugin-react": "7.26.0",
-		"jest": "27.2.1",
+		"eslint": "8.8.0",
+		"eslint-plugin-jest": "26.0.0",
+		"eslint-plugin-react": "7.28.0",
+		"jest": "27.4.7",
 		"node-fetch": "2.6.1",
 		"normaliz": "0.2.0",
 		"react": "17.0.2",
 		"react-dom": "17.0.2",
 		"react-test-renderer": "17.0.2",
 		"rimraf": "3.0.2",
-		"rollup": "2.57.0",
+		"rollup": "2.66.1",
 		"rollup-plugin-terser": "7.0.2",
-		"wretch": "1.7.6",
+		"typescript": "^4.5.5",
+		"wretch": "1.7.8",
 		"ws": "^7.5.5"
 	}
 }

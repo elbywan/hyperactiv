@@ -1,6 +1,6 @@
 import wretch from 'wretch'
 
-import { identity, defaultSerialize, defaultRootKey } from './tools'
+import { identity, defaultSerialize, defaultRootKey } from './tools.js'
 
 export function request(url, {
     store,

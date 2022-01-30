@@ -1,5 +1,5 @@
 import React from 'react'
-import hyperactiv from '../../src/index'
+import hyperactiv from '../../src/index.js'
 const { computed, dispose } = hyperactiv
 
 export class Watch extends React.Component {

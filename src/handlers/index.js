@@ -1,6 +1,6 @@
-import { allHandler } from './all'
-import { debugHandler } from './debug'
-import { writeHandler } from './write'
+import { allHandler } from './all.js'
+import { debugHandler } from './debug.js'
+import { writeHandler } from './write.js'
 
 export default {
     write: writeHandler,
