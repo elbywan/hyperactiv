@@ -1,5 +1,5 @@
 /**
- * @jest-environment jsdom
+ * @jest-environment ./test/environment
  */
 
 import React from 'react'

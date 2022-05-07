@@ -1,5 +1,5 @@
 /**
- * @jest-environment jsdom
+ * @jest-environment ./test/environment
  */
 
 import React from 'react'
@@ -29,6 +29,56 @@ setHooksDependencies({ wretch, normaliz })
 wretch().polyfills({
     fetch: require('node-fetch')
 })
+
+const fakeClient = wretch().middlewares([
+    () => url =>
+        Promise.resolve({
+            ok: true,
+            json() {
+                switch (url) {
+                    case '/error':
+                        return Promise.reject('rejected')
+                    case '/hello':
+                        return Promise.resolve({ hello: 'hello world'})
+                    case '/bonjour':
+                        return Promise.resolve({ bonjour: 'bonjour le monde'})
+                    case '/entity':
+                        return Promise.resolve({ id: 1 })
+                }
+            }
+        })
+])
+
+const SSRComponent = ({ error, errorNormalized, noSSR }) => {
+    const { data, loading } = useRequest(
+        error ? '/error' : '/hello',
+        {
+            serialize: () => 'test',
+            ssr: !noSSR
+        }
+    )
+    const { data: data2 } = useRequest(
+        '/bonjour',
+        {
+            skip: () => loading,
+            serialize: () => 'test2',
+            ssr: !noSSR
+        }
+    )
+    const { data: data3 } = useNormalizedRequest(
+        errorNormalized ? '/error' : '/entity',
+        {
+            skip: () => loading,
+            serialize: () => 'test3',
+            normalize: {
+                schema: [],
+                entity: 'entity'
+            },
+            ssr: !noSSR
+        }
+    )
+    return <div>{data && data.hello} {data2 && data2.bonjour} {data3 && data3.entity['1'].id }</div>
+}
 
 describe('React context test suite', () => {
     test('Context provider should inject a client and a store', () => {
@@ -72,55 +122,6 @@ describe('React context test suite', () => {
         expect(getByText('store client')).toBeTruthy()
     })
 
-    const fakeClient = wretch().middlewares([
-        () => url =>
-            Promise.resolve({
-                ok: true,
-                json() {
-                    switch (url) {
-                        case '/error':
-                            return Promise.reject('rejected')
-                        case '/hello':
-                            return Promise.resolve({ hello: 'hello world'})
-                        case '/bonjour':
-                            return Promise.resolve({ bonjour: 'bonjour le monde'})
-                        case '/entity':
-                            return Promise.resolve({ id: 1 })
-                    }
-                }
-            })
-    ])
-    const SSRComponent = ({ error, errorNormalized, noSSR }) => {
-        const { data, loading } = useRequest(
-            error ? '/error' : '/hello',
-            {
-                serialize: () => 'test',
-                ssr: !noSSR
-            }
-        )
-        const { data: data2 } = useRequest(
-            '/bonjour',
-            {
-                skip: () => loading,
-                serialize: () => 'test2',
-                ssr: !noSSR
-            }
-        )
-        const { data: data3 } = useNormalizedRequest(
-            errorNormalized ? '/error' : '/entity',
-            {
-                skip: () => loading,
-                serialize: () => 'test3',
-                normalize: {
-                    schema: [],
-                    entity: 'entity'
-                },
-                ssr: !noSSR
-            }
-        )
-        return <div>{data && data.hello} {data2 && data2.bonjour} {data3 && data3.entity['1'].id }</div>
-    }
-
     test('SSR Provider and preloadData should resolve promises and render markup', async () => {
         const store = createStore({})
         const jsx =
@@ -150,6 +151,7 @@ describe('React context test suite', () => {
                 }
             }
         })
+
         expect(TestRenderer.create(jsx).toJSON()).toMatchSnapshot()
     })
 
