@@ -93,7 +93,6 @@
 		"build:classes": "rollup -c config/rollup.classes.config.js",
 		"build:websocket": "rollup -c config/rollup.websocket.config.js",
 		"test": "jest",
-		"coverage": "cat ./coverage/lcov.info | coveralls",
 		"clean": "rimraf {dist,react,handlers,websocket,classes,types}",
 		"prepublishOnly": "npm start"
 	},
@@ -129,7 +128,6 @@
 		"@testing-library/react": "^12.1.2",
 		"@types/jest": "^27.4.0",
 		"babel-jest": "^27.4.6",
-		"coveralls": "^3.1.1",
 		"eslint": "^8.8.0",
 		"eslint-plugin-jest": "^26.0.0",
 		"eslint-plugin-react": "^7.28.0",
