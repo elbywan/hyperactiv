@@ -2,7 +2,6 @@
 	"name": "hyperactiv",
 	"version": "0.10.1",
 	"description": "Super small observable & reactive objects library.",
-	"type": "module",
 	"main": "./dist/index.js",
 	"module": "./src/index.js",
 	"types": "./types/index.d.ts",
