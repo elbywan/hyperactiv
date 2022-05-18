@@ -46,23 +46,23 @@
 		},
 		"./react": {
 			"import": "./src/react/index.js",
-			"require": "./dist/react/index.js"
+			"require": "./react/index.js"
 		},
 		"./classes": {
 			"import": "./src/classes/index.js",
-			"require": "./dist/classes/index.js"
+			"require": "./classes/index.js"
 		},
 		"./handlers": {
 			"import": "./src/handlers/index.js",
-			"require": "./dist/handlers/index.js"
+			"require": "./handlers/index.js"
 		},
 		"./http": {
 			"import": "./src/http/index.js",
-			"require": "./dist/http/index.js"
+			"require": "./http/index.js"
 		},
 		"./websocket": {
 			"import": "./src/websocket/index.js",
-			"require": "./dist/websocket/index.js"
+			"require": "./websocket/index.js"
 		},
 		"./package.json": "./package.json"
 	},
