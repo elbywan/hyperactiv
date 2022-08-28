@@ -18,7 +18,7 @@ import { request, normalized, resource } from 'hyperactiv/http'
 Or alternatively if you prefer script tags :
 
 ```html
-<script src="https://unpkg.com/hyperactiv/http/index.js" ></script>
+<script src="https://unpkg.com/hyperactiv/dist/http" ></script>
 ```
 
 ```js

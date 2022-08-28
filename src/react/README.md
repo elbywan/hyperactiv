@@ -77,7 +77,7 @@ And alternatively, if you prefer script tags:
 
 ```html
 <script src="https://unpkg.com/hyperactiv"></script>
-<script src="https://unpkg.com/hyperactiv/react"></script>
+<script src="https://unpkg.com/hyperactiv/dist/react"></script>
 ```
 
 ```js

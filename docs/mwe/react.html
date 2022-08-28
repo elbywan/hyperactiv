@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <script defer src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
   <script defer src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
   <script defer src="https://unpkg.com/wretch" crossorigin></script>
   <script defer src="https://unpkg.com/normaliz" crossorigin></script>
   <script defer src="https://unpkg.com/hyperactiv" crossorigin></script>
-  <script defer src="https://unpkg.com/hyperactiv/react" crossorigin></script>
+  <script defer src="https://unpkg.com/hyperactiv/dist/react" crossorigin></script>
   <script defer src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
 </head>
+
 <body>
   <div id="root"></div>
 
@@ -34,7 +36,7 @@
         <p>
           <input
             value={todo.title || ''}
-            onChange={e => todo.title = e.target.value }
+            onChange={e => todo.title = e.target.value}
           />
           <input
             type='checkbox'
@@ -56,7 +58,7 @@
           store
         }
       )
-      if(loading)
+      if (loading)
         return 'Loading'
       return (
         <>
@@ -66,7 +68,7 @@
             </button>
           </p>
           <pre>
-            { JSON.stringify(todo, null, 2)}
+            {JSON.stringify(todo, null, 2)}
           </pre>
         </>
       )
@@ -80,4 +82,5 @@
     </>, container)
   </script>
 </body>
+
 </html>

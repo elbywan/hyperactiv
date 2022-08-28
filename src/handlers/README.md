@@ -13,7 +13,7 @@ import handlers from 'hyperactiv/handlers'
 Or alternatively if you prefer script tags :
 
 ```html
-<script src="https://unpkg.com/hyperactiv/handlers/index.js" ></script>
+<script src="https://unpkg.com/hyperactiv/dist/handlers" ></script>
 ```
 
 ```js

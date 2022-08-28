@@ -14,7 +14,7 @@ Or alternatively if you prefer script tags :
 
 ```html
 <script src="https://unpkg.com/hyperactiv"></script>
-<script src="https://unpkg.com/hyperactiv/classes" ></script>
+<script src="https://unpkg.com/hyperactiv/dist/classes" ></script>
 ```
 
 ```js

@@ -163,7 +163,7 @@ export function observe(obj, options = {}) {
               dependents.delete(dependent)
             } else if(dependent !== computedStack[0]) {
               // Run the computed function
-              if(typeof batch !== 'undefined') {
+              if(typeof batch !== 'undefined' && batch !== false) {
                 enqueue(dependent, batch)
               } else {
                 dependent()

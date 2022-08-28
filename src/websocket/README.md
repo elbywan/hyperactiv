@@ -62,7 +62,7 @@ const remoteObject = subscribeToHostedObject(new WebSocket("ws://localhost:8080"
 <html>
     <head>
         <script src="https://unpkg.com/hyperactiv" ></script>
-        <script src="https://unpkg.com/hyperactiv/websocket/browser.js"></script>
+        <script src="https://unpkg.com/hyperactiv/dist/websocket/browser.js"></script>
     </head>
     <body onload="window['hyperactiv-websocket']('ws://localhost:8080', window.remoteObject = {})">
         Check developer console for "remoteObject"
