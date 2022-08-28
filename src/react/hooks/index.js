@@ -1,8 +1,8 @@
 import dependencies from './dependencies.js'
 
 export function setHooksDependencies({ wretch, normaliz }) {
-    if(wretch) dependencies.references.wretch = wretch
-    if(normaliz) dependencies.references.normaliz = normaliz
+  if(wretch) dependencies.references.wretch = wretch
+  if(normaliz) dependencies.references.normaliz = normaliz
 }
 
 export * from './useNormalizedRequest.js'

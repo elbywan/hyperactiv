@@ -1,206 +1,216 @@
 {
-    "parser": "@babel/eslint-parser",
-    "parserOptions": {
-        "ecmaVersion": 8,
-        "sourceType": "module"
-    },
-    "env": {
-        "es6": true,
-        "browser": true,
-        "node": true,
-        "jest/globals": true
-    },
-    "plugins": ["jest"],
-    "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended"
-    ],
-    "settings": {
-        "react": {
-            "version": "detect"
-        }
-    },
-    "rules": {
-        "no-console": ["warn"],
-        "no-extra-parens": ["warn", "all"],
-        "block-spacing": [
-            "warn",
-            "always"
-        ],
-        "brace-style": [
-            "warn",
-            "1tbs",
-            {
-                "allowSingleLine": true
-            }
-        ],
-        "camelcase": [
-            "error",
-            {
-                "properties": "never"
-            }
-        ],
-        "comma-dangle": [
-            "error",
-            "never"
-        ],
-        "comma-spacing": [
-            "error"
-        ],
-        "comma-style": [
-            "error"
-        ],
-        "computed-property-spacing": [
-            "error"
-        ],
-        "consistent-this": [
-            "error"
-        ],
-        "no-trailing-spaces": [
-            "error"
-        ],
-        "no-multiple-empty-lines": [
-            "error"
-        ],
-        "func-call-spacing": [
-            "error"
-        ],
-        "indent": [
-            "error",
-            4,
-            {
-                "flatTernaryExpressions": true,
-                "SwitchCase": 1
-            }
-        ],
-        "key-spacing": [
-            "error",
-            {
-                "mode": "minimum"
-            }
-        ],
-        "keyword-spacing": [
-            "error",
-            {
-                "overrides": {
-                    "if": {
-                        "after": false
-                    },
-                    "for": {
-                        "after": false
-                    },
-                    "while": {
-                        "after": false
-                    },
-                    "catch": {
-                        "after": false
-                    }
-                }
-            }
-        ],
-        "linebreak-style": [
-            "error"
-        ],
-        "new-cap": [
-            "warn"
-        ],
-        "new-parens": [
-            "error"
-        ],
-        "newline-per-chained-call": [
-            "error",
-            {
-                "ignoreChainWithDepth": 3
-            }
-        ],
-        "no-lonely-if": [
-            "error"
-        ],
-        "no-mixed-spaces-and-tabs": [
-            "warn",
-            "smart-tabs"
-        ],
-        "no-unneeded-ternary": [
-            "error"
-        ],
-        "no-whitespace-before-property": [
-            "error"
-        ],
-        "operator-linebreak": [
-            "warn",
-            "after"
-        ],
-        "quote-props": [
-            "error",
-            "as-needed",
-            {
-                "keywords": true
-            }
-        ],
-        "quotes": [
-            "error",
-            "single",
-            {
-                "avoidEscape": true
-            }
-        ],
-        "no-unexpected-multiline": [
-            "warn"
-        ],
-        "semi": [
-            "error",
-            "never"
-        ],
-        "space-before-blocks": [
-            "error"
-        ],
-        "space-before-function-paren": ["error", {
-            "anonymous": "never",
-            "named": "never",
-            "asyncArrow": "always"
-        }],
-        "space-in-parens": [
-            "error"
-        ],
-        "space-infix-ops": [
-            "error",
-            {
-                "int32Hint": false
-            }
-        ],
-        "spaced-comment": [
-            "error",
-            "always"
-        ],
-        "space-unary-ops": [
-            "error",
-            {
-                "words": true,
-                "nonwords": false
-            }
-        ],
-        "unicode-bom": [
-            "error",
-            "never"
-        ],
-        "arrow-body-style": [
-            "error",
-            "as-needed"
-        ],
-        "arrow-parens": [
-            "error",
-            "as-needed"
-        ],
-        "arrow-spacing": [
-            "error"
-        ],
-        "prefer-const": [
-            "error"
-        ],
-        "prefer-rest-params": [
-            "warn"
-        ],
-        "react/display-name": 0,
-        "react/prop-types": 0
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "module"
+  },
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true,
+    "jest/globals": true
+  },
+  "plugins": [
+    "jest"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
+  "settings": {
+    "react": {
+      "version": "detect"
     }
+  },
+  "rules": {
+    "no-console": [
+      "warn"
+    ],
+    "no-extra-parens": [
+      "warn",
+      "all"
+    ],
+    "block-spacing": [
+      "warn",
+      "always"
+    ],
+    "brace-style": [
+      "warn",
+      "1tbs",
+      {
+        "allowSingleLine": true
+      }
+    ],
+    "camelcase": [
+      "error",
+      {
+        "properties": "never"
+      }
+    ],
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
+    "comma-spacing": [
+      "error"
+    ],
+    "comma-style": [
+      "error"
+    ],
+    "computed-property-spacing": [
+      "error"
+    ],
+    "consistent-this": [
+      "error"
+    ],
+    "no-trailing-spaces": [
+      "error"
+    ],
+    "no-multiple-empty-lines": [
+      "error"
+    ],
+    "func-call-spacing": [
+      "error"
+    ],
+    "indent": [
+      "error",
+      2,
+      {
+        "flatTernaryExpressions": true,
+        "SwitchCase": 1
+      }
+    ],
+    "key-spacing": [
+      "error",
+      {
+        "mode": "minimum"
+      }
+    ],
+    "keyword-spacing": [
+      "error",
+      {
+        "overrides": {
+          "if": {
+            "after": false
+          },
+          "for": {
+            "after": false
+          },
+          "while": {
+            "after": false
+          },
+          "catch": {
+            "after": false
+          }
+        }
+      }
+    ],
+    "linebreak-style": [
+      "error"
+    ],
+    "new-cap": [
+      "warn"
+    ],
+    "new-parens": [
+      "error"
+    ],
+    "newline-per-chained-call": [
+      "error",
+      {
+        "ignoreChainWithDepth": 3
+      }
+    ],
+    "no-lonely-if": [
+      "error"
+    ],
+    "no-mixed-spaces-and-tabs": [
+      "warn",
+      "smart-tabs"
+    ],
+    "no-unneeded-ternary": [
+      "error"
+    ],
+    "no-whitespace-before-property": [
+      "error"
+    ],
+    "operator-linebreak": [
+      "warn",
+      "after"
+    ],
+    "quote-props": [
+      "error",
+      "as-needed",
+      {
+        "keywords": true
+      }
+    ],
+    "quotes": [
+      "error",
+      "single",
+      {
+        "avoidEscape": true
+      }
+    ],
+    "no-unexpected-multiline": [
+      "warn"
+    ],
+    "semi": [
+      "error",
+      "never"
+    ],
+    "space-before-blocks": [
+      "error"
+    ],
+    "space-before-function-paren": [
+      "error",
+      {
+        "anonymous": "never",
+        "named": "never",
+        "asyncArrow": "always"
+      }
+    ],
+    "space-in-parens": [
+      "error"
+    ],
+    "space-infix-ops": [
+      "error",
+      {
+        "int32Hint": false
+      }
+    ],
+    "spaced-comment": [
+      "error",
+      "always"
+    ],
+    "space-unary-ops": [
+      "error",
+      {
+        "words": true,
+        "nonwords": false
+      }
+    ],
+    "unicode-bom": [
+      "error",
+      "never"
+    ],
+    "arrow-body-style": [
+      "error",
+      "as-needed"
+    ],
+    "arrow-parens": [
+      "error",
+      "as-needed"
+    ],
+    "arrow-spacing": [
+      "error"
+    ],
+    "prefer-const": [
+      "error"
+    ],
+    "prefer-rest-params": [
+      "warn"
+    ],
+    "react/display-name": 0,
+    "react/prop-types": 0
+  }
 }

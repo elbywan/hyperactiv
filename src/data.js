@@ -1,5 +1,4 @@
 export const data = {
-    computedStack: [],
-    observersMap: new WeakMap(),
-    computedDependenciesTracker: new WeakMap()
+  computedStack: [],
+  trackerSymbol: Symbol('tracker')
 }

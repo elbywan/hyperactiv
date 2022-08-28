@@ -5,117 +5,117 @@ import { HyperactivContext, SSRContext } from '../context/index.js'
 import dependencies from './dependencies.js'
 
 export function useNormalizedRequest(url, {
-    store,
-    normalize,
-    client,
-    skip = () => false,
-    beforeRequest = identity,
-    afterRequest = identity,
-    rootKey = defaultRootKey,
-    serialize = defaultSerialize,
-    bodyType = 'json',
-    policy = 'cache-first',
-    ssr = true
+  store,
+  normalize,
+  client,
+  skip = () => false,
+  beforeRequest = identity,
+  afterRequest = identity,
+  rootKey = defaultRootKey,
+  serialize = defaultSerialize,
+  bodyType = 'json',
+  policy = 'cache-first',
+  ssr = true
 }) {
-    const contextValue = useContext(HyperactivContext)
-    const ssrContext = ssr && useContext(SSRContext)
-    store = contextValue && contextValue.store || store
-    client = contextValue && contextValue.client || client || dependencies.references.wretch()
+  const contextValue = useContext(HyperactivContext)
+  const ssrContext = ssr && useContext(SSRContext)
+  store = contextValue && contextValue.store || store
+  client = contextValue && contextValue.client || client || dependencies.references.wretch()
 
-    const configuredClient = useMemo(() => beforeRequest(client.url(url)), [client, beforeRequest, url])
-    const storeKey = useMemo(() => serialize('get', configuredClient._url), [configuredClient])
-    if(!store[rootKey]) {
-        store[rootKey] = {}
-    }
-    const storedMappings = store[rootKey][storeKey]
+  const configuredClient = useMemo(() => beforeRequest(client.url(url)), [client, beforeRequest, url])
+  const storeKey = useMemo(() => serialize('get', configuredClient._url), [configuredClient])
+  if(!store[rootKey]) {
+    store[rootKey] = {}
+  }
+  const storedMappings = store[rootKey][storeKey]
 
-    const cacheLookup = policy !== 'network-only'
+  const cacheLookup = policy !== 'network-only'
 
-    const [ error, setError ] = useState(null)
-    const [ loading, setLoading ] = useState(
-        !cacheLookup ||
+  const [ error, setError ] = useState(null)
+  const [ loading, setLoading ] = useState(
+    !cacheLookup ||
         !storedMappings
-    )
-    const [ networkData, setNetworkData ] = useState(null)
-    const data =
+  )
+  const [ networkData, setNetworkData ] = useState(null)
+  const data =
         cacheLookup ?
-            storedMappings &&
+          storedMappings &&
             normalizedOperations.read(storedMappings, store) :
-            networkData
+          networkData
 
-    const unmounted = useRef(false)
-    useEffect(() => () => unmounted.current = false, [])
-    const pendingRequests = useRef([])
+  const unmounted = useRef(false)
+  useEffect(() => () => unmounted.current = false, [])
+  const pendingRequests = useRef([])
 
-    function refetch(noState) {
-        if(!noState && !unmounted.current) {
-            setLoading(true)
-            setError(null)
-            setNetworkData(null)
-        }
-        const promise = configuredClient
-            .get()
-            // eslint-disable-next-line no-unexpected-multiline
-            [bodyType](body => afterRequest(body))
-            .then(result => {
-                const normalizedData = dependencies.references.normaliz(result, normalize)
-                store[rootKey][storeKey] = Object.entries(normalizedData).reduce((mappings, [ entity, dataById ]) => {
-                    mappings[entity] = Object.keys(dataById)
-                    return mappings
-                }, {})
-                normalizedOperations.write(normalizedData, store)
-                const storeSlice = normalizedOperations.read(store[rootKey][storeKey], store)
-                pendingRequests.current.splice(pendingRequests.current.indexOf(promise), 1)
-                if(!ssrContext && !unmounted.current && pendingRequests.current.length === 0) {
-                    setNetworkData(storeSlice)
-                    setLoading(false)
-                }
-                return storeSlice
-            })
-            .catch(error => {
-                pendingRequests.current.splice(pendingRequests.current.indexOf(promise), 1)
-                if(!ssrContext && !unmounted.current && pendingRequests.current.length === 0) {
-                    setError(error)
-                    setLoading(false)
-                }
-                if(ssrContext)
-                    throw error
-            })
-
-        pendingRequests.current.push(promise)
-        if(ssrContext) {
-            ssrContext.push(promise)
-        }
-        return promise
+  function refetch(noState) {
+    if(!noState && !unmounted.current) {
+      setLoading(true)
+      setError(null)
+      setNetworkData(null)
     }
+    const promise = configuredClient
+      .get()
+    // eslint-disable-next-line no-unexpected-multiline
+      [bodyType](body => afterRequest(body))
+      .then(result => {
+        const normalizedData = dependencies.references.normaliz(result, normalize)
+        store[rootKey][storeKey] = Object.entries(normalizedData).reduce((mappings, [ entity, dataById ]) => {
+          mappings[entity] = Object.keys(dataById)
+          return mappings
+        }, {})
+        normalizedOperations.write(normalizedData, store)
+        const storeSlice = normalizedOperations.read(store[rootKey][storeKey], store)
+        pendingRequests.current.splice(pendingRequests.current.indexOf(promise), 1)
+        if(!ssrContext && !unmounted.current && pendingRequests.current.length === 0) {
+          setNetworkData(storeSlice)
+          setLoading(false)
+        }
+        return storeSlice
+      })
+      .catch(error => {
+        pendingRequests.current.splice(pendingRequests.current.indexOf(promise), 1)
+        if(!ssrContext && !unmounted.current && pendingRequests.current.length === 0) {
+          setError(error)
+          setLoading(false)
+        }
+        if(ssrContext)
+          throw error
+      })
 
-    function checkAndRefetch(noState = false) {
-        if(
-            !skip() &&
+    pendingRequests.current.push(promise)
+    if(ssrContext) {
+      ssrContext.push(promise)
+    }
+    return promise
+  }
+
+  function checkAndRefetch(noState = false) {
+    if(
+      !skip() &&
             !error &&
             (policy !== 'cache-first' || !data)
-        ) {
-            refetch(noState)
-        }
+    ) {
+      refetch(noState)
     }
+  }
 
-    useEffect(function() {
-        checkAndRefetch()
-    }, [ storeKey, skip() ])
+  useEffect(function() {
+    checkAndRefetch()
+  }, [ storeKey, skip() ])
 
-    if(ssrContext) {
-        checkAndRefetch(true)
-    }
+  if(ssrContext) {
+    checkAndRefetch(true)
+  }
 
-    return skip() ? {
-        data: null,
-        error: null,
-        loading: false,
-        refetch
-    } : {
-        loading,
-        data,
-        error,
-        refetch
-    }
+  return skip() ? {
+    data: null,
+    error: null,
+    loading: false,
+    refetch
+  } : {
+    loading,
+    data,
+    error,
+    refetch
+  }
 }

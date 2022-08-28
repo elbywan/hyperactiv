@@ -6,6 +6,6 @@ import { data } from './data.js'
  * @param {Function} computedFunction
  */
 export function dispose(computedFunction) {
-    data.computedDependenciesTracker.delete(computedFunction)
-    return computedFunction.__disposed = true
+  computedFunction[data.trackerSymbol] = null
+  return computedFunction.__disposed = true
 }

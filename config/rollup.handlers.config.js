@@ -1,12 +1,19 @@
-import { IS_TEST_BUILD, plugins, sourcemap } from './common'
+import { plugins, sourcemap } from './common'
 
 export default {
-    input: './src/handlers/index.js',
-    output: {
-        file: IS_TEST_BUILD ? 'handlers/handlers.js' : 'handlers/index.js',
-        format: 'umd',
-        name: 'hyperactiv-handlers',
-        sourcemap
+  input: './src/handlers/index.js',
+  output: [
+    {
+      file: 'dist/handlers/index.js',
+      format: 'umd',
+      name: 'hyperactiv-handlers',
+      sourcemap
     },
-    plugins
+    {
+      file: 'dist/handlers/index.mjs',
+      format: 'es',
+      sourcemap
+    }
+  ],
+  plugins
 }

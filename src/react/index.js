@@ -6,5 +6,5 @@ export * from './hooks/index.js'
 export * from './context/index.js'
 
 export const store = function(obj, options = {}) {
-    return hyperactiv.observe(obj, Object.assign({ deep: true, batch: false }, options))
+  return hyperactiv.observe(obj, Object.assign({ deep: true, batch: false }, options))
 }

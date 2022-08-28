@@ -7,31 +7,37 @@
 	"types": "./types/index.d.ts",
 	"typesVersions": {
 		"*": {
-			"react": [
+			"src": [
+				"./types/index.d.ts"
+			],
+			"dist": [
+				"./types/index.d.ts"
+			],
+			"dist/react": [
 				"./types/react/index.d.ts"
 			],
 			"src/react": [
 				"./types/react/index.d.ts"
 			],
-			"classes": [
+			"dist/classes": [
 				"./types/classes/index.d.ts"
 			],
 			"src/classes": [
 				"./types/classes/index.d.ts"
 			],
-			"handlers": [
+			"dist/handlers": [
 				"./types/handlers/index.d.ts"
 			],
 			"src/handlers": [
 				"./types/handlers/index.d.ts"
 			],
-			"http": [
+			"dist/http": [
 				"./types/http/index.d.ts"
 			],
 			"src/http": [
 				"./types/http/index.d.ts"
 			],
-			"websocket": [
+			"dist/websocket": [
 				"./types/websocket/index.d.ts"
 			],
 			"src/websocket": [
@@ -41,28 +47,31 @@
 	},
 	"exports": {
 		".": {
-			"import": "./src/index.js",
+			"import": "./dist/index.mjs",
 			"require": "./dist/index.js"
 		},
 		"./react": {
-			"import": "./src/react/index.js",
-			"require": "./react/index.js"
+			"import": "./dist/react/index.mjs",
+			"require": "./dist/react/index.js"
 		},
 		"./classes": {
-			"import": "./src/classes/index.js",
-			"require": "./classes/index.js"
+			"import": "./dist/classes/index.mjs",
+			"require": "./dist/classes/index.js"
 		},
 		"./handlers": {
-			"import": "./src/handlers/index.js",
-			"require": "./handlers/index.js"
+			"import": "./dist/handlers/index.mjs",
+			"require": "./dist/handlers/index.js"
 		},
 		"./http": {
-			"import": "./src/http/index.js",
-			"require": "./http/index.js"
+			"import": "./dist/http/index.mjs",
+			"require": "./dist/http/index.js"
 		},
-		"./websocket": {
-			"import": "./src/websocket/index.js",
-			"require": "./websocket/index.js"
+		"./websocket/server": {
+			"import": "./dist/websocket/server.mjs",
+			"require": "./dist/websocket/server.js"
+		},
+		"./websocket/browser": {
+			"default": "./dist/websocket/browser.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -73,11 +82,7 @@
 	"files": [
 		"src",
 		"types",
-		"dist",
-		"handlers",
-		"react",
-		"classes",
-		"websocket"
+		"dist"
 	],
 	"scripts": {
 		"start": "npm run lint && npm run build && npm run test",
@@ -92,7 +97,7 @@
 		"build:classes": "rollup -c config/rollup.classes.config.js",
 		"build:websocket": "rollup -c config/rollup.websocket.config.js",
 		"test": "jest",
-		"clean": "rimraf {dist,react,handlers,websocket,classes,types}",
+		"clean": "rimraf {dist,types}",
 		"prepublishOnly": "npm start"
 	},
 	"keywords": [

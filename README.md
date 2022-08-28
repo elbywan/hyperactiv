@@ -481,3 +481,20 @@ Will remove the computed function from the reactive Maps (the next time an bound
 ```ts
 dispose(Function) => void
 ```
+
+### batch
+
+_Only when observables are created with the `{batch: …}` flag_
+
+Will perform accumulated b.ed computations instantly.
+
+```ts
+const obj = observe({ a: 0, b: 0 }, { batch: true })
+computed(() => obj.a = obj.b)
+obj.b++
+obj.b++
+console.log(obj.a) // => 0
+batch()
+console.log(obj.a) // => 2
+```
+
