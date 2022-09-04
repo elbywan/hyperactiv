@@ -7,14 +7,15 @@
 
 import kleur from 'kleur'
 import * as cellx from 'cellx'
-
 import * as Sjs from 's-js'
 import * as mobx from 'mobx'
 import * as maverick from '@maverick-js/observables'
 import hyperactiv from 'hyperactiv'
 import Table from 'cli-table'
+import pkgs from './pkgs.cjs'
 
-const RUNS_PER_TIER = 25
+const RUNS_PER_TIER = 50
+const DISCARD_BEST_WORST_X_RUNS = 10
 const LAYER_TIERS = [10, 100, 500, 1000, 2000, 2500, 5000, 10000]
 
 const sum = array => array.reduce((a, b) => a + b, 0)
@@ -37,13 +38,15 @@ const SOLUTIONS = {
  */
 const isSolution = (layers, answer) => answer.every((s, i) => s === SOLUTIONS[layers][i])
 
+const pkgKey = pkg => `${pkgs[pkg].name}@${pkgs[pkg].version}`
+
 async function main() {
   const report = {
-    cellx: { fn: runCellx, runs: [] },
-    hyperactiv: { fn: runHyperactiv, runs: [] },
-    maverick: { fn: runMaverick, runs: [], avg: [] },
-    mobx: { fn: runMobx, runs: [] },
-    S: { fn: runS, runs: [] }
+    [pkgKey('cellx')]: { fn: runCellx, runs: [] },
+    [pkgKey('hyperactiv')]: { fn: runHyperactiv, runs: [] },
+    [pkgKey('maverick')]: { fn: runMaverick, runs: [], avg: [] },
+    [pkgKey('mobx')]: { fn: runMobx, runs: [] },
+    [pkgKey('S')]: { fn: runS, runs: [] }
   }
 
   for(const lib of Object.keys(report)) {
@@ -51,7 +54,7 @@ async function main() {
 
     for(let i = 0; i < LAYER_TIERS.length; i += 1) {
       const layers = LAYER_TIERS[i]
-      const runs = []
+      let runs = []
       let result = null
 
       for(let j = 0; j < RUNS_PER_TIER; j += 1) {
@@ -64,6 +67,9 @@ async function main() {
       if(typeof result !== 'number') {
         current.runs[i] = result
       } else {
+        if(DISCARD_BEST_WORST_X_RUNS) {
+          runs = runs.sort().slice(DISCARD_BEST_WORST_X_RUNS, -DISCARD_BEST_WORST_X_RUNS)
+        }
         current.runs[i] = avg(runs) * 1000
       }
     }
@@ -119,7 +125,7 @@ async function start(runner, layers) {
     runner(layers, done)
   }).catch(error => {
     console.error(error)
-    return 'error'
+    return error.message.toString()
   })
 }
 
@@ -262,12 +268,12 @@ function runMobx(layers, done) {
 
   for(let i = layers; i--;) {
     layer = (prev => {
-      const next = mobx.observable({
+      const next = {
         a: mobx.computed(() => prev.b.get()),
         b: mobx.computed(() => prev.a.get() - prev.c.get()),
         c: mobx.computed(() => prev.b.get() + prev.d.get()),
         d: mobx.computed(() => prev.c.get())
-      })
+      }
 
       return next
     })(layer)
@@ -294,21 +300,24 @@ function runMobx(layers, done) {
 }
 
 function runHyperactiv(layers, done) {
-  const start = hyperactiv.observe({
+  const observe = obj => hyperactiv.observe(obj, { batch: true })
+  const computed = fn => hyperactiv.computed(fn, { disableTracking: true })
+
+  const start = observe({
     a: 1,
     b: 2,
     c: 3,
     d: 4
-  }, { batch: true })
+  })
   let layer = start
 
   for(let i = layers; i--;) {
     layer = (prev => {
-      const next = hyperactiv.observe({}, { batch: true })
-      hyperactiv.computed(() => next.a = prev.b, { disableTracking: true })
-      hyperactiv.computed(() => next.b = prev.a - prev.c, { disableTracking: true })
-      hyperactiv.computed(() => next.c = prev.b + prev.d, { disableTracking: true })
-      hyperactiv.computed(() => next.d = prev.c, { disableTracking: true })
+      const next = observe({})
+      computed(() => next.a = prev.b)
+      computed(() => next.b = prev.a - prev.c)
+      computed(() => next.c = prev.b + prev.d)
+      computed(() => next.d = prev.c)
       return next
     })(layer)
   }

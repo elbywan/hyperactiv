@@ -170,6 +170,21 @@ dispose(calculateSum)
 
 *Hyperactiv websocket implementation.*
 
+## Performance
+
+This repository includes a [benchmark folder](https://github.com/elbywan/hyperactiv/tree/master/bench) which pits `hyperactiv` against other similar libraries.
+
+While not the best in terms of raw performance it is still reasonably fast and I encourage you to have a look at the different implementations to compare the library APIs. [For instance there is no `.get()` and `.set()` wrappers when using `hyperactiv`](https://github.com/elbywan/hyperactiv/blob/master/bench/layers.mjs#L302).
+
+**Here are the raw results: _(50 runs per tiers, average time ignoring the 10 best & 10 worst runs)_**
+
+![bench](./docs/bench.png)
+
+> Each tier nests observable objects X (10/100/500/1000…) times and performs some computations on the deepest one. This causes reactions to propagate to the whole observable tree.
+
+
+_**Disclaimer**: I adapted the code from [`maverickjs`](https://github.com/maverick-js/observables/tree/main/bench) which was itself a rewrite of the benchmark from [`cellx`](https://github.com/Riim/cellx#benchmark). I also wrote some MobX code which might not be the best in terms of optimization since I am not very familiar with the API._
+
 ## Code samples
 
 #### A simple sum and a counter
