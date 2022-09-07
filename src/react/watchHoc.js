@@ -15,8 +15,8 @@ const watchClassComponent = Component => new Proxy(Component, {
     instance.forceUpdate = instance.forceUpdate.bind(instance)
     // Monkey patch the componentWillUnmount method to do some clean up on destruction
     const originalUnmount =
-            typeof instance.componentWillUnmount === 'function' &&
-            instance.componentWillUnmount.bind(instance)
+      typeof instance.componentWillUnmount === 'function' &&
+      instance.componentWillUnmount.bind(instance)
     instance.componentWillUnmount = function(...args) {
       dispose(instance.forceUpdate)
       if(originalUnmount) {
@@ -50,12 +50,13 @@ function watchFunctionalComponent(component) {
     }
     const [child, setChild] = React.useState(null)
     React.useEffect(function onMount() {
+      const callback = () => forceUpdate()
       setChild(() => computed(component, {
         autoRun: false,
-        callback: forceUpdate
+        callback
       }))
       return function onUnmount() {
-        dispose(forceUpdate)
+        dispose(callback)
       }
     }, [])
     return child ? child(injectedProps) : component(injectedProps)
