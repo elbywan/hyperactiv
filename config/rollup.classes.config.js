@@ -23,12 +23,13 @@ export default {
         [HYPERACTIV_PATH]: 'hyperactiv'
       },
       paths: {
-        [HYPERACTIV_PATH]: 'hyperactiv'
+        [HYPERACTIV_PATH]: '../index.mjs'
       }
     }
   ],
   external: [
     HYPERACTIV_PATH
   ],
-  plugins
+  plugins,
+  makeAbsoluteExternalsRelative: false
 }

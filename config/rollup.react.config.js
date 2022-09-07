@@ -1,5 +1,8 @@
 import { HYPERACTIV_PATH, plugins, sourcemap } from './common'
 
+/**
+ * @type {import('rollup').RollupOptions}
+ */
 export default {
   input: './src/react/index.js',
   output: [
@@ -31,7 +34,7 @@ export default {
         [HYPERACTIV_PATH]: 'hyperactiv'
       },
       paths: {
-        [HYPERACTIV_PATH]: 'hyperactiv'
+        [HYPERACTIV_PATH]: '../index.mjs'
       },
       sourcemap
     }
@@ -44,5 +47,6 @@ export default {
     'wretch',
     'normaliz',
     HYPERACTIV_PATH
-  ]
+  ],
+  makeAbsoluteExternalsRelative: false
 }

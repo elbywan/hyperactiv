@@ -45,7 +45,7 @@ This library also provides hooks that can fetch, normalize and cache data.
 ## Minimal Working Example
 
 ```js
-import { watch, store as createStore } from 'hyperactiv/src/react'
+import { watch, store as createStore } from 'hyperactiv/react'
 
 const store = createStore({ counter: 0 })
 
@@ -61,16 +61,11 @@ const Counter = watch(() =>
 
 ## Import
 
-The UMD way, compatible with most environments:
-
 ```js
+// ESM
 import { watch, store, ... } from 'hyperactiv/react'
-```
-
-Add `/src` for the esm, tree-shakable version:
-
-```js
-import { watch, store, ... } from 'hyperactiv/src/react'
+// CommonJS
+const { watch, store, ... } = require('hyperactiv/react')
 ```
 
 And alternatively, if you prefer script tags:
@@ -441,7 +436,7 @@ const {
 Can be used in combination with hooks, in order to provide a global `store` and `client`.
 
 ```js
-import { HyperactivProvider } from 'hyperactiv/src/react'
+import { HyperactivProvider } from 'hyperactiv/react'
 
 /* ... */
 
@@ -453,7 +448,7 @@ import { HyperactivProvider } from 'hyperactiv/src/react'
 To retrieve the store or the client from a component, you can use the following hooks:
 
 ```js
-import { useStore, useClient } from 'hyperactiv/src/react'
+import { useStore, useClient } from 'hyperactiv/react'
 
 const store = useStore()
 const client = useClient()
@@ -472,7 +467,7 @@ watch(function ({ store }) {
 Fills-up the store, usually before performing SSR.
 
 ```js
-import { preloadData } from 'hyperactiv/src/react'
+import { preloadData } from 'hyperactiv/react'
 
 const store = {} // your store
 const jsx = // your jsx root, including an instance of HyperactivProvider with the store

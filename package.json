@@ -13,58 +13,79 @@
 			"dist": [
 				"./types/index.d.ts"
 			],
-			"dist/react": [
+			"react": [
 				"./types/react/index.d.ts"
 			],
 			"src/react": [
 				"./types/react/index.d.ts"
 			],
-			"dist/classes": [
+			"classes": [
 				"./types/classes/index.d.ts"
 			],
 			"src/classes": [
 				"./types/classes/index.d.ts"
 			],
-			"dist/handlers": [
+			"handlers": [
 				"./types/handlers/index.d.ts"
 			],
 			"src/handlers": [
 				"./types/handlers/index.d.ts"
 			],
-			"dist/http": [
+			"http": [
 				"./types/http/index.d.ts"
 			],
 			"src/http": [
 				"./types/http/index.d.ts"
 			],
-			"dist/websocket": [
-				"./types/websocket/index.d.ts"
+			"websocket/browser": [
+				"./types/websocket/browser.d.ts"
 			],
-			"src/websocket": [
-				"./types/websocket/index.d.ts"
+			"src/websocket/browser": [
+				"./types/websocket/browser.d.ts"
+			],
+			"websocket/server": [
+				"./types/websocket/server.d.ts"
+			],
+			"src/websocket/server": [
+				"./types/websocket/server.d.ts"
 			]
 		}
 	},
 	"exports": {
 		".": {
-			"import": "./dist/index.mjs",
-			"require": "./dist/index.js"
+			"node": {
+				"import": "./dist/index.mjs",
+				"require": "./dist/index.js"
+			},
+			"default": "./src/index.js"
 		},
 		"./react": {
-			"import": "./dist/react/index.mjs",
-			"require": "./dist/react/index.js"
+			"node": {
+				"import": "./dist/react/index.mjs",
+				"require": "./dist/react/index.js"
+			},
+			"default": "./src/react/index.js"
 		},
 		"./classes": {
-			"import": "./dist/classes/index.mjs",
-			"require": "./dist/classes/index.js"
+			"node": {
+				"import": "./dist/classes/index.mjs",
+				"require": "./dist/classes/index.js"
+			},
+			"default": "./src/classes/index.js"
 		},
 		"./handlers": {
-			"import": "./dist/handlers/index.mjs",
-			"require": "./dist/handlers/index.js"
+			"node": {
+				"import": "./dist/handlers/index.mjs",
+				"require": "./dist/handlers/index.js"
+			},
+			"default": "./src/handlers/index.js"
 		},
 		"./http": {
-			"import": "./dist/http/index.mjs",
-			"require": "./dist/http/index.js"
+			"node": {
+				"import": "./dist/http/index.mjs",
+				"require": "./dist/http/index.js"
+			},
+			"default": "./src/http/index.js"
 		},
 		"./websocket/server": {
 			"import": "./dist/websocket/server.mjs",
@@ -148,5 +169,19 @@
 		"typescript": "^4.6.4",
 		"wretch": "^1.7.9",
 		"ws": "^7"
+	},
+	"peerDependenciesMeta": {
+		"react": {
+			"optional": true
+		},
+		"react-dom": {
+			"optional": true
+		},
+		"normaliz": {
+			"optional": true
+		},
+		"wretch": {
+			"optional": true
+		}
 	}
 }
