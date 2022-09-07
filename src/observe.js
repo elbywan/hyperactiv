@@ -19,8 +19,8 @@ const observedSymbol = Symbol('__observed')
  *  Batch computed properties calls, wrapping them in a queueMicrotask and
  *  executing them in a new context and preventing excessive calls.
  *  If batch is an integer, the calls will be debounced by the value in milliseconds using setTimemout.
- * @prop {number} [deep] - Recursively observe nested objects and when setting new properties.
- * @prop {number} [bind] - Automatically bind methods to the observed object.
+ * @prop {boolean} [deep] - Recursively observe nested objects and when setting new properties.
+ * @prop {boolean} [bind] - Automatically bind methods to the observed object.
  */
 
 /**
