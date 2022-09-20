@@ -64,6 +64,9 @@ async function main() {
         }
         runs.push(await start(current.fn, layers))
       }
+      // Allow libraries that free resources asynchronously (e.g. cellx) do so.
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
       if(typeof result !== 'number') {
         current.runs[i] = result
       } else {
