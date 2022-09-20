@@ -174,7 +174,7 @@ dispose(calculateSum)
 
 This repository includes a [benchmark folder](https://github.com/elbywan/hyperactiv/tree/master/bench) which pits `hyperactiv` against other similar libraries.
 
-While not the best in terms of raw performance it is still reasonably fast and I encourage you to have a look at the different implementations to compare the library APIs. [For instance there is no `.get()` and `.set()` wrappers when using `hyperactiv`](https://github.com/elbywan/hyperactiv/blob/master/bench/layers.mjs#L302).
+While not the best in terms of raw performance it is still reasonably fast and I encourage you to have a look at the different implementations to compare the library APIs. [For instance there is no `.get()` and `.set()` wrappers when using `hyperactiv`](https://github.com/elbywan/hyperactiv/blob/master/bench/layers.mjs#L343).
 
 **Here are the raw results: _(100 runs per tiers, average time ignoring the 10 best & 10 worst runs)_**
 
