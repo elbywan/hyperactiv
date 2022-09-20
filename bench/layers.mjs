@@ -10,11 +10,12 @@ import * as cellx from 'cellx'
 import * as Sjs from 's-js'
 import * as mobx from 'mobx'
 import * as maverick from '@maverick-js/observables'
+import * as preact from '@preact/signals-core'
 import hyperactiv from 'hyperactiv'
 import Table from 'cli-table'
 import pkgs from './pkgs.cjs'
 
-const RUNS_PER_TIER = 50
+const RUNS_PER_TIER = 100
 const DISCARD_BEST_WORST_X_RUNS = 10
 const LAYER_TIERS = [10, 100, 500, 1000, 2000, 2500, 5000, 10000]
 
@@ -46,6 +47,7 @@ async function main() {
     [pkgKey('hyperactiv')]: { fn: runHyperactiv, runs: [] },
     [pkgKey('maverick')]: { fn: runMaverick, runs: [], avg: [] },
     [pkgKey('mobx')]: { fn: runMobx, runs: [] },
+    [pkgKey('preact')]: { fn: runPreact, runs: [] },
     [pkgKey('S')]: { fn: runS, runs: [] }
   }
 
@@ -65,7 +67,7 @@ async function main() {
         runs.push(await start(current.fn, layers))
       }
       // Allow libraries that free resources asynchronously (e.g. cellx) do so.
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await new Promise(resolve => setTimeout(resolve, 0))
 
       if(typeof result !== 'number') {
         current.runs[i] = result
@@ -299,7 +301,43 @@ function runMobx(layers, done) {
   ]
   const endTime = performance.now() - startTime
   done(isSolution(layers, solution) ? endTime : 'wrong')
+}
 
+/**
+ * @see {@link https://github.com/preactjs/signals}
+ */
+function runPreact(layers, done) {
+  const a = preact.signal(1),
+    b = preact.signal(2),
+    c = preact.signal(3),
+    d = preact.signal(4)
+
+  const start = { a, b, c, d }
+
+  let layer = start
+
+  for(let i = layers; i--;) {
+    layer = (m => {
+      const props = {
+        a: preact.computed(() => m.b.value),
+        b: preact.computed(() => m.a.value - m.c.value),
+        c: preact.computed(() => m.b.value + m.d.value),
+        d: preact.computed(() => m.c.value)
+      }
+
+      return props
+    })(layer)
+  }
+
+  const startTime = performance.now()
+  const end = layer
+
+  a.value = 4, b.value = 3, c.value = 2, d.value = 1
+
+  const solution = [end.a.value, end.b.value, end.c.value, end.d.value]
+  const endTime = performance.now() - startTime
+
+  done(isSolution(layers, solution) ? endTime : -1)
 }
 
 function runHyperactiv(layers, done) {

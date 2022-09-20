@@ -6,12 +6,13 @@
     "start": "node layers.mjs"
   },
   "dependencies": {
-    "@maverick-js/observables": "^4.3.2",
+    "@maverick-js/observables": "^4.5.0",
+    "@preact/signals-core": "^1.1.1",
     "cellx": "^1.10.29",
     "cli-table": "^0.3.11",
     "hyperactiv": "file:..",
     "kleur": "^4.1.5",
-    "mobx": "^6.6.1",
+    "mobx": "^6.6.2",
     "s-js": "^0.4.9"
   }
 }

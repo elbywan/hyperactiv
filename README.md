@@ -176,7 +176,7 @@ This repository includes a [benchmark folder](https://github.com/elbywan/hyperac
 
 While not the best in terms of raw performance it is still reasonably fast and I encourage you to have a look at the different implementations to compare the library APIs. [For instance there is no `.get()` and `.set()` wrappers when using `hyperactiv`](https://github.com/elbywan/hyperactiv/blob/master/bench/layers.mjs#L302).
 
-**Here are the raw results: _(50 runs per tiers, average time ignoring the 10 best & 10 worst runs)_**
+**Here are the raw results: _(100 runs per tiers, average time ignoring the 10 best & 10 worst runs)_**
 
 ![bench](./docs/bench.png)
 
