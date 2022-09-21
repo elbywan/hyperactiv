@@ -14,6 +14,12 @@ import * as preact from '@preact/signals-core'
 import hyperactiv from 'hyperactiv'
 import Table from 'cli-table'
 import pkgs from './pkgs.cjs'
+import v8 from 'node:v8'
+
+v8.setFlagsFromString('--expose-gc')
+function collectGarbage() {
+  global.gc && global.gc()
+}
 
 const RUNS_PER_TIER = 100
 const DISCARD_BEST_WORST_X_RUNS = 10
@@ -52,6 +58,9 @@ async function main() {
   }
 
   for(const lib of Object.keys(report)) {
+    // Force garbage collection when switching libraries
+    collectGarbage()
+
     const current = report[lib]
 
     for(let i = 0; i < LAYER_TIERS.length; i += 1) {
@@ -61,6 +70,8 @@ async function main() {
 
       for(let j = 0; j < RUNS_PER_TIER; j += 1) {
         result = await start(current.fn, layers)
+        // Force garbage collection between each run
+        collectGarbage()
         if(typeof result !== 'number') {
           break
         }
@@ -176,10 +187,10 @@ function runCellx(layers, done) {
   const solution = [end.a.get(), end.b.get(), end.c.get(), end.d.get()]
   const endTime = performance.now() - startTime
 
-  start.a.dispose();
-  start.b.dispose();
-  start.c.dispose();
-  start.d.dispose();
+  start.a.dispose()
+  start.b.dispose()
+  start.c.dispose()
+  start.d.dispose()
 
   done(isSolution(layers, solution) ? endTime : 'wrong')
 }
@@ -337,7 +348,9 @@ function runPreact(layers, done) {
   const startTime = performance.now()
   const end = layer
 
-  a.value = 4, b.value = 3, c.value = 2, d.value = 1
+  preact.batch(() => {
+    a.value = 4, b.value = 3, c.value = 2, d.value = 1
+  })
 
   const solution = [end.a.value, end.b.value, end.c.value, end.d.value]
   const endTime = performance.now() - startTime
