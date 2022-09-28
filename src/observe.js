@@ -5,7 +5,7 @@ import {
   setHiddenKey
 } from './tools.js'
 import { data } from './data.js'
-import { enqueue } from './batcher.js'
+import { enqueue, __batched } from './batcher.js'
 
 const { computedStack, trackerSymbol } = data
 
@@ -165,6 +165,7 @@ export function observe(obj, options = {}) {
               // Run the computed function
               if(typeof batch !== 'undefined' && batch !== false) {
                 enqueue(dependent, batch)
+                dependent[__batched] = true
               } else {
                 dependent()
               }
