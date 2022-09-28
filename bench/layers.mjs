@@ -15,15 +15,17 @@ import hyperactiv from 'hyperactiv'
 import Table from 'cli-table'
 import pkgs from './pkgs.cjs'
 import v8 from 'node:v8'
+import vm from 'vm'
 
 v8.setFlagsFromString('--expose-gc')
+const gc = vm.runInNewContext('gc')
 function collectGarbage() {
-  global.gc && global.gc()
+  gc && gc()
 }
 
 const RUNS_PER_TIER = 100
 const DISCARD_BEST_WORST_X_RUNS = 10
-const LAYER_TIERS = [10, 100, 500, 1000, 2000, 2500, 5000, 10000]
+const LAYER_TIERS = [10, 100, 500, 1000, 2000, 2500/* , 5000, 10000*/]
 
 const sum = array => array.reduce((a, b) => a + b, 0)
 const avg = array => sum(array) / array.length || 0
@@ -70,8 +72,6 @@ async function main() {
 
       for(let j = 0; j < RUNS_PER_TIER; j += 1) {
         result = await start(current.fn, layers)
-        // Force garbage collection between each run
-        collectGarbage()
         if(typeof result !== 'number') {
           break
         }
