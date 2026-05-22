@@ -48,7 +48,7 @@ importers:
         specifier: ^28.1.0
         version: 28.1.0
       node-fetch:
-        specifier: ^2
+        specifier: ^2.6.7
         version: 2.6.7
       normaliz:
         specifier: ^0.2.0
@@ -66,7 +66,7 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2
       rollup:
-        specifier: ^2.72.0
+        specifier: ^2.80.0
         version: 2.80.0
       rollup-plugin-terser:
         specifier: ^7.0.2
@@ -78,7 +78,7 @@ importers:
         specifier: ^1.7.9
         version: 1.7.9
       ws:
-        specifier: ^7
+        specifier: ^7.5.10
         version: 7.5.10
 
 packages:
@@ -951,8 +951,8 @@ packages:
       react: ^18.0.0
       react-dom: ^18.0.0
 
-  '@tootallnate/once@2.0.0':
-    resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
+  '@tootallnate/once@2.0.1':
+    resolution: {integrity: sha512-HqmEUIGRJ5fSXchkVgR5F7qn48bDBzv0kWj/Kfu5e6uci4UlEeng4331LnBkWffb++Ei3FOVLxo8JJWMFBDMeQ==}
     engines: {node: '>= 10'}
 
   '@types/aria-query@4.2.2':
@@ -4231,7 +4231,7 @@ snapshots:
       react: 18.1.0
       react-dom: 18.1.0(react@18.1.0)
 
-  '@tootallnate/once@2.0.0': {}
+  '@tootallnate/once@2.0.1': {}
 
   '@types/aria-query@4.2.2': {}
 
@@ -5223,7 +5223,7 @@ snapshots:
 
   http-proxy-agent@5.0.0:
     dependencies:
-      '@tootallnate/once': 2.0.0
+      '@tootallnate/once': 2.0.1
       agent-base: 6.0.2
       debug: 4.4.3
     transitivePeerDependencies:
